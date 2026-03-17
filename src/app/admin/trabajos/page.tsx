@@ -36,6 +36,7 @@ export default function GalleryEditor() {
         setUploading(true);
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("folder", "trabajos");
 
         try {
             const res = await fetch("/api/upload", {

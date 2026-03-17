@@ -25,6 +25,7 @@ export default function CategoriesEditor() {
         setError("");
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("folder", "categorias");
 
         try {
             const res = await fetch("/api/upload", {
