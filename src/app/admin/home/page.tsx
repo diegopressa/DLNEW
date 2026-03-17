@@ -839,19 +839,36 @@ export default function HomeEditor() {
                                                 setIndustries(newInds);
                                             }}
                                         />
-                                        <label className="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 hover:border-blue-400 hover:text-blue-600 cursor-pointer transition-all">
-                                            <Plus size={12} />
-                                            Subir Imagen
-                                            <input 
-                                                type="file" 
-                                                className="hidden" 
-                                                accept="image/*"
-                                                onChange={(e) => {
-                                                    const file = e.target.files?.[0];
-                                                    if (file) handleIndustryImageUpload(ind.id, index, file);
-                                                }}
-                                            />
-                                        </label>
+                                        <div className="flex gap-2">
+                                            <label className="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 hover:border-blue-400 hover:text-blue-600 cursor-pointer transition-all">
+                                                <Plus size={12} />
+                                                Subir Imagen
+                                                <input 
+                                                    type="file" 
+                                                    className="hidden" 
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) handleIndustryImageUpload(ind.id, index, file);
+                                                    }}
+                                                />
+                                            </label>
+                                            {ind.imageUrl && (
+                                                <button 
+                                                    onClick={() => {
+                                                        const newInds = [...industries];
+                                                        newInds[index].imageUrl = "";
+                                                        setIndustries(newInds);
+                                                        setMessage({ type: "info", text: "Imagen quitada (clic en Guardar para publicar)." });
+                                                        setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+                                                    }}
+                                                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-100 rounded-lg text-[10px] font-bold text-red-600 hover:bg-red-600 hover:text-white transition-all"
+                                                >
+                                                    <Trash2 size={12} />
+                                                    Eliminar
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
