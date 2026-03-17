@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { getAboutUs, updateAboutUs } from "@/actions/aboutActions";
-import { uploadImage } from "@/actions/homeActions";
+// uploadImage server action intentionally removed:
+// Server Actions serialize args with their own protocol and drop File binaries
+// when called programmatically. We use /api/upload (fetch + FormData) instead.
 import { Save, Loader2, Image as ImageIcon, Type, FileText, Upload, X, Link } from "lucide-react";
 
 export default function AboutAdmin() {
@@ -82,21 +84,31 @@ export default function AboutAdmin() {
 
         if (pendingFile) {
             setMessage({ type: "info", text: "Subiendo imagen..." });
+
+            // Use fetch + native FormData so the browser sends real multipart/form-data.
+            // DO NOT set Content-Type manually — the browser adds the correct boundary.
             const formData = new FormData();
             formData.append("file", pendingFile);
 
             try {
-                const res = await uploadImage(formData);
+                const response = await fetch("/api/upload", {
+                    method: "POST",
+                    body: formData,
+                    // No "Content-Type" header — browser sets multipart/form-data + boundary
+                });
+
+                const res = await response.json();
+
                 if (res.success && res.url) {
                     imageUrl = res.url;
-                    // Clean up the blob URL now that we have the real server URL
+                    // Clean up blob URL now that we have the server URL
                     if (previewUrl && previewUrl.startsWith("blob:")) {
                         URL.revokeObjectURL(previewUrl);
                     }
                     setPreviewUrl(null);
                     setPendingFile(null);
                 } else {
-                    setMessage({ type: "error", text: "Error al subir la imagen. Intentá de nuevo." });
+                    setMessage({ type: "error", text: res.error || "Error al subir la imagen. Intentá de nuevo." });
                     setSaving(false);
                     return;
                 }
