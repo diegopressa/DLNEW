@@ -7,8 +7,6 @@ import {
     getHeroData, 
     updateHeroTexts, 
     addHeroImage,
-    uploadHeroImage,
-    uploadImage,
     deleteHeroImage,
     getIndustriesSection,
     updateIndustriesSection,
@@ -238,10 +236,17 @@ export default function HomeEditor() {
 
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("folder", "home/hero");
 
         try {
-            const res = await uploadHeroImage(formData);
+            const response = await fetch("/api/upload", {
+                method: "POST",
+                body: formData,
+            });
+            const res = await response.json();
+
             if (res.success) {
+                await addHeroImage(res.url);
                 const heroData = await getHeroData();
                 setHeroImages(heroData?.images || []);
                 setMessage({ type: "success", text: "Imagen subida y agregada al rotador." });
@@ -257,18 +262,30 @@ export default function HomeEditor() {
         }
     };
 
-    const handleGenericUpload = async (file: File) => {
+    const handleGenericUpload = async (file: File, folder: string = "home") => {
         setUploadingImage(true);
         setMessage({ type: "info", text: "Subiendo imagen..." });
+        
         const formData = new FormData();
         formData.append("file", file);
-        const res = await uploadImage(formData);
-        setUploadingImage(false);
-        return res;
+        formData.append("folder", folder);
+
+        try {
+            const response = await fetch("/api/upload", {
+                method: "POST",
+                body: formData,
+            });
+            const res = await response.json();
+            return res;
+        } catch (error) {
+            return { success: false, error: "Error de conexión" };
+        } finally {
+            setUploadingImage(false);
+        }
     };
 
     const handleIndustryImageUpload = async (id: number, index: number, file: File) => {
-        const res = await handleGenericUpload(file);
+        const res = await handleGenericUpload(file, "home/industries");
         if (res.success && res.url) {
             const newInds = [...industries];
             newInds[index].imageUrl = res.url;
@@ -283,7 +300,7 @@ export default function HomeEditor() {
     };
 
     const handleCategoryImageUpload = async (id: number, index: number, file: File) => {
-        const res = await handleGenericUpload(file);
+        const res = await handleGenericUpload(file, "home/categories");
         if (res.success && res.url) {
             const newCats = [...categories];
             newCats[index].imageUrl = res.url;
@@ -298,7 +315,7 @@ export default function HomeEditor() {
     };
 
     const handleProjectImageUpload = async (id: number, index: number, file: File) => {
-        const res = await handleGenericUpload(file);
+        const res = await handleGenericUpload(file, "home/projects");
         if (res.success && res.url) {
             const newProjs = [...projects];
             newProjs[index].imageUrl = res.url;
