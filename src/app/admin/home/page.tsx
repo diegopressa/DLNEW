@@ -328,35 +328,59 @@ export default function HomeEditor() {
 
     const handleSaveIndustry = async (id: number, index: number) => {
         setSaving(true);
-        const ind = industries[index];
-        let finalUrl = ind.imageUrl;
 
-        if (ind.pendingFile) {
-            const res = await handleGenericUpload(ind.pendingFile, "home/industries");
-            if (res.success) {
-                finalUrl = res.url;
-            } else {
-                setMessage({ type: "error", text: "Error al subir imagen." });
+        // Capture all values immediately, before any async op causes re-renders
+        const snapshot = industries[index];
+        const pendingFile: File | null = snapshot?.pendingFile ?? null;
+        const currentImageUrl: string = snapshot?.imageUrl ?? "";
+        const name: string = snapshot?.name ?? "";
+        const description: string = snapshot?.description ?? "";
+        const iconName: string = snapshot?.iconName ?? "";
+
+        let finalUrl = currentImageUrl;
+
+        if (pendingFile) {
+            setUploadingImage(true);
+            const formData = new FormData();
+            formData.append("file", pendingFile);
+            formData.append("folder", "home/industries");
+
+            try {
+                const response = await fetch("/api/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+                const res = await response.json();
+                if (res.success && res.url) {
+                    finalUrl = res.url;
+                } else {
+                    setMessage({ type: "error", text: "Error al subir la imagen." });
+                    setSaving(false);
+                    setUploadingImage(false);
+                    return;
+                }
+            } catch {
+                setMessage({ type: "error", text: "Error de conexión al subir imagen." });
                 setSaving(false);
+                setUploadingImage(false);
                 return;
             }
+            setUploadingImage(false);
         }
 
-        const result = await updateIndustry(id, {
-            name: ind.name,
-            description: ind.description,
-            iconName: ind.iconName,
-            imageUrl: finalUrl
-        });
+        const result = await updateIndustry(id, { name, description, iconName, imageUrl: finalUrl });
 
         if (result.success) {
-            const newInds = [...industries];
-            newInds[index].imageUrl = finalUrl;
-            newInds[index].pendingFile = null;
-            newInds[index].previewUrl = null;
-            setIndustries(newInds);
+            setIndustries(prev => {
+                const updated = [...prev];
+                updated[index] = { ...updated[index], imageUrl: finalUrl, pendingFile: null, previewUrl: null };
+                return updated;
+            });
             setMessage({ type: "success", text: "Industria actualizada." });
+        } else {
+            setMessage({ type: "error", text: "Error al guardar la industria." });
         }
+
         setSaving(false);
         setTimeout(() => setMessage({ type: "", text: "" }), 3000);
     };
