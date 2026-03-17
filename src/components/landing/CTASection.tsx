@@ -9,11 +9,12 @@ export default async function CTASection() {
     const ctaData = await getCtaSection();
 
     // Determine target based on what buttonLink contains
-    const buttonLink = ctaData.buttonLink.startsWith('#') 
-        ? ctaData.buttonLink 
-        : (ctaData.buttonLink.includes('wa.me') || ctaData.buttonLink === '#whatsapp') 
+    const rawLink = ctaData?.buttonLink || "#";
+    const buttonLink = rawLink.startsWith('#') 
+        ? rawLink 
+        : (rawLink.includes('wa.me') || rawLink === '#whatsapp') 
             ? `https://wa.me/${whatsapp}` 
-            : ctaData.buttonLink;
+            : rawLink;
 
     return (
         <section className="py-24 bg-slate-50">
