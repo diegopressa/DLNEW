@@ -1,0 +1,220 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id       String @id @default(cuid())
+  username String @unique
+  password String
+}
+
+model GlobalSettings {
+  id           Int     @id @default(autoincrement())
+  whatsapp     String  @default("59899000000")
+  email        String  @default("info@dldiseno.uy")
+  phone        String  @default("+598 99 000 000")
+  address      String  @default("Montevideo, Uruguay")
+  instagramUrl String?
+  facebookUrl  String?
+  hoursWeek    String? @default("09:00 - 18:00 hs")
+  hoursSat     String? @default("09:00 - 13:00 hs")
+  mapEmbedUrl  String?
+}
+
+model AboutUs {
+  id        Int      @id @default(1)
+  title     String   @default("Sobre Nosotros")
+  content   String   @default("Somos una empresa dedicada a...")
+  imageUrl  String?
+  updatedAt DateTime @updatedAt
+}
+
+model SeoMetadata {
+  id           Int      @id @default(autoincrement())
+  pageSlug     String   @unique
+  pageName     String
+  metaTitle    String?
+  metaDesc     String?
+  keywords     String?
+  ogTitle      String?
+  ogDesc       String?
+  ogImage      String?
+  canonicalUrl String?
+  robotsIndex  Boolean  @default(true)
+  robotsFollow Boolean  @default(true)
+  updatedAt    DateTime @updatedAt
+}
+
+model SeoSettings {
+  id                       Int      @id @default(autoincrement())
+  siteName                 String   @default("DL Diseño & Estampado")
+  defaultTitleTemplate     String   @default("{{page_title}} | DL Diseño & Estampado")
+  defaultMetaDesc          String   @default("Uniformes y prendas personalizadas para empresas en Uruguay.")
+  defaultOgImage           String?
+  robotsTxt                String?
+  googleSiteVerification   String?
+  facebookDomainVerification String?
+  customHeadCode           String?
+  customBodyEndCode        String?
+  updatedAt                DateTime @updatedAt
+}
+
+model HeroSection {
+  id           Int         @id @default(autoincrement())
+  title        String      @default("Uniformes personalizados para empresas")
+  subtitle     String      @default("Nos encargamos de todo: prenda, estampado y entrega. Presupuesto inmediato y entrega en 24-48 horas.")
+  ctaPrimary   String      @default("Solicitar presupuesto por WhatsApp")
+  ctaSecondary String      @default("Ver trabajos realizados")
+  images       HeroImage[]
+}
+
+model HeroImage {
+  id     Int         @id @default(autoincrement())
+  url    String
+  order  Int         @default(0)
+  heroId Int         @default(1)
+  hero   HeroSection @relation(fields: [heroId], references: [id])
+}
+
+model IndustriesSection {
+  id       Int    @id @default(autoincrement())
+  title    String @default("Trabajamos con empresas que necesitan uniformes para su equipo")
+  subtitle String @default("Abastecemos a empresas en Montevideo, Canelones y Maldonado, brindando soluciones integrales de vestimenta corporativa.")
+}
+
+model Industry {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+  iconName    String?
+  imageUrl    String?
+  order       Int     @default(0)
+}
+
+model SolutionsSection {
+  id       Int    @id @default(autoincrement())
+  title    String @default("Uniformes sin complicaciones para tu empresa")
+  subtitle String @default("Simplificamos todo el proceso para que no tengas que preocuparte por nada más que elegir el diseño.")
+}
+
+model BusinessSolution {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String
+  iconName    String?
+  order       Int     @default(0)
+}
+
+model CategoriesSection {
+  id       Int    @id @default(autoincrement())
+  title    String @default("Prendas para uniformar a tu equipo")
+  subtitle String @default("Contamos con una amplia línea de prendas seleccionadas por su durabilidad y calidad para el uso diario en empresas.")
+}
+
+model ProductCategory {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  imageUrl    String
+  order       Int       @default(0)
+  showOnHome  Boolean   @default(false)
+  products    Product[]
+}
+
+model Product {
+  id          Int            @id @default(autoincrement())
+  slug        String         @unique
+  name        String
+  description String?
+  highlight   String?
+  materials   String?
+  categoryId  Int
+  category    ProductCategory @relation(fields: [categoryId], references: [id])
+  images      ProductImage[]
+  features    ProductFeature[]
+  colors      ProductColor[]
+  order       Int            @default(0)
+  createdAt   DateTime       @default(now())
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  url       String
+  order     Int     @default(0)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductFeature {
+  id        Int     @id @default(autoincrement())
+  text      String
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductColor {
+  id        Int     @id @default(autoincrement())
+  name      String
+  hex       String
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProjectsSection {
+  id        Int    @id @default(1)
+  title     String @default("Empresas que ya confiaron en DL")
+  subtitle  String @default("Llevamos la identidad de tu marca a la vestimenta de tu equipo con acabados profesionales.")
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  title       String
+  category    String?
+  imageUrl    String
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model WhyUsSection {
+  id              Int    @id @default(1)
+  title           String @default("Por qué las empresas nos eligen")
+  subtitle        String @default("Combinamos materiales de primera con un servicio enfocado en resolver las necesidades de tu negocio.")
+  backgroundColor String @default("#4b85c1") // Azul predeterminado de la captura
+}
+
+model WhyChooseUs {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  order       Int    @default(0)
+}
+
+model ProcessStep {
+  id          Int     @id @default(autoincrement())
+  number      Int
+  title       String
+  description String?
+  order       Int     @default(0)
+}
+
+model ProcessSection {
+  id       Int    @id @default(1)
+  title    String @default("Así de simple es trabajar con DL")
+  subtitle String @default("")
+}
+
+model CtaSection {
+  id              Int    @id @default(1)
+  title           String @default("¿Necesitás uniformes para tu empresa?")
+  subtitle        String @default("Te pasamos presupuesto inmediato y te ayudamos a resolver todo en un solo lugar. Calidad, rapidez y atención personalizada.")
+  buttonText      String @default("Pedir presupuesto por WhatsApp")
+  buttonLink      String @default("#whatsapp") // or #budget
+  smallText       String @default("Respondemos en menos de 10 minutos")
+  backgroundColor String @default("#1f2937") // Default slate-800
+}
