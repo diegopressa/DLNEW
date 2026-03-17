@@ -47,6 +47,7 @@ export default function ProductsEditor() {
         setUploading(true);
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("folder", "articulos");
 
         try {
             const res = await fetch("/api/upload", {

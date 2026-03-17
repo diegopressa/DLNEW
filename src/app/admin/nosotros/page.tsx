@@ -89,6 +89,7 @@ export default function AboutAdmin() {
             // DO NOT set Content-Type manually — the browser adds the correct boundary.
             const formData = new FormData();
             formData.append("file", pendingFile);
+            formData.append("folder", "nosotros");
 
             try {
                 const response = await fetch("/api/upload", {
