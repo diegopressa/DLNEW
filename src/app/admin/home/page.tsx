@@ -6,8 +6,7 @@ import * as LucideIcons from "lucide-react";
 import { 
     getHeroData, 
     updateHeroTexts, 
-    addHeroImage,
-    deleteHeroImage,
+    syncHeroImages,
     getIndustriesSection,
     updateIndustriesSection,
     getIndustries, 
@@ -203,28 +202,33 @@ export default function HomeEditor() {
     const handleSaveHeroTexts = async () => {
         setSaving(true);
         setMessage({ type: "", text: "" });
-        const result = await updateHeroTexts(hero);
-        if (result.success) {
-            setMessage({ type: "success", text: "Textos del Hero actualizados." });
-        } else {
-            setMessage({ type: "error", text: "Error al actualizar textos." });
+        
+        try {
+            // Save texts and gallery (sync list of URLs)
+            const [textResult, imgResult] = await Promise.all([
+                updateHeroTexts(hero),
+                syncHeroImages(heroImages.map(img => img.url))
+            ]);
+
+            if (textResult.success && imgResult.success) {
+                setMessage({ type: "success", text: "Hero actualizado correctamente (textos e imágenes)." });
+            } else {
+                setMessage({ type: "error", text: "Error al actualizar el Hero." });
+            }
+        } catch (error) {
+            setMessage({ type: "error", text: "Error de conexión." });
+        } finally {
+            setSaving(false);
+            setTimeout(() => setMessage({ type: "", text: "" }), 3000);
         }
-        setSaving(false);
-        setTimeout(() => setMessage({ type: "", text: "" }), 3000);
     };
 
-    const handleAddHeroImage = async () => {
+    const handleAddHeroImage = () => {
         if (!newImageUrl) return;
-        setSaving(true);
-        const res = await addHeroImage(newImageUrl);
-        if (res.success) {
-            setNewImageUrl("");
-            const heroData = await getHeroData();
-            setHeroImages(heroData?.images || []);
-            setMessage({ type: "success", text: "Imagen agregada al rotador." });
-        }
-        setSaving(false);
-        setTimeout(() => setMessage({ type: "", text: " " }), 3000);
+        setHeroImages([...heroImages, { id: 'link_' + Date.now(), url: newImageUrl }]);
+        setNewImageUrl("");
+        setMessage({ type: "success", text: "Imagen agregada al borrador (clic en Guardar Textos para publicar)." });
+        setTimeout(() => setMessage({ type: "", text: "" }), 3000);
     };
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -246,10 +250,8 @@ export default function HomeEditor() {
             const res = await response.json();
 
             if (res.success) {
-                await addHeroImage(res.url);
-                const heroData = await getHeroData();
-                setHeroImages(heroData?.images || []);
-                setMessage({ type: "success", text: "Imagen subida y agregada al rotador." });
+                setHeroImages([...heroImages, { id: 'new_' + Date.now(), url: res.url }]);
+                setMessage({ type: "success", text: "Imagen cargada (clic en Guardar Textos para publicar)." });
             } else {
                 setMessage({ type: "error", text: res.error || "Error al subir la imagen." });
             }
@@ -290,9 +292,7 @@ export default function HomeEditor() {
             const newInds = [...industries];
             newInds[index].imageUrl = res.url;
             setIndustries(newInds);
-            // Auto save
-            await updateIndustry(id, { imageUrl: res.url, name: newInds[index].name });
-            setMessage({ type: "success", text: "Imagen de industria actualizada." });
+            setMessage({ type: "success", text: "Imagen de industria cargada (clic en Guardar para publicar)." });
         } else {
             setMessage({ type: "error", text: "Error al subir imagen." });
         }
@@ -305,9 +305,7 @@ export default function HomeEditor() {
             const newCats = [...categories];
             newCats[index].imageUrl = res.url;
             setCategories(newCats);
-            // Auto save
-            await updateCategory(id, { imageUrl: res.url, name: newCats[index].name });
-            setMessage({ type: "success", text: "Imagen de categoría actualizada." });
+            setMessage({ type: "success", text: "Imagen de categoría cargada (clic en Guardar para publicar)." });
         } else {
             setMessage({ type: "error", text: "Error al subir imagen." });
         }
@@ -320,24 +318,16 @@ export default function HomeEditor() {
             const newProjs = [...projects];
             newProjs[index].imageUrl = res.url;
             setProjects(newProjs);
-            // Auto save
-            await updateProject(id, { 
-                imageUrl: res.url, 
-                title: newProjs[index].title,
-                category: newProjs[index].category 
-            });
-            setMessage({ type: "success", text: "Imagen de trabajo actualizada." });
+            setMessage({ type: "success", text: "Imagen de trabajo cargada (clic en Guardar para publicar)." });
         } else {
             setMessage({ type: "error", text: "Error al subir imagen." });
         }
         setTimeout(() => setMessage({ type: "", text: "" }), 3000);
     };
 
-    const handleDeleteHeroImage = async (id: number) => {
-        if (!confirm("¿Eliminar esta imagen del rotador?")) return;
-        await deleteHeroImage(id);
-        const heroData = await getHeroData();
-        setHeroImages(heroData?.images || []);
+    const handleDeleteHeroImage = (id: any) => {
+        setHeroImages(heroImages.filter(img => img.id !== id));
+        setMessage({ type: "info", text: "Imagen quitada (clic en Guardar Textos para confirmar)." });
     };
 
     const handleSaveIndustriesSection = async () => {
@@ -356,7 +346,8 @@ export default function HomeEditor() {
         const result = await updateIndustry(id, {
             name: ind.name,
             description: ind.description,
-            iconName: ind.iconName
+            iconName: ind.iconName,
+            imageUrl: ind.imageUrl
         });
         if (result.success) {
             setMessage({ type: "success", text: "Industria actualizada." });

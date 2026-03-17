@@ -63,6 +63,29 @@ export async function updateHeroTexts(data: {
     }
 }
 
+export async function syncHeroImages(imageUrls: string[]) {
+    try {
+        await prisma.heroImage.deleteMany({ where: { heroId: 1 } });
+        
+        if (imageUrls.length > 0) {
+            await prisma.$transaction(
+                imageUrls.map((url, i) => 
+                    prisma.heroImage.create({
+                        data: { url, order: i, heroId: 1 }
+                    })
+                )
+            );
+        }
+
+        revalidatePath("/");
+        revalidatePath("/admin/home");
+        return { success: true };
+    } catch (error) {
+        console.error("syncHeroImages error:", error);
+        return { success: false };
+    }
+}
+
 export async function addHeroImage(url: string) {
     try {
         const last = await prisma.heroImage.findFirst({
@@ -70,29 +93,19 @@ export async function addHeroImage(url: string) {
             orderBy: { order: "desc" }
         });
         await prisma.heroImage.create({
-            data: {
-                url,
-                order: (last?.order || 0) + 1,
-                heroId: 1
-            }
+            data: { url, order: (last?.order || 0) + 1, heroId: 1 }
         });
         revalidatePath("/");
-        revalidatePath("/admin/home");
         return { success: true };
-    } catch (error) {
-        return { success: false };
-    }
+    } catch (error) { return { success: false }; }
 }
 
 export async function deleteHeroImage(id: number) {
     try {
         await prisma.heroImage.delete({ where: { id } });
         revalidatePath("/");
-        revalidatePath("/admin/home");
         return { success: true };
-    } catch (error) {
-        return { success: false };
-    }
+    } catch (error) { return { success: false }; }
 }
 
 // Industries
