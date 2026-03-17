@@ -286,43 +286,28 @@ export default function HomeEditor() {
         }
     };
 
-    const handleIndustryImageUpload = async (id: number, index: number, file: File) => {
-        const res = await handleGenericUpload(file, "home/industries");
-        if (res.success && res.url) {
-            const newInds = [...industries];
-            newInds[index].imageUrl = res.url;
-            setIndustries(newInds);
-            setMessage({ type: "success", text: "Imagen de industria cargada (clic en Guardar para publicar)." });
-        } else {
-            setMessage({ type: "error", text: "Error al subir imagen." });
-        }
-        setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+    const handleIndustryImageUpload = (index: number, file: File) => {
+        const url = URL.createObjectURL(file);
+        const newInds = [...industries];
+        newInds[index].previewUrl = url;
+        newInds[index].pendingFile = file;
+        setIndustries(newInds);
     };
 
-    const handleCategoryImageUpload = async (id: number, index: number, file: File) => {
-        const res = await handleGenericUpload(file, "home/categories");
-        if (res.success && res.url) {
-            const newCats = [...categories];
-            newCats[index].imageUrl = res.url;
-            setCategories(newCats);
-            setMessage({ type: "success", text: "Imagen de categoría cargada (clic en Guardar para publicar)." });
-        } else {
-            setMessage({ type: "error", text: "Error al subir imagen." });
-        }
-        setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+    const handleCategoryImageUpload = (index: number, file: File) => {
+        const url = URL.createObjectURL(file);
+        const newCats = [...categories];
+        newCats[index].previewUrl = url;
+        newCats[index].pendingFile = file;
+        setCategories(newCats);
     };
 
-    const handleProjectImageUpload = async (id: number, index: number, file: File) => {
-        const res = await handleGenericUpload(file, "home/projects");
-        if (res.success && res.url) {
-            const newProjs = [...projects];
-            newProjs[index].imageUrl = res.url;
-            setProjects(newProjs);
-            setMessage({ type: "success", text: "Imagen de trabajo cargada (clic en Guardar para publicar)." });
-        } else {
-            setMessage({ type: "error", text: "Error al subir imagen." });
-        }
-        setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+    const handleProjectImageUpload = (index: number, file: File) => {
+        const url = URL.createObjectURL(file);
+        const newProjs = [...projects];
+        newProjs[index].previewUrl = url;
+        newProjs[index].pendingFile = file;
+        setProjects(newProjs);
     };
 
     const handleDeleteHeroImage = (id: any) => {
@@ -342,16 +327,37 @@ export default function HomeEditor() {
     };
 
     const handleSaveIndustry = async (id: number, index: number) => {
+        setSaving(true);
         const ind = industries[index];
+        let finalUrl = ind.imageUrl;
+
+        if (ind.pendingFile) {
+            const res = await handleGenericUpload(ind.pendingFile, "home/industries");
+            if (res.success) {
+                finalUrl = res.url;
+            } else {
+                setMessage({ type: "error", text: "Error al subir imagen." });
+                setSaving(false);
+                return;
+            }
+        }
+
         const result = await updateIndustry(id, {
             name: ind.name,
             description: ind.description,
             iconName: ind.iconName,
-            imageUrl: ind.imageUrl
+            imageUrl: finalUrl
         });
+
         if (result.success) {
+            const newInds = [...industries];
+            newInds[index].imageUrl = finalUrl;
+            newInds[index].pendingFile = null;
+            newInds[index].previewUrl = null;
+            setIndustries(newInds);
             setMessage({ type: "success", text: "Industria actualizada." });
         }
+        setSaving(false);
         setTimeout(() => setMessage({ type: "", text: "" }), 3000);
     };
 
@@ -390,14 +396,34 @@ export default function HomeEditor() {
     };
 
     const handleSaveCategory = async (id: number, index: number) => {
+        setSaving(true);
         const cat = categories[index];
+        let finalUrl = cat.imageUrl;
+
+        if (cat.pendingFile) {
+            const res = await handleGenericUpload(cat.pendingFile, "home/categories");
+            if (res.success) finalUrl = res.url;
+            else {
+                setMessage({ type: "error", text: "Error al subir imagen." });
+                setSaving(false);
+                return;
+            }
+        }
+
         const result = await updateCategory(id, {
             name: cat.name,
-            imageUrl: cat.imageUrl
+            imageUrl: finalUrl
         });
+
         if (result.success) {
+            const newCats = [...categories];
+            newCats[index].imageUrl = finalUrl;
+            newCats[index].pendingFile = null;
+            newCats[index].previewUrl = null;
+            setCategories(newCats);
             setMessage({ type: "success", text: "Categoría actualizada." });
         }
+        setSaving(false);
         setTimeout(() => setMessage({ type: "", text: "" }), 3000);
     };
 
@@ -412,15 +438,35 @@ export default function HomeEditor() {
     };
 
     const handleSaveProject = async (id: number, index: number) => {
+        setSaving(true);
         const proj = projects[index];
+        let finalUrl = proj.imageUrl;
+
+        if (proj.pendingFile) {
+            const res = await handleGenericUpload(proj.pendingFile, "home/projects");
+            if (res.success) finalUrl = res.url;
+            else {
+                setMessage({ type: "error", text: "Error al subir imagen." });
+                setSaving(false);
+                return;
+            }
+        }
+
         const result = await updateProject(id, {
             title: proj.title,
             category: proj.category,
-            imageUrl: proj.imageUrl
+            imageUrl: finalUrl
         });
+
         if (result.success) {
+            const newProjs = [...projects];
+            newProjs[index].imageUrl = finalUrl;
+            newProjs[index].pendingFile = null;
+            newProjs[index].previewUrl = null;
+            setProjects(newProjs);
             setMessage({ type: "success", text: "Proyecto actualizado." });
         }
+        setSaving(false);
         setTimeout(() => setMessage({ type: "", text: "" }), 3000);
     };
 
@@ -818,13 +864,13 @@ export default function HomeEditor() {
                                 <label className="text-xs font-bold text-slate-500 uppercase">Imagen de Fondo (Opcional)</label>
                                 <div className="flex gap-2">
                                     <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
-                                        {ind.imageUrl ? (
-                                            <img src={ind.imageUrl} className="w-full h-full object-cover" />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-slate-300">
-                                                <ImageIcon size={20} />
-                                            </div>
-                                        )}
+                                                {ind.previewUrl || ind.imageUrl ? (
+                                                    <img src={ind.previewUrl || ind.imageUrl} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                                        <ImageIcon size={20} />
+                                                    </div>
+                                                )}
                                         {uploadingImage && <div className="absolute inset-0 bg-white/60 flex items-center justify-center"><Loader2 className="animate-spin text-blue-600" size={16} /></div>}
                                     </div>
                                     <div className="flex-1 space-y-2">
@@ -849,7 +895,8 @@ export default function HomeEditor() {
                                                     accept="image/*"
                                                     onChange={(e) => {
                                                         const file = e.target.files?.[0];
-                                                        if (file) handleIndustryImageUpload(ind.id, index, file);
+                                                        if (file) handleIndustryImageUpload(index, file);
+                                                        if (e.target) e.target.value = "";
                                                     }}
                                                 />
                                             </label>
@@ -858,6 +905,8 @@ export default function HomeEditor() {
                                                     onClick={() => {
                                                         const newInds = [...industries];
                                                         newInds[index].imageUrl = "";
+                                                        newInds[index].previewUrl = null;
+                                                        newInds[index].pendingFile = null;
                                                         setIndustries(newInds);
                                                         setMessage({ type: "info", text: "Imagen quitada (clic en Guardar para publicar)." });
                                                         setTimeout(() => setMessage({ type: "", text: "" }), 3000);
@@ -1095,9 +1144,19 @@ export default function HomeEditor() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {categories.map((cat, index) => (
                         <div key={cat.id} className="p-6 border border-slate-100 rounded-2xl space-y-4 hover:border-slate-200 transition-all group">
-                            <div className="aspect-video w-full rounded-xl overflow-hidden bg-slate-100 relative group-hover:shadow-md transition-all">
-                                <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity p-4 flex-col gap-2">
+                            <div className="group relative h-48 overflow-hidden rounded-2xl bg-slate-200">
+                                {cat.previewUrl || cat.imageUrl ? (
+                                    <img 
+                                        src={cat.previewUrl || cat.imageUrl} 
+                                        alt={cat.name} 
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                        <ImageIcon size={32} />
+                                    </div>
+                                )}
+                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 gap-2">
                                     <input 
                                         type="text" 
                                         placeholder="Pegar URL de imagen" 
@@ -1118,7 +1177,8 @@ export default function HomeEditor() {
                                             accept="image/*"
                                             onChange={(e) => {
                                                 const file = e.target.files?.[0];
-                                                if (file) handleCategoryImageUpload(cat.id, index, file);
+                                                if (file) handleCategoryImageUpload(index, file);
+                                                if (e.target) e.target.value = "";
                                             }}
                                         />
                                     </label>
@@ -1435,7 +1495,7 @@ export default function HomeEditor() {
                                     </button>
                                     <button 
                                         onClick={() => handleDeleteProcessStep(step.id)}
-                                        className="w-10 h-10 shrink-0 bg-red-50 text-red-600 rounded-xl flex items-center justify-center hover:bg-red-600 hover:text-white transition-all active:scale-95 opacity-0 group-hover:opacity-100"
+                                        className="w-10 h-10 bg-red-50 text-red-600 rounded-xl flex items-center justify-center hover:bg-red-600 hover:text-white transition-all active:scale-95 opacity-0 group-hover:opacity-100"
                                     >
                                         <Trash2 size={16} />
                                     </button>
@@ -1584,7 +1644,13 @@ export default function HomeEditor() {
                                 {projects.map((proj, index) => (
                                     <div key={proj.id} className="group bg-slate-50/50 border border-slate-100 p-4 rounded-[2rem] space-y-4 hover:border-indigo-100 hover:bg-white transition-all hover:shadow-xl hover:shadow-slate-100/50 relative">
                                         <div className="aspect-[4/5] w-full rounded-2xl overflow-hidden bg-slate-200 relative">
-                                            <img src={proj.imageUrl} alt={proj.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                            {proj.previewUrl || proj.imageUrl ? (
+                                                <img src={proj.previewUrl || proj.imageUrl} alt={proj.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                                    <ImageIcon size={32} />
+                                                </div>
+                                            )}
                                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 gap-3">
                                                 <input 
                                                     type="text" 
@@ -1606,7 +1672,8 @@ export default function HomeEditor() {
                                                         accept="image/*"
                                                         onChange={(e) => {
                                                             const file = e.target.files?.[0];
-                                                            if (file) handleProjectImageUpload(proj.id, index, file);
+                                                            if (file) handleProjectImageUpload(index, file);
+                                                            if (e.target) e.target.value = "";
                                                         }}
                                                     />
                                                 </label>
