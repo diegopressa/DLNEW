@@ -15,6 +15,8 @@ import {
     Info
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { logoutAction } from "@/app/login/actions";
+import { useTransition } from "react";
 
 const menuItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -29,6 +31,13 @@ const menuItems = [
 
 export default function AdminSidebar() {
     const pathname = usePathname();
+    const [isPending, startTransition] = useTransition();
+
+    const handleLogout = () => {
+        startTransition(async () => {
+            await logoutAction();
+        });
+    };
 
     return (
         <div className="w-64 bg-slate-900 text-slate-400 flex flex-col h-screen sticky top-0">
@@ -63,9 +72,13 @@ export default function AdminSidebar() {
             </nav>
 
             <div className="p-4 border-t border-slate-800">
-                <button className="flex items-center gap-3 px-4 py-3 w-full hover:bg-red-500/10 hover:text-red-500 rounded-lg transition-colors text-sm font-medium">
+                <button 
+                    onClick={handleLogout}
+                    disabled={isPending}
+                    className="flex items-center gap-3 px-4 py-3 w-full hover:bg-red-500/10 hover:text-red-500 rounded-lg transition-colors text-sm font-medium disabled:opacity-50"
+                >
                     <LogOut size={20} />
-                    Cerrar Sesión
+                    {isPending ? "Saliendo..." : "Cerrar Sesión"}
                 </button>
             </div>
         </div>
