@@ -1,1 +1,11 @@
+EJECUTAR EN LOCALHOST
 npm run dev
+
+
+
+
+SUBIR A VERCEL
+
+git add .
+git commit -m "cambios web"
+git push

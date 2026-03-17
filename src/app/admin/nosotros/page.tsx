@@ -8,90 +8,131 @@ import { Save, Loader2, Image as ImageIcon, Type, FileText, Upload, X, Link } fr
 export default function AboutAdmin() {
     const [about, setAbout] = useState<any>(null);
     const [saving, setSaving] = useState(false);
-    const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState({ type: "", text: "" });
     const [urlMode, setUrlMode] = useState(false);
+
+    // Pending file + local preview (before saving to server)
+    const [pendingFile, setPendingFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         fetchAbout();
     }, []);
 
+    // Cleanup blob URL on unmount
+    useEffect(() => {
+        return () => {
+            if (previewUrl && previewUrl.startsWith("blob:")) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
+
     const fetchAbout = async () => {
         const data = await getAboutUs();
         setAbout(data);
     };
 
+    // ─── File selection → immediate local preview, no server call yet ────────
+    const handleFileSelect = (file: File | null | undefined) => {
+        if (!file) return;
+
+        // Validate type
+        if (!file.type.startsWith("image/")) {
+            setMessage({ type: "error", text: "El archivo debe ser una imagen (PNG, JPG, WEBP)." });
+            return;
+        }
+
+        // Validate size (max 10 MB)
+        if (file.size > 10 * 1024 * 1024) {
+            setMessage({ type: "error", text: "La imagen no puede superar los 10 MB." });
+            return;
+        }
+
+        // Clear any previous error and revoke old blob URL
+        setMessage({ type: "", text: "" });
+        if (previewUrl && previewUrl.startsWith("blob:")) {
+            URL.revokeObjectURL(previewUrl);
+        }
+
+        const objectUrl = URL.createObjectURL(file);
+        setPreviewUrl(objectUrl);
+        setPendingFile(file);
+    };
+
+    const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleFileSelect(e.target.files?.[0]);
+        // Reset input so same file can be re-selected
+        if (e.target) e.target.value = "";
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        handleFileSelect(e.dataTransfer.files?.[0]);
+    };
+
+    // ─── Save: upload pending file to server first, then persist data ────────
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
+
+        let imageUrl = about.imageUrl;
+
+        if (pendingFile) {
+            setMessage({ type: "info", text: "Subiendo imagen..." });
+            const formData = new FormData();
+            formData.append("file", pendingFile);
+
+            try {
+                const res = await uploadImage(formData);
+                if (res.success && res.url) {
+                    imageUrl = res.url;
+                    // Clean up the blob URL now that we have the real server URL
+                    if (previewUrl && previewUrl.startsWith("blob:")) {
+                        URL.revokeObjectURL(previewUrl);
+                    }
+                    setPreviewUrl(null);
+                    setPendingFile(null);
+                } else {
+                    setMessage({ type: "error", text: "Error al subir la imagen. Intentá de nuevo." });
+                    setSaving(false);
+                    return;
+                }
+            } catch {
+                setMessage({ type: "error", text: "Error de conexión al subir la imagen." });
+                setSaving(false);
+                return;
+            }
+        }
+
         const res = await updateAboutUs({
             title: about.title,
             content: about.content,
-            imageUrl: about.imageUrl
+            imageUrl
         });
+
         setSaving(false);
+
         if (res.success) {
+            setAbout({ ...about, imageUrl });
             setMessage({ type: "success", text: "Cambios guardados correctamente" });
-            setTimeout(() => setMessage({ type: "", text: "" }), 3000);
         } else {
             setMessage({ type: "error", text: "Error al guardar los cambios" });
-            setTimeout(() => setMessage({ type: "", text: "" }), 3000);
         }
+
+        setTimeout(() => setMessage({ type: "", text: "" }), 3000);
     };
 
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        setUploading(true);
-        setMessage({ type: "info", text: "Subiendo imagen..." });
-
-        const formData = new FormData();
-        formData.append("file", file);
-
-        try {
-            const res = await uploadImage(formData);
-            if (res.success && res.url) {
-                setAbout({ ...about, imageUrl: res.url });
-                setMessage({ type: "success", text: "Imagen subida. Recordá guardar los cambios." });
-            } else {
-                setMessage({ type: "error", text: "Error al subir la imagen." });
-            }
-        } catch {
-            setMessage({ type: "error", text: "Error en la conexión." });
-        } finally {
-            setUploading(false);
-            if (e.target) e.target.value = "";
-            setTimeout(() => setMessage({ type: "", text: "" }), 4000);
+    const handleClearImage = () => {
+        if (previewUrl && previewUrl.startsWith("blob:")) {
+            URL.revokeObjectURL(previewUrl);
         }
-    };
-
-    const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files?.[0];
-        if (!file || !file.type.startsWith("image/")) return;
-
-        setUploading(true);
-        setMessage({ type: "info", text: "Subiendo imagen..." });
-
-        const formData = new FormData();
-        formData.append("file", file);
-
-        try {
-            const res = await uploadImage(formData);
-            if (res.success && res.url) {
-                setAbout({ ...about, imageUrl: res.url });
-                setMessage({ type: "success", text: "Imagen subida. Recordá guardar los cambios." });
-            } else {
-                setMessage({ type: "error", text: "Error al subir la imagen." });
-            }
-        } catch {
-            setMessage({ type: "error", text: "Error en la conexión." });
-        } finally {
-            setUploading(false);
-            setTimeout(() => setMessage({ type: "", text: "" }), 4000);
-        }
+        setPreviewUrl(null);
+        setPendingFile(null);
+        setAbout({ ...about, imageUrl: "" });
+        setMessage({ type: "", text: "" });
     };
 
     if (!about) return (
@@ -99,6 +140,13 @@ export default function AboutAdmin() {
             <Loader2 className="animate-spin text-blue-600" size={40} />
         </div>
     );
+
+    // The URL shown in the preview: local blob while pending, server URL after save
+    const displayImageUrl = previewUrl || about.imageUrl || "";
+    // The label shown in the path row
+    const displayImageLabel = pendingFile
+        ? `Pendiente: ${pendingFile.name}`
+        : about.imageUrl || "";
 
     return (
         <div className="max-w-5xl mx-auto p-6 space-y-8">
@@ -116,9 +164,9 @@ export default function AboutAdmin() {
                         <label className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                             <Type size={14} className="text-blue-600" /> Título de la página
                         </label>
-                        <input 
+                        <input
                             value={about.title}
-                            onChange={e => setAbout({...about, title: e.target.value})}
+                            onChange={e => setAbout({ ...about, title: e.target.value })}
                             className="w-full bg-slate-50 border border-slate-100 p-4 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold text-lg text-slate-800"
                             placeholder="Ej: Nuestra Historia"
                         />
@@ -129,9 +177,9 @@ export default function AboutAdmin() {
                         <label className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                             <FileText size={14} className="text-blue-600" /> Contenido / Texto (Izquierda)
                         </label>
-                        <textarea 
+                        <textarea
                             value={about.content}
-                            onChange={e => setAbout({...about, content: e.target.value})}
+                            onChange={e => setAbout({ ...about, content: e.target.value })}
                             className="w-full bg-slate-50 border border-slate-100 p-4 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all min-h-[250px] text-slate-700 leading-relaxed"
                             placeholder="Escribí aquí la historia de tu empresa..."
                         />
@@ -158,9 +206,12 @@ export default function AboutAdmin() {
                                 {urlMode ? (
                                     /* URL mode */
                                     <div className="space-y-2">
-                                        <input 
+                                        <input
                                             value={about.imageUrl || ""}
-                                            onChange={e => setAbout({...about, imageUrl: e.target.value})}
+                                            onChange={e => {
+                                                setMessage({ type: "", text: "" });
+                                                setAbout({ ...about, imageUrl: e.target.value });
+                                            }}
                                             className="w-full bg-slate-50 border border-slate-100 p-4 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm font-mono"
                                             placeholder="https://ejemplo.com/imagen.jpg"
                                         />
@@ -172,44 +223,33 @@ export default function AboutAdmin() {
                                         <div
                                             onDrop={handleDrop}
                                             onDragOver={e => e.preventDefault()}
-                                            onClick={() => !uploading && fileInputRef.current?.click()}
-                                            className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-2xl cursor-pointer transition-all
-                                                ${uploading 
-                                                    ? 'bg-slate-100 border-slate-300 cursor-not-allowed' 
-                                                    : 'bg-slate-50 border-slate-200 hover:bg-blue-50 hover:border-blue-400'
-                                                }`}
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-2xl cursor-pointer transition-all bg-slate-50 border-slate-200 hover:bg-blue-50 hover:border-blue-400"
                                         >
-                                            {uploading ? (
-                                                <>
-                                                    <Loader2 className="w-8 h-8 mb-2 text-blue-500 animate-spin" />
-                                                    <p className="text-sm text-slate-500 font-bold">Subiendo imagen...</p>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Upload className="w-8 h-8 mb-2 text-slate-400" />
-                                                    <p className="text-sm text-slate-600 font-bold">
-                                                        <span className="text-blue-600">Click para cargar</span> o arrastrar y soltar
-                                                    </p>
-                                                    <p className="text-xs text-slate-400 mt-1">PNG, JPG o WEBP (Máx. 10MB)</p>
-                                                </>
-                                            )}
+                                            <Upload className="w-8 h-8 mb-2 text-slate-400" />
+                                            <p className="text-sm text-slate-600 font-bold">
+                                                <span className="text-blue-600">Click para cargar</span> o arrastrar y soltar
+                                            </p>
+                                            <p className="text-xs text-slate-400 mt-1">PNG, JPG o WEBP (Máx. 10MB)</p>
                                         </div>
+
                                         <input
                                             ref={fileInputRef}
                                             type="file"
                                             className="hidden"
                                             accept="image/*"
-                                            onChange={handleFileUpload}
-                                            disabled={uploading}
+                                            onChange={handleFileInputChange}
                                         />
 
-                                        {/* Show current URL as read-only if it's a local file */}
-                                        {about.imageUrl && (
+                                        {/* Current image path (read-only) */}
+                                        {displayImageLabel && (
                                             <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2">
-                                                <p className="text-xs text-slate-500 font-mono truncate flex-1">{about.imageUrl}</p>
+                                                <p className={`text-xs font-mono truncate flex-1 ${pendingFile ? "text-blue-600 font-bold" : "text-slate-500"}`}>
+                                                    {displayImageLabel}
+                                                </p>
                                                 <button
                                                     type="button"
-                                                    onClick={() => setAbout({...about, imageUrl: ""})}
+                                                    onClick={handleClearImage}
                                                     className="text-slate-400 hover:text-red-500 transition-colors shrink-0"
                                                     title="Quitar imagen"
                                                 >
@@ -217,14 +257,25 @@ export default function AboutAdmin() {
                                                 </button>
                                             </div>
                                         )}
+
+                                        {/* Pending file badge */}
+                                        {pendingFile && (
+                                            <p className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">
+                                                ⬆ Se subirá al servidor al guardar
+                                            </p>
+                                        )}
                                     </div>
                                 )}
                             </div>
 
                             {/* Preview */}
-                            {about.imageUrl ? (
+                            {displayImageUrl ? (
                                 <div className="relative group rounded-3xl overflow-hidden border-4 border-slate-50 shadow-lg h-48">
-                                    <img src={about.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                                    <img
+                                        src={displayImageUrl}
+                                        alt="Preview"
+                                        className="w-full h-full object-cover"
+                                    />
                                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
                                         <span className="opacity-0 group-hover:opacity-100 text-white text-xs font-bold bg-black/50 px-3 py-1 rounded-full transition-all">
                                             Vista previa
@@ -244,19 +295,18 @@ export default function AboutAdmin() {
                 </div>
 
                 <div className="pt-8 border-t border-slate-50 flex items-center gap-4">
-                    <button 
-                        type="submit" 
-                        disabled={saving || uploading}
+                    <button
+                        type="submit"
+                        disabled={saving}
                         className="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black flex items-center gap-3 hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-50 active:scale-95"
                     >
                         {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
                         {saving ? "GUARDANDO..." : "GUARDAR CAMBIOS"}
                     </button>
                     {message.text && (
-                        <span className={`font-black text-sm uppercase animate-in fade-in slide-in-from-left duration-300 ${
-                            message.type === "success" ? "text-green-600" : 
+                        <span className={`font-black text-sm uppercase animate-in fade-in slide-in-from-left duration-300 ${message.type === "success" ? "text-green-600" :
                             message.type === "error" ? "text-red-600" : "text-blue-600"
-                        }`}>
+                            }`}>
                             {message.text}
                         </span>
                     )}
