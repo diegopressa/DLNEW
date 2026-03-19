@@ -2,28 +2,33 @@
 
 import { useState } from "react";
 
-interface Color {
+interface ColorItem {
     name: string;
     hex: string;
 }
 
 interface ColorSwatchesProps {
-    colors: Color[];
+    colors: any[]; // Support both direct Color and ProductColor pivot
 }
 
 export default function ColorSwatches({ colors }: ColorSwatchesProps) {
     const [selected, setSelected] = useState(0);
 
+    // Flatten logic handles the pivot table: [{ color: { name, hex } }] OR [{ name, hex }]
+    const normalizedColors = colors.map(c => c.color ? c.color : c) as ColorItem[];
+
+    if (!normalizedColors || normalizedColors.length === 0) return null;
+
     return (
         <div>
             <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                Colores disponibles
+                Colores disponibles 
                 <span className="ml-2 text-primary font-bold normal-case tracking-normal">
-                    — {colors[selected].name}
+                    — {normalizedColors[selected]?.name}
                 </span>
             </p>
             <div className="flex flex-wrap gap-3">
-                {colors.map((color, i) => (
+                {normalizedColors.map((color, i) => (
                     <button
                         key={i}
                         title={color.name}
