@@ -12,7 +12,8 @@ import {
     LogOut,
     ChevronRight,
     Package,
-    Info
+    Info,
+    Palette
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logoutAction } from "@/app/login/actions";
@@ -25,6 +26,7 @@ const menuItems = [
     { name: "Galería / Trabajos", href: "/admin/trabajos", icon: ImageIcon },
     { name: "Categorías", href: "/admin/categorias", icon: Briefcase },
     { name: "Artículos", href: "/admin/articulos", icon: Package },
+    { name: "Colores", href: "/admin/colores", icon: Palette },
     { name: "SEO / Metadatos", href: "/admin/seo", icon: Search },
     { name: "Configuración", href: "/admin/settings", icon: Settings },
 ];

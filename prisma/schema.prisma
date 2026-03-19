@@ -137,7 +137,7 @@ model Product {
   category    ProductCategory @relation(fields: [categoryId], references: [id])
   images      ProductImage[]
   features    ProductFeature[]
-  colors      ProductColor[]
+  colors      ProductColor[]  @relation("ProductColorsNew")
   order       Int            @default(0)
   createdAt   DateTime       @default(now())
 }
@@ -157,12 +157,28 @@ model ProductFeature {
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
+model Color {
+  id         Int            @id @default(autoincrement())
+  name       String
+  slug       String         @unique
+  hex        String
+  sortOrder  Int            @default(0)
+  isActive   Boolean        @default(true)
+  createdAt  DateTime       @default(now())
+  products   ProductColor[]
+
+  @@map("colors")
+}
+
 model ProductColor {
   id        Int     @id @default(autoincrement())
-  name      String
-  hex       String
   productId Int
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  colorId   Int
+  product   Product @relation("ProductColorsNew", fields: [productId], references: [id], onDelete: Cascade)
+  color     Color   @relation(fields: [colorId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, colorId])
+  @@map("product_colors")
 }
 
 model ProjectsSection {

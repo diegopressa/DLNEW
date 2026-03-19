@@ -1,42 +1,185 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { getProducts, addProduct, updateProduct, deleteProduct } from "@/actions/productActions";
 import { getCategories } from "@/actions/categoryActions";
-import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload } from "lucide-react";
+import { getColors } from "@/actions/colorActions";
+import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette } from "lucide-react";
 
+// ─── Color Multi-Select Picker ───────────────────────────────────────────────
+function ColorPicker({
+    allColors,
+    selectedIds,
+    onChange,
+}: {
+    allColors: any[];
+    selectedIds: number[];
+    onChange: (ids: number[]) => void;
+}) {
+    const [search, setSearch] = useState("");
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+
+    // Close on outside click
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, []);
+
+    const filtered = allColors.filter(c =>
+        c.isActive && c.name.toLowerCase().includes(search.toLowerCase())
+    );
+
+    const toggle = (id: number) => {
+        onChange(
+            selectedIds.includes(id)
+                ? selectedIds.filter(x => x !== id)
+                : [...selectedIds, id]
+        );
+    };
+
+    const selectedColors = allColors.filter(c => selectedIds.includes(c.id));
+
+    return (
+        <div className="space-y-2" ref={ref}>
+            {/* Selected chips */}
+            {selectedColors.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                    {selectedColors.map(c => (
+                        <span
+                            key={c.id}
+                            className="inline-flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700"
+                        >
+                            <span className="w-3 h-3 rounded-full border border-white/50 shadow-sm" style={{ backgroundColor: c.hex }} />
+                            {c.name}
+                            <button
+                                type="button"
+                                onClick={() => toggle(c.id)}
+                                className="text-slate-400 hover:text-red-500 transition-colors ml-0.5"
+                            >
+                                <X size={12} />
+                            </button>
+                        </span>
+                    ))}
+                </div>
+            )}
+
+            {/* Dropdown trigger */}
+            <div className="relative">
+                <button
+                    type="button"
+                    onClick={() => setOpen(v => !v)}
+                    className="w-full flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-500 hover:border-blue-400 transition-all text-left"
+                >
+                    <Palette size={16} className="text-slate-400 shrink-0" />
+                    {selectedIds.length === 0
+                        ? "Seleccionar colores..."
+                        : `${selectedIds.length} color${selectedIds.length !== 1 ? "es" : ""} seleccionado${selectedIds.length !== 1 ? "s" : ""}`
+                    }
+                </button>
+
+                {open && (
+                    <div className="absolute z-50 top-full left-0 mt-1 w-full bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden">
+                        <div className="p-2 border-b border-slate-100">
+                            <div className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2">
+                                <Search size={14} className="text-slate-400 shrink-0" />
+                                <input
+                                    type="text"
+                                    placeholder="Buscar color..."
+                                    value={search}
+                                    onChange={e => setSearch(e.target.value)}
+                                    className="bg-transparent text-sm outline-none w-full text-slate-700 placeholder:text-slate-400"
+                                    autoFocus
+                                />
+                            </div>
+                        </div>
+                        <div className="max-h-52 overflow-y-auto py-1">
+                            {filtered.length === 0 ? (
+                                <p className="text-center text-xs text-slate-400 py-4">No hay colores activos</p>
+                            ) : (
+                                filtered.map(c => {
+                                    const isSelected = selectedIds.includes(c.id);
+                                    return (
+                                        <button
+                                            key={c.id}
+                                            type="button"
+                                            onClick={() => toggle(c.id)}
+                                            className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
+                                                isSelected
+                                                    ? "bg-blue-50 text-blue-700"
+                                                    : "text-slate-700 hover:bg-slate-50"
+                                            }`}
+                                        >
+                                            <span
+                                                className="w-5 h-5 rounded-md border border-slate-200 shadow-sm shrink-0"
+                                                style={{ backgroundColor: c.hex }}
+                                            />
+                                            <span className="flex-1 text-left font-medium">{c.name}</span>
+                                            <span className="font-mono text-xs text-slate-400 uppercase">{c.hex}</span>
+                                            {isSelected && (
+                                                <span className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center shrink-0">
+                                                    <svg viewBox="0 0 10 10" className="w-2.5 h-2.5 text-white fill-current">
+                                                        <path d="M1.5 5L4 7.5L8.5 2.5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                                                    </svg>
+                                                </span>
+                                            )}
+                                        </button>
+                                    );
+                                })
+                            )}
+                        </div>
+                        {allColors.filter(c => !c.isActive).length > 0 && (
+                            <div className="px-4 py-2 border-t border-slate-100 text-xs text-slate-400">
+                                {allColors.filter(c => !c.isActive).length} colores inactivos ocultos. Activalos en la sección <strong>Colores</strong>.
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// ─── Empty form state ─────────────────────────────────────────────────────────
+const emptyForm = {
+    name: "",
+    slug: "",
+    description: "",
+    highlight: "",
+    materials: "",
+    categoryId: "",
+    images: [""],
+    features: [""],
+    colorIds: [] as number[],
+};
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
 export default function ProductsEditor() {
     const [products, setProducts] = useState<any[]>([]);
     const [categories, setCategories] = useState<any[]>([]);
+    const [allColors, setAllColors] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAdd, setShowAdd] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editId, setEditId] = useState<number | null>(null);
     const [uploading, setUploading] = useState(false);
-    
-    const [newProd, setNewProd] = useState({
-        name: "",
-        slug: "",
-        description: "",
-        highlight: "",
-        materials: "",
-        categoryId: "",
-        images: [""],
-        features: [""],
-        colors: [{ name: "", hex: "#000000" }]
-    });
 
-    useEffect(() => {
-        loadData();
-    }, []);
+    const [newProd, setNewProd] = useState(emptyForm);
+
+    useEffect(() => { loadData(); }, []);
 
     const loadData = async () => {
-        const [prodData, catData] = await Promise.all([
+        const [prodData, catData, colorData] = await Promise.all([
             getProducts(),
-            getCategories()
+            getCategories(),
+            getColors(),
         ]);
         setProducts(prodData || []);
         setCategories(catData || []);
+        setAllColors(colorData || []);
         setLoading(false);
     };
 
@@ -50,10 +193,7 @@ export default function ProductsEditor() {
         formData.append("folder", "articulos");
 
         try {
-            const res = await fetch("/api/upload", {
-                method: "POST",
-                body: formData,
-            });
+            const res = await fetch("/api/upload", { method: "POST", body: formData });
             const data = await res.json();
             if (data.success) {
                 const updatedImages = [...newProd.images];
@@ -85,21 +225,10 @@ export default function ProductsEditor() {
         setNewProd({ ...newProd, features: updated.length ? updated : [""] });
     };
 
-    const addColor = () => setNewProd({ ...newProd, colors: [...newProd.colors, { name: "", hex: "#000000" }] });
-    const updateColor = (index: number, field: string, val: string) => {
-        const updated = [...newProd.colors];
-        updated[index] = { ...updated[index], [field]: val };
-        setNewProd({ ...newProd, colors: updated });
-    };
-    const removeColor = (index: number) => {
-        const updated = newProd.colors.filter((_, i) => i !== index);
-        setNewProd({ ...newProd, colors: updated.length ? updated : [{ name: "", hex: "#000000" }] });
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        
+
         let res;
         if (isEditing && editId) {
             res = await updateProduct(editId, newProd);
@@ -111,21 +240,12 @@ export default function ProductsEditor() {
             setShowAdd(false);
             setIsEditing(false);
             setEditId(null);
-            setNewProd({
-                name: "",
-                slug: "",
-                description: "",
-                highlight: "",
-                materials: "",
-                categoryId: "",
-                images: [""],
-                features: [""],
-                colors: [{ name: "", hex: "#000000" }]
-            });
+            setNewProd(emptyForm);
             await loadData();
         } else {
             alert("Error al guardar el producto");
         }
+        setLoading(false);
     };
 
     const handleEdit = (prod: any) => {
@@ -138,7 +258,8 @@ export default function ProductsEditor() {
             categoryId: prod.categoryId.toString(),
             images: prod.images.map((img: any) => img.url),
             features: prod.features.map((f: any) => f.text),
-            colors: prod.colors.map((c: any) => ({ name: c.name, hex: c.hex }))
+            // colors is now ProductColor[] with { color: Color }, extract the colorIds
+            colorIds: prod.colors.map((c: any) => c.colorId ?? c.color?.id).filter(Boolean),
         });
         setEditId(prod.id);
         setIsEditing(true);
@@ -162,50 +283,50 @@ export default function ProductsEditor() {
                     <h1 className="text-3xl font-bold text-slate-900">Artículos / Productos</h1>
                     <p className="text-slate-500">Gestioná el catálogo de prendas de la empresa.</p>
                 </div>
-                <button 
+                <button
                     onClick={() => {
                         setShowAdd(!showAdd);
-                        if (showAdd) {
-                            setIsEditing(false);
-                            setEditId(null);
-                        }
+                        if (showAdd) { setIsEditing(false); setEditId(null); }
                     }}
-                    className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 transition-all"
                 >
                     <Plus size={20} /> {showAdd ? "Cancelar" : "Nuevo Artículo"}
                 </button>
             </header>
 
+            {/* ── Product form ─────────────────────────────────────────── */}
             {showAdd && (
                 <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl border border-slate-100 space-y-6 shadow-sm">
                     <h2 className="text-xl font-bold text-slate-900">{isEditing ? "Editar Artículo" : "Crear Nuevo Artículo"}</h2>
+
+                    {/* Basic fields */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-slate-700">Nombre del Producto</label>
-                            <input 
-                                placeholder="Ej: Remera Algodón Premium" 
+                            <input
+                                placeholder="Ej: Remera Algodón Premium"
                                 className="bg-slate-50 p-3 rounded-xl w-full border border-slate-100"
                                 value={newProd.name}
-                                onChange={e => setNewProd({...newProd, name: e.target.value, slug: e.target.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-')})}
+                                onChange={e => setNewProd({ ...newProd, name: e.target.value, slug: e.target.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') })}
                                 required
                             />
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-slate-700">Slug (URL)</label>
-                            <input 
-                                placeholder="remera-algodon-premium" 
+                            <input
+                                placeholder="remera-algodon-premium"
                                 className="bg-slate-50 p-3 rounded-xl w-full border border-slate-100"
                                 value={newProd.slug}
-                                onChange={e => setNewProd({...newProd, slug: e.target.value})}
+                                onChange={e => setNewProd({ ...newProd, slug: e.target.value })}
                                 required
                             />
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-slate-700">Categoría</label>
-                            <select 
+                            <select
                                 className="bg-slate-50 p-3 rounded-xl w-full border border-slate-100"
                                 value={newProd.categoryId}
-                                onChange={e => setNewProd({...newProd, categoryId: e.target.value})}
+                                onChange={e => setNewProd({ ...newProd, categoryId: e.target.value })}
                                 required
                             >
                                 <option value="">Seleccione una categoría</option>
@@ -216,25 +337,26 @@ export default function ProductsEditor() {
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-slate-700">Destacado (Highlight)</label>
-                            <input 
-                                placeholder="Ej: Entrega en 24hs" 
+                            <input
+                                placeholder="Ej: Entrega en 24hs"
                                 className="bg-slate-50 p-3 rounded-xl w-full border border-slate-100"
                                 value={newProd.highlight}
-                                onChange={e => setNewProd({...newProd, highlight: e.target.value})}
+                                onChange={e => setNewProd({ ...newProd, highlight: e.target.value })}
                             />
                         </div>
                     </div>
 
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-slate-700">Descripción</label>
-                        <textarea 
-                            placeholder="Descripción detallada del producto..." 
+                        <textarea
+                            placeholder="Descripción detallada del producto..."
                             className="bg-slate-50 p-3 rounded-xl w-full border border-slate-100 h-24"
                             value={newProd.description}
-                            onChange={e => setNewProd({...newProd, description: e.target.value})}
+                            onChange={e => setNewProd({ ...newProd, description: e.target.value })}
                         />
                     </div>
 
+                    {/* Images */}
                     <div className="space-y-4">
                         <div className="flex justify-between items-center">
                             <label className="text-sm font-bold text-slate-700">Galería de Imágenes</label>
@@ -247,14 +369,14 @@ export default function ProductsEditor() {
                                 <div key={idx} className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex gap-4">
                                     <div className="flex-1 space-y-2">
                                         <div className="flex items-center gap-2">
-                                            <input 
-                                                placeholder="https://..." 
+                                            <input
+                                                placeholder="https://..."
                                                 className="bg-white p-2 rounded-lg w-full border border-slate-200 text-xs"
                                                 value={img}
                                                 onChange={e => {
                                                     const updated = [...newProd.images];
                                                     updated[idx] = e.target.value;
-                                                    setNewProd({...newProd, images: updated});
+                                                    setNewProd({ ...newProd, images: updated });
                                                 }}
                                             />
                                             {newProd.images.length > 1 && (
@@ -281,6 +403,7 @@ export default function ProductsEditor() {
                         </div>
                     </div>
 
+                    {/* Features + Colors */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Características */}
                         <div className="space-y-4">
@@ -293,8 +416,8 @@ export default function ProductsEditor() {
                             <div className="space-y-2">
                                 {newProd.features.map((feat, idx) => (
                                     <div key={idx} className="flex gap-2">
-                                        <input 
-                                            placeholder="Detalle técnico, material, talle..." 
+                                        <input
+                                            placeholder="Detalle técnico, material, talle..."
                                             className="bg-slate-50 p-3 rounded-xl w-full border border-slate-100 italic"
                                             value={feat}
                                             onChange={e => updateFeature(idx, e.target.value)}
@@ -311,42 +434,42 @@ export default function ProductsEditor() {
                         <div className="space-y-4">
                             <div className="flex justify-between items-center">
                                 <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">Colores Disponibles</label>
-                                <button type="button" onClick={addColor} className="text-blue-600 text-xs font-bold flex items-center gap-1 hover:underline">
-                                    <Plus size={14} /> Agregar Color
-                                </button>
+                                <a 
+                                    href="/admin/colores" 
+                                    target="_blank" 
+                                    className="text-blue-600 text-[10px] font-bold flex items-center gap-1 hover:underline bg-blue-50 px-2 py-1 rounded-lg"
+                                >
+                                    <Palette size={12} /> Gestionar Panel de Colores
+                                </a>
                             </div>
-                            <div className="space-y-2">
-                                {newProd.colors.map((color, idx) => (
-                                    <div key={idx} className="flex gap-2 items-center bg-slate-50 p-2 rounded-xl border border-slate-100">
-                                        <input 
-                                            placeholder="Nombre color" 
-                                            className="bg-white p-2 rounded-lg flex-1 border border-slate-200 text-sm"
-                                            value={color.name}
-                                            onChange={e => updateColor(idx, "name", e.target.value)}
-                                        />
-                                        <input 
-                                            type="color"
-                                            className="w-10 h-10 rounded-lg cursor-pointer border-none"
-                                            value={color.hex}
-                                            onChange={e => updateColor(idx, "hex", e.target.value)}
-                                        />
-                                        <button type="button" onClick={() => removeColor(idx)} className="p-2 text-slate-300 hover:text-red-500">
-                                            <Trash2 size={18} />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
+
+                            {allColors.filter(c => c.isActive).length === 0 ? (
+                                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-700">
+                                    No hay colores activos. <a href="/admin/colores" className="font-bold underline">Ir a Colores</a> para crear la paleta global.
+                                </div>
+                            ) : (
+                                <ColorPicker
+                                    allColors={allColors}
+                                    selectedIds={newProd.colorIds}
+                                    onChange={ids => setNewProd({ ...newProd, colorIds: ids })}
+                                />
+                            )}
                         </div>
                     </div>
 
                     <div className="pt-6 border-t border-slate-100">
-                        <button type="submit" disabled={uploading} className="w-full md:w-auto bg-green-600 text-white px-10 py-5 rounded-2xl font-black text-xl flex items-center justify-center gap-3 shadow-xl shadow-green-100 hover:bg-green-700 hover:-translate-y-1 transition-all disabled:opacity-50">
+                        <button
+                            type="submit"
+                            disabled={uploading}
+                            className="w-full md:w-auto bg-green-600 text-white px-10 py-5 rounded-2xl font-black text-xl flex items-center justify-center gap-3 shadow-xl shadow-green-100 hover:bg-green-700 hover:-translate-y-1 transition-all disabled:opacity-50"
+                        >
                             <Save size={24} /> {isEditing ? "Actualizar Artículo" : "Guardar Producto"}
                         </button>
                     </div>
                 </form>
             )}
 
+            {/* ── Product list ─────────────────────────────────────────── */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((prod) => (
                     <div key={prod.id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden flex flex-col group shadow-sm hover:shadow-md transition-shadow">
@@ -361,26 +484,34 @@ export default function ProductsEditor() {
                             <div className="absolute top-3 left-3 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase">
                                 {prod.category?.name}
                             </div>
+                            {/* Color swatches on the card */}
+                            {prod.colors?.length > 0 && (
+                                <div className="absolute bottom-3 left-3 flex gap-1">
+                                    {prod.colors.slice(0, 6).map((pc: any) => (
+                                        <span
+                                            key={pc.id}
+                                            className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
+                                            style={{ backgroundColor: pc.color?.hex ?? "#ccc" }}
+                                            title={pc.color?.name}
+                                        />
+                                    ))}
+                                    {prod.colors.length > 6 && (
+                                        <span className="text-[10px] text-white font-bold leading-4">+{prod.colors.length - 6}</span>
+                                    )}
+                                </div>
+                            )}
                         </div>
                         <div className="p-5 flex-1 flex flex-col">
                             <h3 className="font-bold text-slate-900 text-lg mb-1">{prod.name}</h3>
                             <p className="text-sm text-slate-500 line-clamp-2 mb-4">{prod.description}</p>
-                            
+
                             <div className="mt-auto flex justify-between items-center bg-slate-50 -mx-5 -mb-5 p-4 border-t border-slate-100">
                                 <span className="text-[10px] font-mono text-slate-400 bg-white px-2 py-1 rounded border border-slate-100">/{prod.slug}</span>
                                 <div className="flex gap-2">
-                                    <button 
-                                        onClick={() => handleEdit(prod)}
-                                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-                                        title="Editar"
-                                    >
+                                    <button onClick={() => handleEdit(prod)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Editar">
                                         <Pencil size={18} />
                                     </button>
-                                    <button 
-                                        onClick={() => handleDelete(prod.id)}
-                                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                                        title="Eliminar"
-                                    >
+                                    <button onClick={() => handleDelete(prod.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Eliminar">
                                         <Trash2 size={18} />
                                     </button>
                                 </div>
@@ -388,7 +519,7 @@ export default function ProductsEditor() {
                         </div>
                     </div>
                 ))}
-                
+
                 {products.length === 0 && !loading && (
                     <div className="col-span-full py-20 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
                         <Package className="mx-auto text-slate-300 mb-4" size={48} />
