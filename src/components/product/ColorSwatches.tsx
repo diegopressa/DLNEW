@@ -33,10 +33,10 @@ export default function ColorSwatches({ colors }: ColorSwatchesProps) {
                         key={i}
                         title={color.name}
                         onClick={() => setSelected(i)}
-                        className={`w-9 h-9 rounded-full transition-all duration-200 border-2 ${
+                        className={`w-9 h-9 rounded-full transition-all duration-200 border ${
                             i === selected
                                 ? "scale-125 border-primary shadow-lg shadow-primary/30 ring-2 ring-white ring-offset-1"
-                                : "border-white/80 hover:scale-110 hover:border-slate-300 shadow-sm"
+                                : "border-slate-300 hover:scale-110 hover:border-slate-400 shadow-sm"
                         }`}
                         style={{ backgroundColor: color.hex }}
                         aria-label={color.name}
