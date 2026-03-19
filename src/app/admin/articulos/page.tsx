@@ -53,7 +53,7 @@ function ColorPicker({
                             key={c.id}
                             className="inline-flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700"
                         >
-                            <span className="w-3 h-3 rounded-full border border-white/50 shadow-sm" style={{ backgroundColor: c.hex }} />
+                            <span className="w-3 h-3 rounded-full border border-slate-200 shadow-sm" style={{ backgroundColor: c.hex }} />
                             {c.name}
                             <button
                                 type="button"
@@ -490,7 +490,7 @@ export default function ProductsEditor() {
                                     {prod.colors.slice(0, 6).map((pc: any) => (
                                         <span
                                             key={pc.id}
-                                            className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
+                                            className="w-4 h-4 rounded-full border border-slate-200 shadow-sm"
                                             style={{ backgroundColor: pc.color?.hex ?? "#ccc" }}
                                             title={pc.color?.name}
                                         />

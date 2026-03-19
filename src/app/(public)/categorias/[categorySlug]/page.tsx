@@ -75,7 +75,7 @@ export default async function CategoryListingPage({ params }: { params: { catego
                                             return (
                                                 <div 
                                                     key={i} 
-                                                    className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
+                                                    className="w-6 h-6 rounded-full border border-slate-200 shadow-sm"
                                                     style={{ backgroundColor: color.hex }}
                                                     title={color.name}
                                                 />
