@@ -10,7 +10,7 @@ export async function getProducts() {
                 category: true,
                 images: { orderBy: { order: "asc" } },
                 features: true,
-                colors: true
+                colors: { include: { color: true } }
             },
             orderBy: { order: "asc" }
         });
@@ -22,33 +22,26 @@ export async function getProducts() {
 
 export async function addProduct(data: any) {
     try {
-        const { images, features, colors, categoryId, ...productData } = data;
-        
-        // Data cleaning: remove empty values
+        const { images, features, colorIds, categoryId, ...productData } = data;
+
         const cleanImages = (images || []).filter((url: string) => url && url.trim() !== "");
         const cleanFeatures = (features || []).filter((text: string) => text && text.trim() !== "");
-        const cleanColors = (colors || []).filter((c: any) => c.hex && c.hex.trim() !== "");
+        const cleanColorIds: number[] = (colorIds || []).map(Number).filter(Boolean);
 
-        const last = await (prisma as any).product.findFirst({ orderBy: { order: "asc" } });
-        
+        const last = await (prisma as any).product.findFirst({ orderBy: { order: "desc" } });
+
         const product = await (prisma as any).product.create({
             data: {
                 ...productData,
                 slug: productData.slug.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-'),
                 categoryId: parseInt(categoryId) || 0,
                 order: (last?.order || 0) + 1,
-                images: {
-                    create: cleanImages.map((url: string, index: number) => ({ url, order: index }))
-                },
-                features: {
-                    create: cleanFeatures.map((text: string) => ({ text }))
-                },
-                colors: {
-                    create: cleanColors.map((c: any) => ({ name: c.name || "", hex: c.hex }))
-                }
+                images: { create: cleanImages.map((url: string, index: number) => ({ url, order: index })) },
+                features: { create: cleanFeatures.map((text: string) => ({ text })) },
+                colors: { create: cleanColorIds.map((colorId) => ({ colorId })) }
             }
         });
-        
+
         revalidatePath("/", "layout");
         return { success: true, product };
     } catch (error) {
@@ -59,14 +52,12 @@ export async function addProduct(data: any) {
 
 export async function updateProduct(id: number, data: any) {
     try {
-        const { images, features, colors, categoryId, ...productData } = data;
-        
-        // Data cleaning: remove empty values
+        const { images, features, colorIds, categoryId, ...productData } = data;
+
         const cleanImages = (images || []).filter((url: string) => url && url.trim() !== "");
         const cleanFeatures = (features || []).filter((text: string) => text && text.trim() !== "");
-        const cleanColors = (colors || []).filter((c: any) => c.hex && c.hex.trim() !== "");
+        const cleanColorIds: number[] = (colorIds || []).map(Number).filter(Boolean);
 
-        // Delete existing relations to recreate them
         await prisma.$transaction([
             (prisma as any).productImage.deleteMany({ where: { productId: id } }),
             (prisma as any).productFeature.deleteMany({ where: { productId: id } }),
@@ -76,19 +67,13 @@ export async function updateProduct(id: number, data: any) {
                 data: {
                     ...productData,
                     categoryId: parseInt(categoryId) || 0,
-                    images: {
-                        create: cleanImages.map((url: string, index: number) => ({ url, order: index }))
-                    },
-                    features: {
-                        create: cleanFeatures.map((text: string) => ({ text }))
-                    },
-                    colors: {
-                        create: cleanColors.map((c: any) => ({ name: c.name || "", hex: c.hex }))
-                    }
+                    images: { create: cleanImages.map((url: string, index: number) => ({ url, order: index })) },
+                    features: { create: cleanFeatures.map((text: string) => ({ text })) },
+                    colors: { create: cleanColorIds.map((colorId) => ({ colorId })) }
                 }
             })
         ]);
-        
+
         revalidatePath("/", "layout");
         return { success: true };
     } catch (error) {
@@ -117,24 +102,23 @@ export async function getProductBySlug(slug: string) {
                 category: true,
                 images: { orderBy: { order: "asc" } },
                 features: true,
-                colors: true
+                colors: { include: { color: true } }
             }
         });
 
         if (product) return product;
 
-        // Fallback: Search all and match normalized slugs (in case of sync issues)
         const all = await (prisma as any).product.findMany({
             include: {
                 category: true,
                 images: { orderBy: { order: "asc" } },
                 features: true,
-                colors: true
+                colors: { include: { color: true } }
             }
         });
 
         const normalizedRequested = decodedSlug.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
-        return all.find((p: any) => 
+        return all.find((p: any) =>
             p.slug.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') === normalizedRequested
         );
     } catch (error) {
