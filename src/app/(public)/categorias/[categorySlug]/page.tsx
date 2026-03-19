@@ -70,14 +70,17 @@ export default async function CategoryListingPage({ params }: { params: { catego
                                 
                                 <div className="flex items-center justify-between pt-4 border-t border-slate-50">
                                     <div className="flex -space-x-2">
-                                        {product.colors.slice(0, 3).map((c: any, i: number) => (
-                                            <div 
-                                                key={i} 
-                                                className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
-                                                style={{ backgroundColor: c.hex }}
-                                                title={c.name}
-                                            />
-                                        ))}
+                                        {product.colors.slice(0, 3).map((pc: any, i: number) => {
+                                            const color = pc.color || pc;
+                                            return (
+                                                <div 
+                                                    key={i} 
+                                                    className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
+                                                    style={{ backgroundColor: color.hex }}
+                                                    title={color.name}
+                                                />
+                                            );
+                                        })}
                                         {product.colors.length > 3 && (
                                             <div className="w-6 h-6 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-400">
                                                 +{product.colors.length - 3}
