@@ -1,11 +1,14 @@
 import { MessageCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { getCategories } from "@/actions/categoryActions";
+import { getGlobalSettings } from "@/actions/settingsActions";
 
 export const dynamic = "force-dynamic";
 
 export default async function ProductosPage() {
     const dbCategories = await getCategories();
+    const settings = await getGlobalSettings();
+    const whatsapp = settings?.whatsapp || "59899000000";
     
     // Fallback if no categories in DB yet
     const categories = dbCategories.length > 0 ? dbCategories.map(c => ({
@@ -66,7 +69,7 @@ export default async function ProductosPage() {
                         </p>
                     </div>
                     <Link
-                        href="https://wa.me/59899000000"
+                        href={`https://wa.me/${whatsapp}`}
                         className="bg-primary text-white px-10 py-5 rounded-2xl font-black text-lg hover:scale-105 transition-all flex items-center gap-3 shadow-xl shadow-primary/20 relative z-10"
                     >
                         Preguntar por otras prendas
