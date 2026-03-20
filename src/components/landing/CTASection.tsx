@@ -5,7 +5,7 @@ import { getCtaSection } from "@/actions/homeActions";
 
 export default async function CTASection() {
     const settings = await getGlobalSettings();
-    const whatsapp = settings?.whatsapp || "59899000000";
+    const whatsapp = settings?.whatsapp || "59897534866";
     const ctaData = await getCtaSection();
 
     // Determine target based on what buttonLink contains
@@ -13,7 +13,7 @@ export default async function CTASection() {
     const buttonLink = rawLink.startsWith('#') 
         ? rawLink 
         : (rawLink.includes('wa.me') || rawLink === '#whatsapp') 
-            ? `https://wa.me/${whatsapp}` 
+            ? `https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0` 
             : rawLink;
 
     return (

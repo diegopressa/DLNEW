@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function ProductosPage() {
     const dbCategories = await getCategories();
     const settings = await getGlobalSettings();
-    const whatsapp = settings?.whatsapp || "59899000000";
+    const whatsapp = settings?.whatsapp || "59897534866";
     
     // Fallback if no categories in DB yet
     const categories = dbCategories.length > 0 ? dbCategories.map(c => ({
@@ -69,7 +69,7 @@ export default async function ProductosPage() {
                         </p>
                     </div>
                     <Link
-                        href={`https://wa.me/${whatsapp}`}
+                        href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0`}
                         className="bg-primary text-white px-10 py-5 rounded-2xl font-black text-lg hover:scale-105 transition-all flex items-center gap-3 shadow-xl shadow-primary/20 relative z-10"
                     >
                         Preguntar por otras prendas

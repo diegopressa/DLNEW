@@ -13,7 +13,7 @@ export async function getGlobalSettings() {
             settings = await prisma.globalSettings.create({
                 data: {
                     id: 1,
-                    whatsapp: "59899000000",
+                    whatsapp: "59897534866",
                     email: "info@dldiseno.uy",
                     phone: "+598 99 000 000",
                     address: "Montevideo, Uruguay"
