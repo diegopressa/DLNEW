@@ -12,8 +12,11 @@ export default async function ContactoPage() {
     const settings = await getGlobalSettings();
     const whatsapp = settings?.whatsapp || "59897534866";
     const email = settings?.email || "info@dldiseno.uy";
-    const phone = settings?.phone || "+598 99 000 000";
+    const phone = settings?.phone || "59829250584";
     const address = settings?.address || "Montevideo, Uruguay";
+
+    const formattedPhone = phone.startsWith('598') ? `+598 ${phone.slice(3, 7)} ${phone.slice(7)}` : phone;
+    const formattedWhatsapp = whatsapp.startsWith('598') ? `+598 0${whatsapp.slice(3, 5)} ${whatsapp.slice(5, 8)} ${whatsapp.slice(8)}` : whatsapp;
 
     return (
         <div className="pt-32 pb-20 px-4 flex flex-col items-center bg-[#fafbfc]">
@@ -32,7 +35,7 @@ export default async function ContactoPage() {
                                     </div>
                                     <div>
                                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Teléfono</p>
-                                        <p className="text-sm font-bold text-slate-800">{phone}</p>
+                                        <p className="text-sm font-bold text-slate-800">{formattedPhone}</p>
                                     </div>
                                 </div>
 
@@ -43,7 +46,13 @@ export default async function ContactoPage() {
                                     </div>
                                     <div>
                                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">WhatsApp</p>
-                                        <p className="text-sm font-bold text-slate-800">{whatsapp}</p>
+                                        <a 
+                                            href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0`}
+                                            target="_blank"
+                                            className="text-sm font-bold text-slate-800 hover:text-green-600 transition-colors"
+                                        >
+                                            {formattedWhatsapp}
+                                        </a>
                                     </div>
                                 </div>
 

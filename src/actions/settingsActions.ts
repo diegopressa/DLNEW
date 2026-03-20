@@ -15,7 +15,7 @@ export async function getGlobalSettings() {
                     id: 1,
                     whatsapp: "59897534866",
                     email: "info@dldiseno.uy",
-                    phone: "+598 99 000 000",
+                    phone: "59829250584",
                     address: "Montevideo, Uruguay"
                 }
             });
