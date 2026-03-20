@@ -1,6 +1,7 @@
 import { MessageCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
+import { getGlobalSettings } from "@/actions/settingsActions";
 
 import HeroCarousel from "./HeroCarousel";
 
@@ -8,6 +9,8 @@ export default async function Hero() {
     const data = await prisma.heroSection.findUnique({
         where: { id: 1 }
     });
+    const settings = await getGlobalSettings();
+    const whatsapp = settings?.whatsapp || "59899000000";
 
     // Consultamos las imágenes por separado para evitar errores si prisma generate no se completó
     let images: any[] = [];
@@ -50,7 +53,7 @@ export default async function Hero() {
 
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
                             <Link
-                                href="https://wa.me/59899000000"
+                                href={`https://wa.me/${whatsapp}`}
                                 target="_blank"
                                 className="bg-primary text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-primary/90 transition-all shadow-xl shadow-primary/10 flex items-center justify-center gap-3 group"
                             >
