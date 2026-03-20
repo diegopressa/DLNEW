@@ -125,3 +125,40 @@ export async function deleteCategory(id: number) {
         return { success: false };
     }
 }
+
+export async function getCategoriasHeader() {
+    try {
+        let header = await (prisma as any).categoriasHeader.findUnique({ where: { id: 1 } });
+        if (!header) {
+            header = await (prisma as any).categoriasHeader.create({
+                data: {
+                    id: 1,
+                    title: "Nuestro Catálogo de Prendas",
+                    subtitle: "Seleccionamos las mejores telas y cortes para que tu equipo luzca impecable y trabaje con comodidad."
+                }
+            });
+        }
+        return header;
+    } catch (error) {
+        return {
+            title: "Nuestro Catálogo de Prendas",
+            subtitle: "Seleccionamos las mejores telas y cortes para que tu equipo luzca impecable y trabaje con comodidad."
+        };
+    }
+}
+
+export async function updateCategoriasHeader(data: { title: string; subtitle: string }) {
+    try {
+        await (prisma as any).categoriasHeader.upsert({
+            where: { id: 1 },
+            update: data,
+            create: { id: 1, ...data }
+        });
+        revalidatePath("/categorias");
+        revalidatePath("/admin/categorias");
+        return { success: true };
+    } catch (error) {
+        console.error("Error updating categorias header:", error);
+        return { success: false };
+    }
+}

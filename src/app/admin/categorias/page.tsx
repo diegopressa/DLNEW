@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getCategories, addCategory, updateCategory, deleteCategory } from "@/actions/categoryActions";
-import { Plus, Trash2, Save, Loader2, Image as ImageIcon, Pencil } from "lucide-react";
+import { getCategories, addCategory, updateCategory, deleteCategory, getCategoriasHeader, updateCategoriasHeader } from "@/actions/categoryActions";
+import { Plus, Trash2, Save, Loader2, Image as ImageIcon, Pencil, Layout } from "lucide-react";
 
 export default function CategoriesEditor() {
     const [categories, setCategories] = useState<any[]>([]);
@@ -12,6 +12,9 @@ export default function CategoriesEditor() {
     const [newCat, setNewCat] = useState({ name: "", imageUrl: "", description: "", showOnHome: false });
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState("");
+    const [header, setHeader] = useState({ title: "", subtitle: "" });
+    const [savingHeader, setSavingHeader] = useState(false);
+    const [headerMsg, setHeaderMsg] = useState("");
 
     useEffect(() => {
         loadData();
@@ -45,9 +48,24 @@ export default function CategoriesEditor() {
     };
 
     const loadData = async () => {
-        const data = await getCategories();
-        setCategories(data || []);
+        const [cats, head] = await Promise.all([
+            getCategories(),
+            getCategoriasHeader()
+        ]);
+        setCategories(cats || []);
+        setHeader(head);
         setLoading(false);
+    };
+
+    const handleSaveHeader = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSavingHeader(true);
+        const res = await updateCategoriasHeader(header);
+        if (res.success) {
+            setHeaderMsg("Encabezado actualizado");
+            setTimeout(() => setHeaderMsg(""), 3000);
+        }
+        setSavingHeader(false);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -125,6 +143,50 @@ export default function CategoriesEditor() {
                     {showAdd ? "Cancelar" : "Nueva Categoría"}
                 </button>
             </header>
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+                <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                        <Layout size={20} />
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-black text-slate-800">Encabezado de la Página</h2>
+                        <p className="text-sm text-slate-500">Título y subtítulo que aparecen en la parte pública.</p>
+                    </div>
+                </div>
+
+                <form onSubmit={handleSaveHeader} className="grid grid-cols-1 gap-6">
+                    <div className="space-y-2">
+                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Título Principal</label>
+                        <input 
+                            value={header.title}
+                            onChange={e => setHeader({...header, title: e.target.value})}
+                            className="w-full bg-slate-50 border border-slate-100 p-4 rounded-2xl font-bold text-slate-900 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                            placeholder="Nuestro Catálogo de Prendas"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Subtítulo Descriptivo</label>
+                        <textarea 
+                            value={header.subtitle}
+                            onChange={e => setHeader({...header, subtitle: e.target.value})}
+                            className="w-full bg-slate-50 border border-slate-100 p-4 rounded-2xl h-24 resize-none text-slate-600 leading-relaxed focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                            placeholder="Seleccionamos las mejores telas..."
+                        />
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <button 
+                            type="submit"
+                            disabled={savingHeader}
+                            className="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-800 transition-all disabled:opacity-50"
+                        >
+                            {savingHeader ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                            Guardar Cambios
+                        </button>
+                        {headerMsg && <span className="text-green-600 font-bold animate-in fade-in slide-in-from-left-2">{headerMsg}</span>}
+                    </div>
+                </form>
+            </div>
+
 
             {showAdd && (
                 <form onSubmit={handleSubmit} className="bg-white p-8 rounded-3xl border border-slate-100 space-y-6 shadow-xl animate-in fade-in slide-in-from-top-4 duration-300">

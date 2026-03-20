@@ -1,6 +1,6 @@
 import { MessageCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { getCategories } from "@/actions/categoryActions";
+import { getCategories, getCategoriasHeader } from "@/actions/categoryActions";
 import { getGlobalSettings } from "@/actions/settingsActions";
 
 export const dynamic = "force-dynamic";
@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function ProductosPage() {
     const dbCategories = await getCategories();
     const settings = await getGlobalSettings();
+    const headers = await getCategoriasHeader();
     const whatsapp = settings?.whatsapp || "59897534866";
     
     // Fallback if no categories in DB yet
@@ -23,9 +24,9 @@ export default async function ProductosPage() {
         <div className="pt-32 pb-24">
             <div className="section-container">
                 <header className="mb-16">
-                    <h1 className="heading-lg mb-4">Nuestro Catálogo de Prendas</h1>
+                    <h1 className="heading-lg mb-4">{headers.title}</h1>
                     <p className="text-lead">
-                        Seleccionamos las mejores telas y cortes para que tu equipo luzca impecable y trabaje con comodidad.
+                        {headers.subtitle}
                     </p>
                 </header>
 
