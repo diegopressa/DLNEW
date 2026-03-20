@@ -17,7 +17,7 @@ export default async function CTASection() {
             : rawLink;
 
     return (
-        <section className="py-24 bg-slate-50">
+        <section className="py-14 bg-slate-50">
             <div className="section-container">
                 <div 
                     className="rounded-[3rem] p-8 md:p-16 lg:p-24 text-center text-white relative overflow-hidden shadow-2xl"
