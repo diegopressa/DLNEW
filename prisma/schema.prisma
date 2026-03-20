@@ -234,3 +234,8 @@ model CtaSection {
   smallText       String @default("Respondemos en menos de 10 minutos")
   backgroundColor String @default("#1f2937") // Default slate-800
 }
+model CategoriasHeader {
+  id       Int    @id @default(1)
+  title    String @default("Nuestro Catálogo de Prendas")
+  subtitle String @default("Seleccionamos las mejores telas y cortes para que tu equipo luzca impecable y trabaje con comodidad.")
+}
