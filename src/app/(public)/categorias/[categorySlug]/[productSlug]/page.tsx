@@ -36,7 +36,7 @@ const REVIEWS = [
 
 export default async function ProductDetailPage({ params }: { params: { categorySlug: string; productSlug: string } }) {
     const settings = await getGlobalSettings();
-    const whatsapp = settings?.whatsapp || "59899000000";
+    const whatsapp = settings?.whatsapp || "59897534866";
 
     const product = await getProductBySlug(params.productSlug);
 
@@ -46,10 +46,7 @@ export default async function ProductDetailPage({ params }: { params: { category
 
     const category = product.category;
 
-    const whatsappMessage = encodeURIComponent(
-        `Hola! Me interesa el producto: ${product.name} de la categoría ${category.name}. ¿Pueden pasarme precio para uniformes corporativos?`
-    );
-    const waUrl = `https://wa.me/${whatsapp}?text=${whatsappMessage}`;
+    const waUrl = `https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0`;
 
     // Simple logic for related products: other products in the same category
     // In a real scenario, we might want to fetch these from DB

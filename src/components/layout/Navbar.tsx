@@ -56,7 +56,7 @@ const Navbar = ({ whatsapp = "59899000000" }: { whatsapp?: string }) => {
                             </Link>
                         ))}
                         <Link
-                            href={`https://wa.me/${whatsapp}`}
+                            href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0`}
                             target="_blank"
                             className="bg-primary text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-primary/90 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
                         >
@@ -89,7 +89,7 @@ const Navbar = ({ whatsapp = "59899000000" }: { whatsapp?: string }) => {
                         </Link>
                     ))}
                     <Link
-                        href={`https://wa.me/${whatsapp}`}
+                        href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0`}
                         target="_blank"
                         className="w-full bg-primary text-white px-5 py-3 rounded-xl text-center font-bold flex items-center justify-center gap-2"
                     >

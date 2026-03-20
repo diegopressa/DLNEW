@@ -9,7 +9,7 @@ export default async function PublicLayout({
     children: React.ReactNode;
 }) {
     const settings = await getGlobalSettings();
-    const whatsapp = settings?.whatsapp || "59899000000";
+    const whatsapp = settings?.whatsapp || "59897534866";
 
     return (
         <div className="flex flex-col min-h-screen">

@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ContactoPage() {
     const settings = await getGlobalSettings();
-    const whatsapp = settings?.whatsapp || "59899000000";
+    const whatsapp = settings?.whatsapp || "59897534866";
     const email = settings?.email || "info@dldiseno.uy";
     const phone = settings?.phone || "+598 99 000 000";
     const address = settings?.address || "Montevideo, Uruguay";
@@ -98,7 +98,7 @@ export default async function ContactoPage() {
                             
                             <div className="space-y-8">
                                 <a 
-                                    href={`https://wa.me/${whatsapp}`} 
+                                    href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0`} 
                                     target="_blank"
                                     className="block w-full bg-[#25D366] hover:bg-[#20ba59] text-white text-center py-6 rounded-[1.8rem] text-2xl font-black shadow-xl shadow-green-500/20 transition-all active:scale-95 flex items-center justify-center gap-4"
                                 >
