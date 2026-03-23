@@ -444,3 +444,72 @@ export async function updateCtaSection(data: { title: string; subtitle: string; 
         return { success: true };
     } catch (error) { return { success: false }; }
 }
+
+// Brands
+export async function getBrands() {
+    try {
+        return await (prisma as any).brand.findMany({
+            orderBy: { order: "asc" }
+        });
+    } catch (error) {
+        console.error("Error fetching brands:", error);
+        return [];
+    }
+}
+
+export async function addBrand(data: { name: string; imageUrl: string }) {
+    try {
+        const last = await (prisma as any).brand.findFirst({ orderBy: { order: "desc" } });
+        await (prisma as any).brand.create({
+            data: { ...data, order: (last?.order || 0) + 1 }
+        });
+        revalidatePath("/");
+        revalidatePath("/admin/home");
+        return { success: true };
+    } catch (error: any) { 
+        console.error("Error adding brand:", error);
+        return { success: false, error: error.message }; 
+    }
+}
+
+export async function updateBrand(id: number, data: { name: string; imageUrl: string }) {
+    try {
+        await (prisma as any).brand.update({ where: { id }, data });
+        revalidatePath("/");
+        revalidatePath("/admin/home");
+        return { success: true };
+    } catch (error: any) { 
+        console.error("Error updating brand:", error);
+        return { success: false, error: error.message }; 
+    }
+}
+
+export async function deleteBrand(id: number) {
+    try {
+        await (prisma as any).brand.delete({ where: { id } });
+        revalidatePath("/");
+        revalidatePath("/admin/home");
+        return { success: true };
+    } catch (error) { 
+        console.error("Error deleting brand:", error);
+        return { success: false }; 
+    }
+}
+
+export async function updateBrandsOrder(ids: number[]) {
+    try {
+        await prisma.$transaction(
+            ids.map((id, index) => 
+                (prisma as any).brand.update({
+                    where: { id },
+                    data: { order: index }
+                })
+            )
+        );
+        revalidatePath("/");
+        return { success: true };
+    } catch (error) { 
+        console.error("Error updating brands order:", error);
+        return { success: false }; 
+    }
+}

@@ -239,3 +239,11 @@ model CategoriasHeader {
   title    String @default("Nuestro Catálogo de Prendas")
   subtitle String @default("Seleccionamos las mejores telas y cortes para que tu equipo luzca impecable y trabaje con comodidad.")
 }
+
+model Brand {
+  id        Int      @id @default(autoincrement())
+  name      String
+  imageUrl  String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
