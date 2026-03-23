@@ -33,7 +33,7 @@ export default async function WorksPreview() {
     ];
 
     return (
-        <section className="py-24 overflow-hidden">
+        <section className="pt-24 pb-4 overflow-hidden">
             <div className="section-container">
                 <div className="text-center mb-16 space-y-4">
                     <h2 className="heading-lg">{sectionData.title}</h2>

@@ -19,7 +19,7 @@ export default function BrandSlider({ brands }: BrandSliderProps) {
     const displayBrands = [...brands, ...brands, ...brands, ...brands];
 
     return (
-        <div className="py-12 bg-white border-y border-slate-50 overflow-hidden relative">
+        <div className="pt-4 pb-16 bg-white border-b border-slate-50 overflow-hidden relative">
             <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white to-transparent z-10" />
             <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white to-transparent z-10" />
             
