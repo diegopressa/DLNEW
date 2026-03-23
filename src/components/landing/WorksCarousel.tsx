@@ -46,17 +46,23 @@ export default function WorksCarousel({ works }: WorksCarouselProps) {
 
     const scroll = (direction: "left" | "right") => {
         if (scrollRef.current) {
-            const { clientWidth, scrollLeft, scrollWidth } = scrollRef.current;
+            const container = scrollRef.current;
+            const firstChild = container.firstElementChild as HTMLElement;
+            if (!firstChild) return;
+            
+            // Calculamos el ancho de un ítem más el gap (gap-6 = 24px)
+            const itemWidth = firstChild.offsetWidth + 24; 
+            const { clientWidth, scrollLeft, scrollWidth } = container;
             
             if (direction === "right") {
-                // Si estamos al final, volver al principio
-                if (scrollLeft + clientWidth >= scrollWidth - 10) {
-                    scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
+                // Si estamos cerca del final, volver al principio
+                if (scrollLeft + clientWidth >= scrollWidth - 20) {
+                    container.scrollTo({ left: 0, behavior: "smooth" });
                 } else {
-                    scrollRef.current.scrollBy({ left: clientWidth, behavior: "smooth" });
+                    container.scrollBy({ left: itemWidth, behavior: "smooth" });
                 }
             } else {
-                scrollRef.current.scrollBy({ left: -clientWidth, behavior: "smooth" });
+                container.scrollBy({ left: -itemWidth, behavior: "smooth" });
             }
         }
     };
