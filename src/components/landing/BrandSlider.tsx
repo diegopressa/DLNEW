@@ -23,7 +23,7 @@ export default function BrandSlider({ brands }: BrandSliderProps) {
             <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white to-transparent z-10" />
             <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white to-transparent z-10" />
             
-            <div className="flex animate-marquee whitespace-nowrap gap-24 items-center">
+            <div className="flex animate-marquee whitespace-nowrap gap-12 items-center">
                 {displayBrands.map((brand, index) => (
                     <div 
                         key={`${brand.id}-${index}`} 
