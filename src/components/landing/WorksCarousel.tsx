@@ -120,7 +120,7 @@ export default function WorksCarousel({ works }: WorksCarouselProps) {
                         </div>
                         <div className="px-2">
                             <h4 className="font-bold text-slate-900 text-lg leading-tight">{work.title}</h4>
-                            <p className="text-xs text-slate-400 uppercase tracking-[0.2em] mt-1 font-semibold">{work.category}</p>
+                            <p className="text-sm text-slate-500 mt-1 leading-relaxed">{work.category}</p>
                         </div>
                     </div>
                 ))}
