@@ -35,7 +35,7 @@ export default async function Categories() {
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                     {categories.map((cat: any, index: number) => {
                         const slug = cat.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
                         return (
@@ -51,7 +51,7 @@ export default async function Categories() {
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                                 <div className="absolute bottom-6 left-6">
-                                    <h3 className="text-xl font-bold text-white mb-2">{cat.name}</h3>
+                                    <h3 className="text-lg lg:text-xl font-bold text-white mb-2">{cat.name}</h3>
                                     <div className="flex items-center gap-2 text-sm text-primary font-semibold opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
                                         Ver opciones <ArrowRight size={14} />
                                     </div>
