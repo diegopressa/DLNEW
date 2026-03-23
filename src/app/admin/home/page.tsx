@@ -736,10 +736,10 @@ export default function HomeEditor() {
                     {[
                         { id: 'hero', label: 'Hero', icon: Sparkles, color: 'text-blue-600', bg: 'bg-blue-50' },
                         { id: 'industries', label: 'Industrias', icon: Factory, color: 'text-orange-600', bg: 'bg-orange-50' },
-                        { id: 'brands', label: 'Marcas', icon: ImageIcon, color: 'text-cyan-600', bg: 'bg-cyan-50' },
                         { id: 'solutions', label: 'Soluciones', icon: Target, color: 'text-purple-600', bg: 'bg-purple-50' },
                         { id: 'categories', label: 'Categorías', icon: ImageIcon, color: 'text-blue-600', bg: 'bg-blue-50' },
                         { id: 'projects', label: 'Trabajos', icon: ImageIcon, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+                        { id: 'brands', label: 'Marcas', icon: ImageIcon, color: 'text-cyan-600', bg: 'bg-cyan-50' },
                         { id: 'whyus', label: 'Beneficios', icon: Sparkles, color: 'text-green-600', bg: 'bg-green-50' },
                         { id: 'process', label: 'Proceso', icon: Save, color: 'text-blue-600', bg: 'bg-blue-50' },
                         { id: 'cta', label: 'CTA', icon: Target, color: 'text-purple-600', bg: 'bg-purple-50' },
@@ -1085,106 +1085,6 @@ export default function HomeEditor() {
                 </div>
             </section>
 
-            {/* Brands Section (Logos Slider) */}
-            <section id="brands" className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-8 scroll-mt-40">
-                <div className="flex items-center justify-between pb-4 border-b border-slate-50">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-cyan-50 text-cyan-600 p-2 rounded-lg"><ImageIcon size={20} /></div>
-                        <h2 className="text-xl font-bold text-slate-900">Sección: Marcas (Logos)</h2>
-                    </div>
-                    <div className="flex gap-2">
-                        <button 
-                            onClick={handleSaveBrandsOrder}
-                            disabled={saving}
-                            className="bg-slate-50 text-slate-600 border border-slate-200 px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-100 transition-all active:scale-95 disabled:opacity-50"
-                        >
-                            <Save size={18} />
-                            Guardar Orden
-                        </button>
-                        <button 
-                            onClick={handleAddBrand}
-                            disabled={saving}
-                            className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-md active:scale-95 disabled:opacity-50"
-                        >
-                            <Plus size={18} />
-                            Nueva Marca
-                        </button>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {brands.map((brand, index) => (
-                        <div key={brand.id} className="relative bg-slate-50 p-6 rounded-3xl border border-slate-100 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-500/5 transition-all group flex flex-col gap-4">
-                            <button 
-                                onClick={() => handleDeleteBrand(brand.id)}
-                                className="absolute top-4 right-4 bg-white shadow-lg p-2 rounded-xl text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50 hover:scale-110 active:scale-95 z-20"
-                            >
-                                <Trash2 size={16} />
-                            </button>
-
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Imagen del Logo</label>
-                                    <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-white border border-slate-200 group-hover:border-blue-300 transition-all">
-                                        <img 
-                                            src={brand.previewUrl || brand.imageUrl} 
-                                            alt={brand.name} 
-                                            className="w-full h-full object-contain p-4"
-                                        />
-                                        <label className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 hover:opacity-100 transition-all cursor-pointer backdrop-blur-[2px]">
-                                            <ImageIcon className="text-white mb-2" size={24} />
-                                            <span className="text-white text-xs font-bold">Cambiar Logo</span>
-                                            <input 
-                                                type="file" 
-                                                className="hidden" 
-                                                accept="image/*"
-                                                onChange={(e) => {
-                                                    const file = e.target.files?.[0];
-                                                    if (file) handleBrandImageUpload(index, file);
-                                                    if (e.target) e.target.value = "";
-                                                }}
-                                            />
-                                        </label>
-                                    </div>
-                                    <p className="text-[10px] text-slate-400 text-center italic mt-1">Preferiblemente PNG con fondo transparente</p>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre de la Empresa</label>
-                                    <input 
-                                        type="text"
-                                        className="w-full text-sm font-bold text-slate-900 bg-white border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 outline-none transition-all placeholder:font-normal placeholder:text-slate-300"
-                                        placeholder="Nombre de la marca..."
-                                        value={brand.name}
-                                        onChange={(e) => {
-                                            const newName = e.target.value;
-                                            setBrands(prev => prev.map((b, i) => i === index ? { ...b, name: newName } : b));
-                                        }}
-                                    />
-                                </div>
-                            </div>
-
-                            <button 
-                                onClick={() => handleSaveBrand(brand.id, index)}
-                                disabled={saving}
-                                className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition-all active:scale-95 shadow-md shadow-slate-200 mt-2 disabled:opacity-50"
-                            >
-                                <Save size={18} />
-                                {saving ? "Guardando..." : "Guardar Cambios"}
-                            </button>
-                        </div>
-                    ))}
-
-                    {brands.length === 0 && (
-                        <div className="col-span-full py-20 border-2 border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center text-slate-400 bg-slate-50/50">
-                            <ImageIcon size={48} className="mb-4 opacity-20" />
-                            <p className="text-lg font-bold">No hay marcas cargadas</p>
-                            <p className="text-sm">Agregá los logos de las empresas con las que trabajás.</p>
-                        </div>
-                    )}
-                </div>
-            </section>
-
             {/* Solutions Section Editor */}
             <section id="solutions" className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-8 scroll-mt-40">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-50">
@@ -1485,6 +1385,106 @@ export default function HomeEditor() {
                     {projects.length > 4 && (
                         <div className="w-20 h-20 rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center text-slate-400 font-bold text-xs">
                             +{projects.length - 4} más
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            {/* Brands Section (Logos Slider) */}
+            <section id="brands" className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-8 scroll-mt-40">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-50">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-cyan-50 text-cyan-600 p-2 rounded-lg"><ImageIcon size={20} /></div>
+                        <h2 className="text-xl font-bold text-slate-900">Sección: Marcas (Logos)</h2>
+                    </div>
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={handleSaveBrandsOrder}
+                            disabled={saving}
+                            className="bg-slate-50 text-slate-600 border border-slate-200 px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-100 transition-all active:scale-95 disabled:opacity-50"
+                        >
+                            <Save size={18} />
+                            Guardar Orden
+                        </button>
+                        <button 
+                            onClick={handleAddBrand}
+                            disabled={saving}
+                            className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-md active:scale-95 disabled:opacity-50"
+                        >
+                            <Plus size={18} />
+                            Nueva Marca
+                        </button>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {brands.map((brand, index) => (
+                        <div key={brand.id} className="relative bg-slate-50 p-6 rounded-3xl border border-slate-100 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-500/5 transition-all group flex flex-col gap-4">
+                            <button 
+                                onClick={() => handleDeleteBrand(brand.id)}
+                                className="absolute top-4 right-4 bg-white shadow-lg p-2 rounded-xl text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50 hover:scale-110 active:scale-95 z-20"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Imagen del Logo</label>
+                                    <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-white border border-slate-200 group-hover:border-blue-300 transition-all">
+                                        <img 
+                                            src={brand.previewUrl || brand.imageUrl} 
+                                            alt={brand.name} 
+                                            className="w-full h-full object-contain p-4"
+                                        />
+                                        <label className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 hover:opacity-100 transition-all cursor-pointer backdrop-blur-[2px]">
+                                            <ImageIcon className="text-white mb-2" size={24} />
+                                            <span className="text-white text-xs font-bold">Cambiar Logo</span>
+                                            <input 
+                                                type="file" 
+                                                className="hidden" 
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) handleBrandImageUpload(index, file);
+                                                    if (e.target) e.target.value = "";
+                                                }}
+                                            />
+                                        </label>
+                                    </div>
+                                    <p className="text-[10px] text-slate-400 text-center italic mt-1">Preferiblemente PNG con fondo transparente</p>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre de la Empresa</label>
+                                    <input 
+                                        type="text"
+                                        className="w-full text-sm font-bold text-slate-900 bg-white border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 outline-none transition-all placeholder:font-normal placeholder:text-slate-300"
+                                        placeholder="Nombre de la marca..."
+                                        value={brand.name}
+                                        onChange={(e) => {
+                                            const newName = e.target.value;
+                                            setBrands(prev => prev.map((b, i) => i === index ? { ...b, name: newName } : b));
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <button 
+                                onClick={() => handleSaveBrand(brand.id, index)}
+                                disabled={saving}
+                                className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition-all active:scale-95 shadow-md shadow-slate-200 mt-2 disabled:opacity-50"
+                            >
+                                <Save size={18} />
+                                {saving ? "Guardando..." : "Guardar Cambios"}
+                            </button>
+                        </div>
+                    ))}
+
+                    {brands.length === 0 && (
+                        <div className="col-span-full py-20 border-2 border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center text-slate-400 bg-slate-50/50">
+                            <ImageIcon size={48} className="mb-4 opacity-20" />
+                            <p className="text-lg font-bold">No hay marcas cargadas</p>
+                            <p className="text-sm">Agregá los logos de las empresas con las que trabajás.</p>
                         </div>
                     )}
                 </div>
