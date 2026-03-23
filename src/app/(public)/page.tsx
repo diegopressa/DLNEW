@@ -22,10 +22,10 @@ export default async function HomePage() {
         <>
             <Hero />
             <Industries />
-            <BrandSlider brands={brands} />
             <Solutions />
             <Categories />
             <WorksPreview />
+            <BrandSlider brands={brands} />
             <WhyUs />
             <Process />
             <CTASection />
