@@ -5,9 +5,11 @@ import { ZoomIn, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ProductGalleryProps {
     images: string[];
+    hasScreenPrint?: boolean;
+    hasEmbroidery?: boolean;
 }
 
-export default function ProductGallery({ images }: ProductGalleryProps) {
+export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery }: ProductGalleryProps) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [lightboxOpen, setLightboxOpen] = useState(false);
 
@@ -37,17 +39,46 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                     <>
                         <button
                             onClick={prev}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm shadow-lg p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:scale-110 border border-slate-100"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm shadow-lg p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:scale-110 border border-slate-100 z-10"
                         >
                             <ChevronLeft className="w-5 h-5 text-slate-700" />
                         </button>
                         <button
                             onClick={next}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm shadow-lg p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:scale-110 border border-slate-100"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm shadow-lg p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:scale-110 border border-slate-100 z-10"
                         >
                             <ChevronRight className="w-5 h-5 text-slate-700" />
                         </button>
                     </>
+                )}
+
+                {/* Customization Badges Overlay */}
+                {(hasScreenPrint || hasEmbroidery) && (
+                    <div className="absolute top-6 right-6 z-20 animate-in fade-in slide-in-from-right-4 duration-500">
+                        <div className="bg-white/95 backdrop-blur-sm p-4 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 flex items-center gap-4">
+                            <div className="flex flex-col gap-2">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
+                                    Personalización
+                                </span>
+                                <div className="flex flex-col gap-2">
+                                    {hasScreenPrint && (
+                                        <div className="flex items-center gap-2 bg-emerald-500 text-white px-3 py-1.5 rounded-full shadow-sm shadow-emerald-200">
+                                            <span className="text-xs">🎨</span>
+                                            <span className="text-[10px] font-black uppercase tracking-wider">Estampado</span>
+                                        </div>
+                                    )}
+                                    {hasEmbroidery && (
+                                        <div className="flex items-center gap-2 bg-violet-500 text-white px-3 py-1.5 rounded-full shadow-sm shadow-violet-200">
+                                            <span className="text-xs">🧵</span>
+                                            <span className="text-[10px] font-black uppercase tracking-wider">Bordado</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            {/* Vertical dashed line on the right */}
+                            <div className="h-12 border-r-2 border-dashed border-slate-200" />
+                        </div>
+                    </div>
                 )}
             </div>
 

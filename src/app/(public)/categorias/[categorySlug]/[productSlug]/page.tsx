@@ -70,32 +70,11 @@ export default async function ProductDetailPage({ params }: { params: { category
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-20 items-start">
                     {/* Left: Gallery */}
                     <div className="lg:sticky lg:top-24">
-                        {/* Customization badges */}
-                        {(product.hasScreenPrint || product.hasEmbroidery) && (
-                            <div className="flex items-start gap-4 mb-4">
-                                {/* Badges column */}
-                                <div className="flex flex-col gap-1.5 items-start">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">
-                                        Personalización
-                                    </p>
-                                    {product.hasScreenPrint && (
-                                        <span className="inline-flex items-center gap-1.5 bg-emerald-500 text-white text-[11px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-md shadow-emerald-200 select-none">
-                                            🎨 Estampado
-                                        </span>
-                                    )}
-                                    {product.hasEmbroidery && (
-                                        <span className="inline-flex items-center gap-1.5 bg-violet-500 text-white text-[11px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-md shadow-violet-200 select-none">
-                                            🧵 Bordado
-                                        </span>
-                                    )}
-                                </div>
-                                {/* Dashed connector line */}
-                                <div className="flex flex-col items-center self-stretch mt-7 ml-1">
-                                    <div className="flex-1 border-l-2 border-dashed border-slate-300" style={{ minHeight: "2.5rem" }} />
-                                </div>
-                            </div>
-                        )}
-                        <ProductGallery images={product.images.map((img: any) => img.url)} />
+                        <ProductGallery 
+                            images={product.images.map((img: any) => img.url)} 
+                            hasScreenPrint={product.hasScreenPrint}
+                            hasEmbroidery={product.hasEmbroidery}
+                        />
                     </div>
 
                     {/* Right: Product Info */}
