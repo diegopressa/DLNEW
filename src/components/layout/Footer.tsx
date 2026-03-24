@@ -47,6 +47,7 @@ export default function Footer({ settings }: { settings: any }) {
                             <li><Link href="/trabajos" className="hover:text-white transition-colors">Galería de Trabajos</Link></li>
                             <li><Link href="/nosotros" className="hover:text-white transition-colors">Nosotros</Link></li>
                             <li><Link href="/contacto" className="hover:text-white transition-colors">Contacto</Link></li>
+                            <li><Link href="/politicas-de-privacidad" className="hover:text-white transition-colors">Políticas de Privacidad</Link></li>
                         </ul>
                     </div>
 
@@ -84,7 +85,7 @@ export default function Footer({ settings }: { settings: any }) {
                 <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
                     <p>© {year} DL Diseño & Estampado. Todos los derechos reservados.</p>
                     <div className="flex gap-6">
-                        <Link href="#" className="hover:text-white">Políticas de Privacidad</Link>
+                        <Link href="/politicas-de-privacidad" className="hover:text-white">Políticas de Privacidad</Link>
                         <Link href="#" className="hover:text-white">Términos y Condiciones</Link>
                     </div>
                 </div>

@@ -247,3 +247,11 @@ model Brand {
   order     Int      @default(0)
   createdAt DateTime @default(now())
 }
+
+model PrivacyPolicy {
+  id        Int      @id @default(1)
+  title     String   @default("Políticas de Privacidad")
+  content   String   @default("Contenido de las políticas de privacidad...")
+  updatedAt DateTime @updatedAt
+}
+
