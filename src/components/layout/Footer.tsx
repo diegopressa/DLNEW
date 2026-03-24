@@ -83,7 +83,7 @@ export default function Footer({ settings }: { settings: any }) {
                 </div>
 
                 <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
-                    <p>© {year} DL Diseño & Estampado. Todos los derechos reservados.</p>
+                    <p>© {year} DL Diseño & Estampado - Diego Horacio Presa Berrondo. Todos los derechos reservados.</p>
                     <div className="flex gap-6">
                         <Link href="/politicas-de-privacidad" className="hover:text-white">Políticas de Privacidad</Link>
                         <Link href="#" className="hover:text-white">Términos y Condiciones</Link>
