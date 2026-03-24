@@ -138,8 +138,10 @@ model Product {
   images      ProductImage[]
   features    ProductFeature[]
   colors      ProductColor[]  @relation("ProductColorsNew")
-  order       Int            @default(0)
-  createdAt   DateTime       @default(now())
+  order          Int            @default(0)
+  hasEmbroidery  Boolean        @default(false)
+  hasScreenPrint Boolean        @default(false)
+  createdAt      DateTime       @default(now())
 }
 
 model ProductImage {
