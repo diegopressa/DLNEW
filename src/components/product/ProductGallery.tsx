@@ -54,7 +54,7 @@ export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery }
 
                 {/* Customization Badges Overlay */}
                 {(hasScreenPrint || hasEmbroidery) && (
-                    <div className="absolute top-20 right-4 sm:right-6 z-20 animate-in fade-in slide-in-from-right-4 duration-500 origin-top-right scale-90 sm:scale-100">
+                    <div className="absolute top-20 right-4 sm:right-6 z-20 animate-in fade-in slide-in-from-right-4 duration-500 origin-top-right scale-[0.65] sm:scale-100">
                         <div className="flex items-center gap-4">
                             <div className="flex flex-col gap-2 drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]">
                                 <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest leading-none mb-1">
