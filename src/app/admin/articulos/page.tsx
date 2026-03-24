@@ -154,6 +154,8 @@ const emptyForm = {
     images: [""],
     features: [""],
     colorIds: [] as number[],
+    hasEmbroidery: false,
+    hasScreenPrint: false,
 };
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
@@ -260,6 +262,8 @@ export default function ProductsEditor() {
             features: prod.features.map((f: any) => f.text),
             // colors is now ProductColor[] with { color: Color }, extract the colorIds
             colorIds: prod.colors.map((c: any) => c.colorId ?? c.color?.id).filter(Boolean),
+            hasEmbroidery: prod.hasEmbroidery ?? false,
+            hasScreenPrint: prod.hasScreenPrint ?? false,
         });
         setEditId(prod.id);
         setIsEditing(true);
@@ -454,6 +458,49 @@ export default function ProductsEditor() {
                                     onChange={ids => setNewProd({ ...newProd, colorIds: ids })}
                                 />
                             )}
+                        </div>
+                    </div>
+
+                    {/* Personalización */}
+                    <div className="space-y-3">
+                        <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">Personalización disponible</label>
+                        <p className="text-xs text-slate-400">Activá las técnicas de personalización que aplican a este producto. Se mostrarán como etiquetas en la página del producto.</p>
+                        <div className="flex flex-wrap gap-3">
+                            {/* Estampado toggle */}
+                            <button
+                                type="button"
+                                onClick={() => setNewProd({ ...newProd, hasScreenPrint: !newProd.hasScreenPrint })}
+                                className={`flex items-center gap-2.5 px-5 py-3 rounded-xl border-2 font-bold text-sm transition-all ${
+                                    newProd.hasScreenPrint
+                                        ? "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-200"
+                                        : "bg-slate-50 border-slate-200 text-slate-400 hover:border-emerald-300"
+                                }`}
+                            >
+                                <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
+                                    newProd.hasScreenPrint ? "border-white bg-white" : "border-slate-300"
+                                }`}>
+                                    {newProd.hasScreenPrint && <span className="w-2 h-2 rounded-full bg-emerald-500 block" />}
+                                </span>
+                                🎨 Estampado
+                            </button>
+
+                            {/* Bordado toggle */}
+                            <button
+                                type="button"
+                                onClick={() => setNewProd({ ...newProd, hasEmbroidery: !newProd.hasEmbroidery })}
+                                className={`flex items-center gap-2.5 px-5 py-3 rounded-xl border-2 font-bold text-sm transition-all ${
+                                    newProd.hasEmbroidery
+                                        ? "bg-violet-500 border-violet-500 text-white shadow-lg shadow-violet-200"
+                                        : "bg-slate-50 border-slate-200 text-slate-400 hover:border-violet-300"
+                                }`}
+                            >
+                                <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
+                                    newProd.hasEmbroidery ? "border-white bg-white" : "border-slate-300"
+                                }`}>
+                                    {newProd.hasEmbroidery && <span className="w-2 h-2 rounded-full bg-violet-500 block" />}
+                                </span>
+                                🧵 Bordado
+                            </button>
                         </div>
                     </div>
 
