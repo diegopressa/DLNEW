@@ -126,3 +126,28 @@ export async function getProductBySlug(slug: string) {
         return null;
     }
 }
+
+export async function searchProducts(query: string) {
+    try {
+        if (!query || query.trim() === "") return [];
+
+        return await (prisma as any).product.findMany({
+            where: {
+                OR: [
+                    { name: { contains: query, mode: "insensitive" } },
+                    { description: { contains: query, mode: "insensitive" } }
+                ]
+            },
+            include: {
+                category: true,
+                images: { orderBy: { order: "asc" } },
+                features: true,
+                colors: { include: { color: true } }
+            },
+            take: 10
+        });
+    } catch (error) {
+        console.error("Error searchProducts:", error);
+        return [];
+    }
+}
