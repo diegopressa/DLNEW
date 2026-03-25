@@ -22,12 +22,11 @@ export default async function ProductosPage() {
     })) : [];
 
     return (
-        <div className="pt-40 pb-24 bg-slate-50 min-h-screen">
+        <div className="pt-24 pb-24 bg-slate-50 min-h-screen">
             <div className="section-container">
-                <header className="mb-20 text-center flex flex-col items-center">
-                    <span className="text-[12px] font-black uppercase tracking-widest text-primary mb-4 bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10">Nuestro Catálogo</span>
-                    <h1 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter mb-6">{headers.title}</h1>
-                    <p className="text-lead text-slate-500 max-w-2xl mb-12">
+                <header className="mb-12 text-center flex flex-col items-center">
+                    <h1 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter mb-4">{headers.title}</h1>
+                    <p className="text-lead text-slate-500 max-w-2xl mb-8">
                         {headers.subtitle}
                     </p>
 

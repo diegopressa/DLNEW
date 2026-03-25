@@ -35,7 +35,7 @@ export async function addProduct(data: any) {
                 ...productData,
                 slug: productData.slug.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-'),
                 categoryId: parseInt(categoryId) || 0,
-                order: (last?.order || 0) + 1,
+                order: productData.order !== undefined ? parseInt(productData.order) : (last?.order || 0) + 1,
                 images: { create: cleanImages.map((url: string, index: number) => ({ url, order: index })) },
                 features: { create: cleanFeatures.map((text: string) => ({ text })) },
                 colors: { create: cleanColorIds.map((colorId) => ({ colorId })) }
@@ -144,6 +144,7 @@ export async function searchProducts(query: string) {
                 features: true,
                 colors: { include: { color: true } }
             },
+            orderBy: { order: "asc" },
             take: 10
         });
     } catch (error) {

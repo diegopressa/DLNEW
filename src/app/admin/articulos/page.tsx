@@ -156,6 +156,7 @@ const emptyForm = {
     colorIds: [] as number[],
     hasEmbroidery: false,
     hasScreenPrint: false,
+    order: 0,
 };
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
@@ -264,6 +265,7 @@ export default function ProductsEditor() {
             colorIds: prod.colors.map((c: any) => c.colorId ?? c.color?.id).filter(Boolean),
             hasEmbroidery: prod.hasEmbroidery ?? false,
             hasScreenPrint: prod.hasScreenPrint ?? false,
+            order: prod.order ?? 0,
         });
         setEditId(prod.id);
         setIsEditing(true);
@@ -346,6 +348,17 @@ export default function ProductsEditor() {
                                 className="bg-slate-50 p-3 rounded-xl w-full border border-slate-100"
                                 value={newProd.highlight}
                                 onChange={e => setNewProd({ ...newProd, highlight: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700">Orden de visualización</label>
+                            <input
+                                type="number"
+                                placeholder="0"
+                                className="bg-slate-50 p-3 rounded-xl w-full border border-slate-100"
+                                value={newProd.order}
+                                onChange={e => setNewProd({ ...newProd, order: parseInt(e.target.value) || 0 })}
+                                required
                             />
                         </div>
                     </div>

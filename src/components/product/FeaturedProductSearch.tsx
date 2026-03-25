@@ -43,15 +43,15 @@ export default function FeaturedProductSearch() {
         <div className="relative w-full max-w-2xl">
             <form onSubmit={handleSearch} className="relative group">
                 <div 
-                    className="absolute inset-y-0 left-6 flex items-center cursor-pointer"
+                    className="absolute inset-y-0 left-4 flex items-center cursor-pointer"
                     onClick={() => query.trim() && router.push(`/buscar?q=${encodeURIComponent(query)}`)}
                 >
-                    <Search className={`w-6 h-6 transition-colors ${query ? "text-primary hover:scale-110" : "text-slate-400"}`} />
+                    <Search className={`w-5 h-5 transition-colors ${query ? "text-primary hover:scale-110" : "text-slate-400"}`} />
                 </div>
                 <input
                     type="text"
-                    placeholder="¿Qué prenda estás buscando? (Ej: Remeras, Buceos, Gorros...)"
-                    className="w-full bg-white border-2 border-slate-100 rounded-[2rem] py-6 pl-16 pr-14 text-lg font-medium text-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all shadow-xl shadow-slate-200/50 placeholder:text-slate-400 group-hover:border-slate-200"
+                    placeholder="¿Qué prenda estás buscando?"
+                    className="w-full bg-white border-2 border-slate-100 rounded-full py-3.5 pl-12 pr-10 text-base font-medium text-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all shadow-xl shadow-slate-200/50 placeholder:text-slate-400 group-hover:border-slate-200"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                 />
@@ -59,9 +59,9 @@ export default function FeaturedProductSearch() {
                     <button 
                         type="button"
                         onClick={() => { setQuery(""); setIsOpen(false); }}
-                        className="absolute inset-y-0 right-6 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                        className="absolute inset-y-0 right-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
                     >
-                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <X className="w-6 h-6" />}
+                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-5 h-5" />}
                     </button>
                 )}
             </form>
@@ -96,9 +96,6 @@ export default function FeaturedProductSearch() {
                                             <h4 className="text-lg font-black text-slate-900 truncate group-hover:text-primary transition-colors mb-1">
                                                 {product.name}
                                             </h4>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg uppercase tracking-wider">{product.category?.name}</span>
-                                            </div>
                                         </div>
                                         <div className="flex items-center">
                                             <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
