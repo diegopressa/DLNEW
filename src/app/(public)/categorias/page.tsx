@@ -1,7 +1,8 @@
-import { MessageCircle, ArrowRight } from "lucide-react";
+import { MessageCircle, ArrowRight, Search } from "lucide-react";
 import Link from "next/link";
 import { getCategories, getCategoriasHeader } from "@/actions/categoryActions";
 import { getGlobalSettings } from "@/actions/settingsActions";
+import FeaturedProductSearch from "@/components/product/FeaturedProductSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -21,14 +22,25 @@ export default async function ProductosPage() {
     })) : [];
 
     return (
-        <div className="pt-32 pb-24">
+        <div className="pt-40 pb-24 bg-slate-50 min-h-screen">
             <div className="section-container">
-                <header className="mb-16">
-                    <h1 className="heading-lg mb-4">{headers.title}</h1>
-                    <p className="text-lead">
+                <header className="mb-20 text-center flex flex-col items-center">
+                    <span className="text-[12px] font-black uppercase tracking-widest text-primary mb-4 bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10">Nuestro Catálogo</span>
+                    <h1 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter mb-6">{headers.title}</h1>
+                    <p className="text-lead text-slate-500 max-w-2xl mb-12">
                         {headers.subtitle}
                     </p>
+
+                    <FeaturedProductSearch />
                 </header>
+
+                <div className="flex items-center justify-between mb-10 px-4">
+                    <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+                        Categorías Principales
+                        <div className="h-[2px] w-12 bg-primary rounded-full" />
+                    </h2>
+                    <span className="text-sm font-bold text-slate-400">{categories.length} categorías</span>
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                     {categories.map((cat) => (

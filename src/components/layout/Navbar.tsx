@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { MessageCircle, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ProductSearch from "@/components/product/ProductSearch";
 
 const Navbar = ({ whatsapp = "59899000000" }: { whatsapp?: string }) => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -55,6 +56,12 @@ const Navbar = ({ whatsapp = "59899000000" }: { whatsapp?: string }) => {
                                 {link.name}
                             </Link>
                         ))}
+                        
+                        {/* Desktop Search */}
+                        <div className="border-l border-slate-200 pl-6 flex items-center">
+                            <ProductSearch />
+                        </div>
+
                         <Link
                             href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0`}
                             target="_blank"
@@ -65,13 +72,16 @@ const Navbar = ({ whatsapp = "59899000000" }: { whatsapp?: string }) => {
                         </Link>
                     </div>
 
-                    {/* Mobile Toggle */}
-                    <button
-                        className="md:hidden text-slate-900"
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    >
-                        {isMobileMenuOpen ? <X /> : <Menu />}
-                    </button>
+                    {/* Mobile Search Icon & Menu Toggle */}
+                    <div className="md:hidden flex items-center gap-4">
+                        <ProductSearch />
+                        <button
+                            className="text-slate-900"
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        >
+                            {isMobileMenuOpen ? <X /> : <Menu />}
+                        </button>
+                    </div>
                 </div>
             </div>
 
