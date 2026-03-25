@@ -58,9 +58,6 @@ export default async function SearchResultsPage({
                                     </div>
                                 )}
                                 
-                                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-slate-900 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-sm">
-                                    {product.category?.name}
-                                </div>
                             </div>
 
                             <div className="px-4 pb-4">

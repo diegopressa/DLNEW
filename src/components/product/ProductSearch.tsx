@@ -13,6 +13,7 @@ export default function ProductSearch() {
     const [isOpen, setIsOpen] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
 
     const handleSearch = (e: React.FormEvent) => {
@@ -66,10 +67,12 @@ export default function ProductSearch() {
                             setIsOpen(false);
                         } else {
                             setIsExpanded(true);
+                            setTimeout(() => inputRef.current?.focus(), 100);
                         }
                     }}
                 />
                 <input
+                    ref={inputRef}
                     type="text"
                     placeholder="Buscá..."
                     className={`bg-transparent outline-none text-sm text-slate-800 placeholder:text-slate-400 w-full py-2 transition-all ${isExpanded ? "opacity-100" : "opacity-0 invisible w-0"}`}
@@ -118,9 +121,6 @@ export default function ProductSearch() {
                                             <h4 className="text-sm font-black text-slate-900 truncate leading-tight group-hover:text-primary transition-colors">
                                                 {product.name}
                                             </h4>
-                                            <p className="text-[11px] text-slate-400 font-medium">
-                                                {product.category?.name}
-                                            </p>
                                         </div>
                                         <div className="flex items-center pr-1">
                                             <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-primary -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300" />

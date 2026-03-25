@@ -18,7 +18,8 @@ export async function getCategoryBySlug(slug: string) {
                     images: true,
                     colors: true,
                     features: true
-                }
+                },
+                orderBy: { order: "asc" }
             }
         }
     });
