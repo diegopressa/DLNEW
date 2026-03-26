@@ -63,13 +63,13 @@ export default async function CategoryListingPage({ params }: { params: { catego
                                     <div className="absolute top-3 right-3 z-20 flex flex-col items-end gap-1.5">
                                         {product.hasScreenPrint && (
                                             <div className="flex items-center gap-1.5 bg-[#10b981] text-white px-2 py-1 rounded-xl shadow-lg shadow-emerald-500/10 w-fit">
-                                                <span className="text-[10px]">🎨</span>
+                                                <span className="text-[7px]">🎨</span>
                                                 <span className="text-[8px] font-black uppercase tracking-wider text-white">Estampado</span>
                                             </div>
                                         )}
                                         {product.hasEmbroidery && (
                                             <div className="flex items-center gap-1.5 bg-[#8b5cf6] text-white px-2 py-1 rounded-xl shadow-lg shadow-violet-500/10 w-fit">
-                                                <span className="text-[10px]">🧵</span>
+                                                <span className="text-[7px]">🧵</span>
                                                 <span className="text-[8px] font-black uppercase tracking-wider text-white">Bordado</span>
                                             </div>
                                         )}
