@@ -71,14 +71,24 @@ export default async function SearchResultsPage({
                                 
                                 <div className="flex items-center justify-between pt-4 border-t border-slate-50">
                                     <div className="flex -space-x-2">
-                                        {product.colors.slice(0, 3).map((pc: any, i: number) => (
-                                            <div 
-                                                key={i} 
-                                                className="w-6 h-6 rounded-full border border-slate-200 shadow-sm"
-                                                style={{ backgroundColor: pc.color?.hex }}
-                                                title={pc.color?.name}
-                                            />
-                                        ))}
+                                        {product.colors.slice(0, 3).map((pc: any, i: number) => {
+                                            const color = pc.color;
+                                            if (!color) return null;
+                                            const hex = color.hex?.startsWith("#") ? color.hex : `#${color.hex}`;
+                                            return (
+                                                <div 
+                                                    key={i} 
+                                                    className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
+                                                    style={{ backgroundColor: hex }}
+                                                    title={color.name}
+                                                />
+                                            );
+                                        })}
+                                        {product.colors.length > 3 && (
+                                            <div className="w-6 h-6 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-[10px] font-extrabold text-slate-500 shadow-sm">
+                                                +{product.colors.length - 3}
+                                            </div>
+                                        )}
                                     </div>
                                     <span className="text-[10px] font-black uppercase tracking-widest text-primary">Ver detalle</span>
                                 </div>

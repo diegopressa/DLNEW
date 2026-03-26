@@ -17,7 +17,11 @@ export async function getCategoryBySlug(slug: string) {
                 where: { isActive: true },
                 include: {
                     images: true,
-                    colors: true,
+                    colors: {
+                        include: {
+                            color: true
+                        }
+                    },
                     features: true
                 },
                 orderBy: { order: "asc" }
