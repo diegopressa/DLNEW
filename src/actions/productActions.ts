@@ -152,3 +152,17 @@ export async function searchProducts(query: string) {
         return [];
     }
 }
+
+export async function updateProductOrder(id: number, order: number) {
+    try {
+        await (prisma as any).product.update({
+            where: { id },
+            data: { order: parseInt(order as any) || 0 }
+        });
+        revalidatePath("/", "layout");
+        return { success: true };
+    } catch (error) {
+        console.error("Error updating product order:", error);
+        return { success: false };
+    }
+}

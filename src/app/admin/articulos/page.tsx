@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { getProducts, addProduct, updateProduct, deleteProduct } from "@/actions/productActions";
+import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrder } from "@/actions/productActions";
 import { getCategories } from "@/actions/categoryActions";
 import { getColors } from "@/actions/colorActions";
 import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette } from "lucide-react";
@@ -158,6 +158,51 @@ const emptyForm = {
     hasScreenPrint: false,
     order: 0,
 };
+
+// ─── Inline Order Input ───────────────────────────────────────────────────
+function OrderInput({ initialOrder, productId, onUpdate }: { initialOrder: number, productId: number, onUpdate: () => void }) {
+    const [order, setOrder] = useState(initialOrder);
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        setOrder(initialOrder);
+    }, [initialOrder]);
+
+    const handleSave = async () => {
+        if (order === initialOrder) return;
+        setSaving(true);
+        const res = await updateProductOrder(productId, order);
+        if (res.success) {
+            onUpdate();
+        } else {
+            alert("Error al actualizar el orden");
+            setOrder(initialOrder);
+        }
+        setSaving(false);
+    };
+
+    return (
+        <div className="flex items-center gap-3 bg-slate-50/50 p-2 rounded-xl border border-slate-100/50 hover:border-slate-200 transition-all group/order">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Orden de visualización</span>
+            <div className="relative flex items-center">
+                <input
+                    type="number"
+                    value={order}
+                    onChange={e => setOrder(parseInt(e.target.value) || 0)}
+                    onBlur={handleSave}
+                    onKeyDown={e => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()}
+                    className={`w-20 bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm font-bold text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-50 shadow-sm transition-all ${saving ? 'opacity-50' : ''}`}
+                    disabled={saving}
+                />
+                {saving && (
+                    <div className="absolute right-2">
+                        <Loader2 size={14} className="animate-spin text-blue-500" />
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function ProductsEditor() {
@@ -565,15 +610,23 @@ export default function ProductsEditor() {
                             <h3 className="font-bold text-slate-900 text-lg mb-1">{prod.name}</h3>
                             <p className="text-sm text-slate-500 line-clamp-2 mb-4">{prod.description}</p>
 
-                            <div className="mt-auto flex justify-between items-center bg-slate-50 -mx-5 -mb-5 p-4 border-t border-slate-100">
-                                <span className="text-[10px] font-mono text-slate-400 bg-white px-2 py-1 rounded border border-slate-100">/{prod.slug}</span>
-                                <div className="flex gap-2">
-                                    <button onClick={() => handleEdit(prod)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Editar">
-                                        <Pencil size={18} />
-                                    </button>
-                                    <button onClick={() => handleDelete(prod.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Eliminar">
-                                        <Trash2 size={18} />
-                                    </button>
+                            <div className="mt-auto space-y-4">
+                                <OrderInput 
+                                    initialOrder={prod.order} 
+                                    productId={prod.id} 
+                                    onUpdate={loadData} 
+                                />
+
+                                <div className="flex justify-between items-center bg-slate-50 -mx-5 -mb-5 p-4 border-t border-slate-100">
+                                    <span className="text-[10px] font-mono text-slate-400 bg-white px-2 py-1 rounded border border-slate-100">/{prod.slug}</span>
+                                    <div className="flex gap-2">
+                                        <button onClick={() => handleEdit(prod)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Editar">
+                                            <Pencil size={18} />
+                                        </button>
+                                        <button onClick={() => handleDelete(prod.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Eliminar">
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
