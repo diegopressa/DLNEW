@@ -14,6 +14,7 @@ export async function getCategoryBySlug(slug: string) {
     const categories = await prisma.productCategory.findMany({
         include: {
             products: {
+                where: { isActive: true },
                 include: {
                     images: true,
                     colors: true,

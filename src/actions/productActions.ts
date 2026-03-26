@@ -22,7 +22,7 @@ export async function getProducts() {
 
 export async function addProduct(data: any) {
     try {
-        const { images, features, colorIds, categoryId, ...productData } = data;
+        const { images, features, colorIds, categoryId, isActive, ...productData } = data;
 
         const cleanImages = (images || []).filter((url: string) => url && url.trim() !== "");
         const cleanFeatures = (features || []).filter((text: string) => text && text.trim() !== "");
@@ -36,6 +36,7 @@ export async function addProduct(data: any) {
                 slug: productData.slug.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-'),
                 categoryId: parseInt(categoryId) || 0,
                 order: productData.order !== undefined ? parseInt(productData.order) : (last?.order || 0) + 1,
+                isActive: isActive !== undefined ? Boolean(isActive) : true,
                 images: { create: cleanImages.map((url: string, index: number) => ({ url, order: index })) },
                 features: { create: cleanFeatures.map((text: string) => ({ text })) },
                 colors: { create: cleanColorIds.map((colorId) => ({ colorId })) }
@@ -52,7 +53,7 @@ export async function addProduct(data: any) {
 
 export async function updateProduct(id: number, data: any) {
     try {
-        const { images, features, colorIds, categoryId, ...productData } = data;
+        const { images, features, colorIds, categoryId, isActive, ...productData } = data;
 
         const cleanImages = (images || []).filter((url: string) => url && url.trim() !== "");
         const cleanFeatures = (features || []).filter((text: string) => text && text.trim() !== "");
@@ -67,6 +68,7 @@ export async function updateProduct(id: number, data: any) {
                 data: {
                     ...productData,
                     categoryId: parseInt(categoryId) || 0,
+                    isActive: isActive !== undefined ? Boolean(isActive) : true,
                     images: { create: cleanImages.map((url: string, index: number) => ({ url, order: index })) },
                     features: { create: cleanFeatures.map((text: string) => ({ text })) },
                     colors: { create: cleanColorIds.map((colorId) => ({ colorId })) }
@@ -97,7 +99,7 @@ export async function getProductBySlug(slug: string) {
     try {
         const decodedSlug = decodeURIComponent(slug);
         const product = await (prisma as any).product.findUnique({
-            where: { slug: decodedSlug },
+            where: { slug: decodedSlug, isActive: true },
             include: {
                 category: true,
                 images: { orderBy: { order: "asc" } },
@@ -136,7 +138,8 @@ export async function searchProducts(query: string) {
                 OR: [
                     { name: { contains: query, mode: "insensitive" } },
                     { description: { contains: query, mode: "insensitive" } }
-                ]
+                ],
+                isActive: true
             },
             include: {
                 category: true,
@@ -163,6 +166,20 @@ export async function updateProductOrder(id: number, order: number) {
         return { success: true };
     } catch (error) {
         console.error("Error updating product order:", error);
+        return { success: false };
+    }
+}
+
+export async function toggleProductActive(id: number, isActive: boolean) {
+    try {
+        await (prisma as any).product.update({
+            where: { id },
+            data: { isActive }
+        });
+        revalidatePath("/", "layout");
+        return { success: true };
+    } catch (error) {
+        console.error("Error toggling product active:", error);
         return { success: false };
     }
 }
