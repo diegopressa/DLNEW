@@ -60,26 +60,19 @@ export default async function CategoryListingPage({ params }: { params: { catego
 
                                 {/* Customization Badges */}
                                 {(product.hasScreenPrint || product.hasEmbroidery) && (
-                                    <div className="absolute top-4 right-4 z-20 scale-[0.5] sm:scale-[0.6] origin-top-right">
-                                        <div className="flex flex-col items-center gap-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
-                                            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest leading-none mb-1">
-                                                Personalización
-                                            </span>
-                                            <div className="flex flex-col gap-2 w-32">
-                                                {product.hasScreenPrint && (
-                                                    <div className="flex items-center justify-center gap-2 bg-[#10b981] text-white px-3 py-2.5 rounded-2xl shadow-lg shadow-emerald-500/20 w-full">
-                                                        <span className="text-sm">🎨</span>
-                                                        <span className="text-[10px] font-black uppercase tracking-wider text-white">Estampado</span>
-                                                    </div>
-                                                )}
-                                                {product.hasEmbroidery && (
-                                                    <div className="flex items-center justify-center gap-2 bg-[#8b5cf6] text-white px-3 py-2.5 rounded-2xl shadow-lg shadow-violet-500/20 w-full">
-                                                        <span className="text-sm">🧵</span>
-                                                        <span className="text-[10px] font-black uppercase tracking-wider text-white">Bordado</span>
-                                                    </div>
-                                                )}
+                                    <div className="absolute top-3 right-3 z-20 flex flex-col items-end gap-1.5">
+                                        {product.hasScreenPrint && (
+                                            <div className="flex items-center gap-1.5 bg-[#10b981] text-white px-2 py-1 rounded-xl shadow-lg shadow-emerald-500/10 w-fit">
+                                                <span className="text-[10px]">🎨</span>
+                                                <span className="text-[8px] font-black uppercase tracking-wider text-white">Estampado</span>
                                             </div>
-                                        </div>
+                                        )}
+                                        {product.hasEmbroidery && (
+                                            <div className="flex items-center gap-1.5 bg-[#8b5cf6] text-white px-2 py-1 rounded-xl shadow-lg shadow-violet-500/10 w-fit">
+                                                <span className="text-[10px]">🧵</span>
+                                                <span className="text-[8px] font-black uppercase tracking-wider text-white">Bordado</span>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
