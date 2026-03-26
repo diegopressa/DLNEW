@@ -52,22 +52,21 @@ export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery }
                     </>
                 )}
 
-                {/* Customization Badges Overlay */}
                 {(hasScreenPrint || hasEmbroidery) && (
                     <div className="absolute top-4 right-4 sm:right-6 z-20 animate-in fade-in slide-in-from-right-4 duration-500 origin-top-right scale-[0.8] sm:scale-100">
-                        <div className="flex flex-col items-end gap-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.05)]">
+                        <div className="flex flex-col items-center gap-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.05)]">
                             <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest leading-none mb-1">
                                 Personalización
                             </span>
-                            <div className="flex flex-col gap-2 items-end">
+                            <div className="flex flex-col gap-2 w-32">
                                 {hasScreenPrint && (
-                                    <div className="flex items-center gap-2 bg-[#10b981] text-white px-4 py-2 rounded-full shadow-lg shadow-emerald-500/20 w-fit">
+                                    <div className="flex items-center justify-center gap-2 bg-[#10b981] text-white px-3 py-2.5 rounded-2xl shadow-lg shadow-emerald-500/20 w-full">
                                         <span className="text-sm">🎨</span>
                                         <span className="text-[10px] font-black uppercase tracking-wider">Estampado</span>
                                     </div>
                                 )}
                                 {hasEmbroidery && (
-                                    <div className="flex items-center gap-2 bg-[#8b5cf6] text-white px-4 py-2 rounded-full shadow-lg shadow-violet-500/20 w-fit">
+                                    <div className="flex items-center justify-center gap-2 bg-[#8b5cf6] text-white px-3 py-2.5 rounded-2xl shadow-lg shadow-violet-500/20 w-full">
                                         <span className="text-sm">🧵</span>
                                         <span className="text-[10px] font-black uppercase tracking-wider">Bordado</span>
                                     </div>

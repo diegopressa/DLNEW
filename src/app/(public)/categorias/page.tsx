@@ -41,7 +41,7 @@ export default async function ProductosPage() {
                     <span className="text-sm font-bold text-slate-400">{categories.length} categorías</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
                     {categories.map((cat) => (
                         <Link key={cat.id} href={`/categorias/lista-${cat.slug}`} className="group cursor-pointer">
                             <div className="aspect-square bg-slate-100 rounded-[2.5rem] mb-6 overflow-hidden relative shadow-sm border border-slate-100">
