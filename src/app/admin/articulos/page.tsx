@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrder } from "@/actions/productActions";
+import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrder, toggleProductActive } from "@/actions/productActions";
 import { getCategories } from "@/actions/categoryActions";
 import { getColors } from "@/actions/colorActions";
-import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff } from "lucide-react";
 
 // ─── Color Multi-Select Picker ───────────────────────────────────────────────
 function ColorPicker({
@@ -156,6 +156,7 @@ const emptyForm = {
     colorIds: [] as number[],
     hasEmbroidery: false,
     hasScreenPrint: false,
+    isActive: true,
     order: 0,
 };
 
@@ -214,6 +215,7 @@ export default function ProductsEditor() {
     const [isEditing, setIsEditing] = useState(false);
     const [editId, setEditId] = useState<number | null>(null);
     const [uploading, setUploading] = useState(false);
+    const [activeTab, setActiveTab] = useState<string>("todos");
 
     const [newProd, setNewProd] = useState(emptyForm);
 
@@ -310,6 +312,7 @@ export default function ProductsEditor() {
             colorIds: prod.colors.map((c: any) => c.colorId ?? c.color?.id).filter(Boolean),
             hasEmbroidery: prod.hasEmbroidery ?? false,
             hasScreenPrint: prod.hasScreenPrint ?? false,
+            isActive: prod.isActive ?? true,
             order: prod.order ?? 0,
         });
         setEditId(prod.id);
@@ -324,6 +327,17 @@ export default function ProductsEditor() {
             loadData();
         }
     };
+
+    const handleToggleActive = async (id: number, isActive: boolean) => {
+        await toggleProductActive(id, isActive);
+        loadData();
+    };
+
+    const filteredProducts = products.filter(p => {
+        if (activeTab === "pausados") return !p.isActive;
+        if (activeTab === "todos") return p.isActive;
+        return p.isActive && p.categoryId.toString() === activeTab;
+    });
 
     if (loading && products.length === 0) return <div className="flex justify-center p-20"><Loader2 className="animate-spin" /></div>;
 
@@ -562,22 +576,69 @@ export default function ProductsEditor() {
                         </div>
                     </div>
 
-                    <div className="pt-6 border-t border-slate-100">
+                    <div className="pt-6 border-t border-slate-100 flex items-center gap-4">
                         <button
                             type="submit"
                             disabled={uploading}
-                            className="w-full md:w-auto bg-green-600 text-white px-10 py-5 rounded-2xl font-black text-xl flex items-center justify-center gap-3 shadow-xl shadow-green-100 hover:bg-green-700 hover:-translate-y-1 transition-all disabled:opacity-50"
+                            className="bg-green-600 text-white px-10 py-5 rounded-2xl font-black text-xl flex items-center justify-center gap-3 shadow-xl shadow-green-100 hover:bg-green-700 hover:-translate-y-1 transition-all disabled:opacity-50"
                         >
                             <Save size={24} /> {isEditing ? "Actualizar Artículo" : "Guardar Producto"}
                         </button>
+                        
+                        <label className="flex items-center gap-2 cursor-pointer bg-slate-50 px-4 py-3 rounded-xl border border-slate-100">
+                            <input 
+                                type="checkbox"
+                                checked={newProd.isActive}
+                                onChange={e => setNewProd({...newProd, isActive: e.target.checked})}
+                                className="w-5 h-5 accent-blue-600"
+                            />
+                            <span className="text-sm font-bold text-slate-700">Producto Activo (Visible en la web)</span>
+                        </label>
                     </div>
                 </form>
             )}
 
+            {/* ── Tabs ── */}
+            <div className="flex flex-wrap gap-2 border-b border-slate-100 pb-1">
+                <button
+                    onClick={() => setActiveTab("todos")}
+                    className={`px-4 py-2 rounded-t-xl text-sm font-bold transition-all border-b-2 ${
+                        activeTab === "todos" 
+                        ? "text-blue-600 border-blue-600 bg-blue-50/50" 
+                        : "text-slate-400 border-transparent hover:text-slate-600"
+                    }`}
+                >
+                    Todos Activos ({products.filter(p => p.isActive).length})
+                </button>
+                {categories.map(cat => (
+                    <button
+                        key={cat.id}
+                        onClick={() => setActiveTab(cat.id.toString())}
+                        className={`px-4 py-2 rounded-t-xl text-sm font-bold transition-all border-b-2 ${
+                            activeTab === cat.id.toString() 
+                            ? "text-blue-600 border-blue-600 bg-blue-50/50" 
+                            : "text-slate-400 border-transparent hover:text-slate-600"
+                        }`}
+                    >
+                        {cat.name} ({products.filter(p => p.isActive && p.categoryId === cat.id).length})
+                    </button>
+                ))}
+                <button
+                    onClick={() => setActiveTab("pausados")}
+                    className={`ml-auto px-4 py-2 rounded-t-xl text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
+                        activeTab === "pausados" 
+                        ? "text-amber-600 border-amber-600 bg-amber-50" 
+                        : "text-slate-400 border-transparent hover:text-amber-500"
+                    }`}
+                >
+                    <Pause size={14} /> Pausados ({products.filter(p => !p.isActive).length})
+                </button>
+            </div>
+
             {/* ── Product list ─────────────────────────────────────────── */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((prod) => (
-                    <div key={prod.id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden flex flex-col group shadow-sm hover:shadow-md transition-shadow">
+                {filteredProducts.map((prod) => (
+                    <div key={prod.id} className={`bg-white rounded-2xl border border-slate-100 overflow-hidden flex flex-col group shadow-sm hover:shadow-md transition-shadow ${!prod.isActive ? 'opacity-75 grayscale-[0.5]' : ''}`}>
                         <div className="aspect-video bg-slate-50 relative overflow-hidden">
                             {prod.images?.[0]?.url ? (
                                 <img src={prod.images[0].url} className="w-full h-full object-cover" alt={prod.name} />
@@ -620,6 +681,13 @@ export default function ProductsEditor() {
                                 <div className="flex justify-between items-center bg-slate-50 -mx-5 -mb-5 p-4 border-t border-slate-100">
                                     <span className="text-[10px] font-mono text-slate-400 bg-white px-2 py-1 rounded border border-slate-100">/{prod.slug}</span>
                                     <div className="flex gap-2">
+                                        <button 
+                                            onClick={() => handleToggleActive(prod.id, !prod.isActive)} 
+                                            className={`p-2 rounded-lg transition-all ${prod.isActive ? 'text-slate-400 hover:text-amber-600 hover:bg-amber-50' : 'text-amber-600 bg-amber-50 hover:bg-amber-100'}`} 
+                                            title={prod.isActive ? "Pausar" : "Reactivar"}
+                                        >
+                                            {prod.isActive ? <Pause size={18} /> : <Play size={18} />}
+                                        </button>
                                         <button onClick={() => handleEdit(prod)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Editar">
                                             <Pencil size={18} />
                                         </button>
@@ -633,11 +701,15 @@ export default function ProductsEditor() {
                     </div>
                 ))}
 
-                {products.length === 0 && !loading && (
+                {filteredProducts.length === 0 && !loading && (
                     <div className="col-span-full py-20 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
                         <Package className="mx-auto text-slate-300 mb-4" size={48} />
-                        <h3 className="text-lg font-bold text-slate-500">No hay artículos cargados</h3>
-                        <p className="text-slate-400">Comenzá agregando tu primer producto al catálogo.</p>
+                        <h3 className="text-lg font-bold text-slate-500">
+                            {activeTab === "pausados" ? "No hay artículos pausados" : "No hay artículos en esta sección"}
+                        </h3>
+                        <p className="text-slate-400">
+                            {activeTab === "pausados" ? "Todos tus productos están visibles en la web." : "Probá seleccionando otra categoría o agregá un producto nuevo."}
+                        </p>
                     </div>
                 )}
             </div>
