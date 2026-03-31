@@ -35,6 +35,16 @@ export default function RootLayout({
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               gtag('config', 'AW-723199533');
+
+              // WhatsApp Conversion Tracking
+              document.addEventListener('click', function(e) {
+                var t = e.target.closest('a');
+                if (t && (t.href.includes('wa.me') || t.href.includes('api.whatsapp.com'))) {
+                  gtag('event', 'conversion', {
+                    'send_to': 'AW-723199533/Kt0oCP6qlZMcEK3M7NgC'
+                  });
+                }
+              }, { passive: true });
             `,
           }}
         />
