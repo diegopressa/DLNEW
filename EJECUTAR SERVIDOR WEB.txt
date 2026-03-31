@@ -9,3 +9,11 @@ SUBIR A VERCEL
 git add .
 git commit -m "cambios web"
 git push
+
+git add .
+git commit -m "fix: safe handling for buttonLink undefined"
+git push
+
+https://api.whatsapp.com/send/?phone=59897534866&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0
+https://api.whatsapp.com/send/?phone=59897534866&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0
+https://api.whatsapp.com/send/?phone=097534866&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0
