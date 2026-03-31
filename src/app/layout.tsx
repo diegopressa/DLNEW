@@ -37,20 +37,24 @@ export default function RootLayout({
               gtag('js', new Date());
               gtag('config', 'AW-723199533');
 
-              // WhatsApp Conversion Tracking
+              // WhatsApp Conversion Tracking with Delay
               document.addEventListener('click', function(e) {
                 var el = e.target.closest('a, button');
                 if (el) {
                   var url = el.href || (el.getAttribute && el.getAttribute('href')) || '';
-                  var isWhatsApp = /wa\.me|api\.whatsapp\.com/.test(url) || 
-                                  (el.tagName === 'BUTTON' && /whatsapp/i.test(el.textContent || ''));
-                  if (isWhatsApp && typeof window.gtag === 'function') {
-                    window.gtag('event', 'conversion', {
-                      'send_to': 'AW-723199533/HMUhCLKtn5McEK3M7NgC'
-                    });
+                  if (/wa\.me|api\.whatsapp\.com/.test(url)) {
+                    e.preventDefault();
+                    if (typeof window.gtag === 'function') {
+                      window.gtag('event', 'conversion', {
+                        'send_to': 'AW-723199533/HMUhCLKtn5McEK3M7NgC'
+                      });
+                    }
+                    setTimeout(function() {
+                      window.location.href = url;
+                    }, 300);
                   }
                 }
-              }, { passive: true });
+              });
             `,
           }}
         />
