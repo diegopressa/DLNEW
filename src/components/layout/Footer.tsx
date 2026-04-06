@@ -1,6 +1,6 @@
 // src/components/layout/Footer.tsx
 import Link from "next/link";
-import { Mail, MapPin, Phone, Instagram, Facebook } from "lucide-react";
+import { Mail, MapPin, Phone, Instagram, Facebook, Clock } from "lucide-react";
 
 export default function Footer({ settings }: { settings: any }) {
     const year = new Date().getFullYear();
@@ -47,6 +47,7 @@ export default function Footer({ settings }: { settings: any }) {
                             <li><Link href="/trabajos" className="hover:text-white transition-colors">Galería de Trabajos</Link></li>
                             <li><Link href="/nosotros" className="hover:text-white transition-colors">Nosotros</Link></li>
                             <li><Link href="/contacto" className="hover:text-white transition-colors">Contacto</Link></li>
+                            <li><Link href="/preguntas" className="hover:text-white transition-colors">Preguntas Frecuentes</Link></li>
                             <li><Link href="/politicas-de-privacidad" className="hover:text-white transition-colors">Políticas de Privacidad</Link></li>
                         </ul>
                     </div>
@@ -77,6 +78,10 @@ export default function Footer({ settings }: { settings: any }) {
                             <li className="flex items-center gap-3">
                                 <Mail size={18} className="text-blue-500" />
                                 <span>{contact.email}</span>
+                            </li>
+                            <li className="flex items-center gap-3">
+                                <Clock size={18} className="text-blue-500" />
+                                <span>Lun–Vie, 9 a 18 hs</span>
                             </li>
                         </ul>
                     </div>

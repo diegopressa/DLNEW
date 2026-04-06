@@ -1,5 +1,5 @@
 import React from "react";
-import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
+import { Mail, Phone, MapPin, MessageCircle, Clock } from "lucide-react";
 import { getGlobalSettings } from "@/actions/settingsActions";
 import { buildMetadata } from "@/lib/buildMetadata";
 import type { Metadata } from "next";
@@ -77,6 +77,17 @@ export default async function ContactoPage() {
                                         <p className="text-sm font-bold text-slate-800 leading-tight">{address}</p>
                                     </div>
                                 </div>
+
+                                {/* Horario */}
+                                <div className="flex items-center gap-3 md:col-span-2">
+                                    <div className="w-10 h-10 bg-slate-50 text-violet-500 rounded-xl flex items-center justify-center shrink-0 border border-slate-100">
+                                        <Clock size={18} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Horario de atención</p>
+                                        <p className="text-sm font-bold text-slate-800">Lunes a Viernes, 9 a 18 hs</p>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Map inside card */}
@@ -118,11 +129,11 @@ export default async function ContactoPage() {
                                     <div className="flex items-center justify-center gap-2">
                                         <div className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
                                         <p className="text-slate-400 font-bold text-[11px] uppercase tracking-[0.2em]">
-                                            Operativo ahora
+                                            Respondemos en menos de 2 horas
                                         </p>
                                     </div>
                                     <p className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.1em]">
-                                        Respuesta inmediata por WhatsApp
+                                        Lun–Vie de 9 a 18 hs · También respondemos fuera de horario cuando podemos
                                     </p>
                                 </div>
                             </div>

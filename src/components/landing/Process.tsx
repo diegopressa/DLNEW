@@ -7,9 +7,9 @@ export default async function Process() {
     const steps = data.length > 0 ? data : [
         { number: 1, title: "Nos escribís", description: "Contactanos por WhatsApp con tu idea inicial." },
         { number: 2, title: "Te asesoramos", description: "Elegimos juntos la prenda que mejor se adapte." },
-        { number: 3, title: "Presupuesto", description: "Te enviamos una cotización formal inmediata." },
+        { number: 3, title: "Presupuesto", description: "Recibís tu cotización en menos de 2 horas en horario laboral." },
         { number: 4, title: "Definición", description: "Confirmamos diseño, talles y personalización." },
-        { number: 5, title: "Entrega", description: "Producimos y enviamos tu pedido en 24-48h." },
+        { number: 5, title: "Entrega", description: "Producimos y enviamos. Plazo desde 48h según volumen y destino." },
     ];
 
     return (
