@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
-const faqs = [
+const DEFAULT_FAQS = [
     {
         question: "¿Cuántas unidades es el pedido mínimo?",
         answer: "El pedido mínimo es de 10 unidades por modelo. Para pedidos mayores a 50 unidades ofrecemos precio especial — consultanos."
@@ -38,8 +38,19 @@ const faqs = [
     }
 ];
 
-export default function FAQ() {
+interface FaqItem {
+    id?: number;
+    question: string;
+    answer: string;
+}
+
+interface FAQProps {
+    items?: FaqItem[];
+}
+
+export default function FAQ({ items }: FAQProps) {
     const [open, setOpen] = useState<number | null>(null);
+    const faqs = (items && items.length > 0) ? items : DEFAULT_FAQS;
 
     return (
         <section className="py-14 bg-slate-50">
@@ -78,10 +89,7 @@ export default function FAQ() {
                 <div className="text-center mt-10">
                     <p className="text-slate-500 text-sm">
                         ¿Tenés otra pregunta?{" "}
-                        <a
-                            href="/contacto"
-                            className="text-primary font-bold hover:underline"
-                        >
+                        <a href="/contacto" className="text-primary font-bold hover:underline">
                             Contactanos
                         </a>
                         {" "}y te respondemos.

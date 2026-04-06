@@ -13,7 +13,8 @@ import {
     ChevronRight,
     Package,
     Info,
-    Palette
+    Palette,
+    HelpCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logoutAction } from "@/app/login/actions";
@@ -27,6 +28,7 @@ const menuItems = [
     { name: "Categorías", href: "/admin/categorias", icon: Briefcase },
     { name: "Artículos", href: "/admin/articulos", icon: Package },
     { name: "Colores", href: "/admin/colores", icon: Palette },
+    { name: "Preguntas Frec.", href: "/admin/faq", icon: HelpCircle },
     { name: "Políticas Priv.", href: "/admin/politicas-de-privacidad", icon: FileText },
     { name: "SEO / Metadatos", href: "/admin/seo", icon: Search },
     { name: "Configuración", href: "/admin/settings", icon: Settings },
