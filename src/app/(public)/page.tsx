@@ -7,6 +7,7 @@ import Categories from "@/components/landing/Categories";
 import WorksPreview from "@/components/landing/WorksPreview";
 import WhyUs from "@/components/landing/WhyUs";
 import Process from "@/components/landing/Process";
+import FAQ from "@/components/landing/FAQ";
 import CTASection from "@/components/landing/CTASection";
 import { buildMetadata } from "@/lib/buildMetadata";
 import type { Metadata } from "next";
@@ -28,6 +29,7 @@ export default async function HomePage() {
             <BrandSlider brands={brands} />
             <WhyUs />
             <Process />
+            <FAQ />
             <CTASection />
         </>
     );

@@ -51,6 +51,10 @@ export default async function Hero() {
                             {hero.subtitle}
                         </p>
 
+                        <p className="text-sm text-slate-500 font-medium">
+                            Pedido mínimo: 10 unidades · Atendemos empresas, instituciones y eventos en todo Uruguay.
+                        </p>
+
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
                             <Link
                                 href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0`}
@@ -69,6 +73,19 @@ export default async function Hero() {
                                 <ArrowRight className="w-5 h-5" />
                             </Link>
                         </div>
+
+                        {/* Trust bar */}
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm text-slate-500">
+                            <span className="flex items-center gap-1.5 font-semibold">
+                                <span className="text-primary font-black">+500</span> empresas atendidas
+                            </span>
+                            <span className="hidden sm:block text-slate-200">|</span>
+                            <span className="flex items-center gap-1.5 font-semibold">
+                                <span className="text-primary font-black">+10</span> años de experiencia
+                            </span>
+                            <span className="hidden sm:block text-slate-200">|</span>
+                            <span className="font-semibold">Envíos a todo Uruguay</span>
+                        </div>
                     </div>
 
                     <div className="relative animate-in fade-in slide-in-from-right duration-1000">
@@ -78,11 +95,11 @@ export default async function Hero() {
                         <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 hidden sm:block">
                             <div className="flex items-center gap-4">
                                 <div className="bg-primary/10 text-primary p-2 rounded-lg font-black text-xl border border-primary/20">
-                                    24h
+                                    48h
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-slate-900">Entrega Rápida</p>
-                                    <p className="text-xs text-slate-500">En todo el país</p>
+                                    <p className="text-xs text-slate-500">Desde 48h según volumen</p>
                                 </div>
                             </div>
                         </div>

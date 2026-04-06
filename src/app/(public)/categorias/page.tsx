@@ -72,7 +72,31 @@ export default async function ProductosPage() {
                     </div>
                 )}
 
-                <div className="mt-24 bg-slate-900 rounded-[3rem] p-10 md:p-16 flex flex-col lg:flex-row items-center justify-between gap-10 text-white relative overflow-hidden shadow-2xl">
+                {/* Descuento por volumen */}
+                <div className="mt-16 bg-primary/5 border border-primary/15 rounded-2xl p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+                    <div>
+                        <h3 className="text-xl font-black text-slate-900 mb-1">Precio especial por volumen</h3>
+                        <p className="text-slate-500 text-sm">Cuantas más unidades pedís, mejor precio por prenda. Consultanos para un presupuesto según tu cantidad.</p>
+                    </div>
+                    <div className="flex gap-6 text-center shrink-0">
+                        <div>
+                            <p className="text-2xl font-black text-primary">10–50</p>
+                            <p className="text-xs text-slate-500 font-medium">unidades</p>
+                        </div>
+                        <div className="text-slate-200 self-center text-2xl font-light">/</div>
+                        <div>
+                            <p className="text-2xl font-black text-primary">51–200</p>
+                            <p className="text-xs text-slate-500 font-medium">precio mejor</p>
+                        </div>
+                        <div className="text-slate-200 self-center text-2xl font-light">/</div>
+                        <div>
+                            <p className="text-2xl font-black text-primary">+200</p>
+                            <p className="text-xs text-slate-500 font-medium">precio especial</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-10 bg-slate-900 rounded-[3rem] p-10 md:p-16 flex flex-col lg:flex-row items-center justify-between gap-10 text-white relative overflow-hidden shadow-2xl">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] rounded-full" />
                     <div className="max-w-xl relative z-10">
                         <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight text-white">¿No encontrás lo que buscás?</h2>
