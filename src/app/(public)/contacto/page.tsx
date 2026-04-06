@@ -35,7 +35,7 @@ export default async function ContactoPage() {
                                     </div>
                                     <div>
                                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Teléfono</p>
-                                        <p className="text-sm font-bold text-slate-800">{formattedPhone}</p>
+                                        <a href={`tel:${phone}`} className="text-sm font-bold text-slate-800 hover:text-blue-600 transition-colors">{formattedPhone}</a>
                                     </div>
                                 </div>
 
@@ -63,7 +63,7 @@ export default async function ContactoPage() {
                                     </div>
                                     <div>
                                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Email</p>
-                                        <p className="text-sm font-bold text-slate-800">{email}</p>
+                                        <a href={`mailto:${email}`} className="text-sm font-bold text-slate-800 hover:text-blue-600 transition-colors">{email}</a>
                                     </div>
                                 </div>
 
@@ -82,7 +82,7 @@ export default async function ContactoPage() {
                             {/* Map inside card */}
                             {(settings as any)?.mapEmbedUrl && (
                                 <div className="mt-auto text-center space-y-4">
-                                    <h3 className="text-sm font-black text-slate-900 leading-none">Visitanos en nuestro local</h3>
+                                    <h3 className="text-sm font-black text-slate-900 leading-none">Visítanos en nuestro local</h3>
                                     
                                     <div 
                                         className="w-full h-72 rounded-[2rem] overflow-hidden shadow-inner border border-slate-100"

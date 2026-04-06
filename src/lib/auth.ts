@@ -6,7 +6,7 @@ const secretKey = process.env.ADMIN_SESSION_SECRET || "default_secret_key_change
 const key = new TextEncoder().encode(secretKey);
 
 export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
-export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "";
 
 export async function encrypt(payload: any) {
     return await new SignJWT(payload)

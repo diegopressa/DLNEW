@@ -1,6 +1,6 @@
 // src/components/layout/Footer.tsx
 import Link from "next/link";
-import { MessageCircle, Mail, MapPin, Phone, Instagram, Facebook } from "lucide-react";
+import { Mail, MapPin, Phone, Instagram, Facebook } from "lucide-react";
 
 export default function Footer({ settings }: { settings: any }) {
     const year = new Date().getFullYear();
@@ -27,12 +27,12 @@ export default function Footer({ settings }: { settings: any }) {
                         </p>
                         <div className="flex gap-4">
                             {settings?.instagramUrl && (
-                                <a href={settings.instagramUrl} target="_blank" className="hover:text-white transition-colors">
+                                <a href={settings.instagramUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                                     <Instagram size={20} />
                                 </a>
                             )}
                             {settings?.facebookUrl && (
-                                <a href={settings.facebookUrl} target="_blank" className="hover:text-white transition-colors">
+                                <a href={settings.facebookUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                                     <Facebook size={20} />
                                 </a>
                             )}
@@ -43,7 +43,7 @@ export default function Footer({ settings }: { settings: any }) {
                     <div>
                         <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-sm">Empresa</h4>
                         <ul className="space-y-2 text-sm">
-                            <li><Link href="/productos" className="hover:text-white transition-colors">Productos</Link></li>
+                            <li><Link href="/categorias" className="hover:text-white transition-colors">Productos</Link></li>
                             <li><Link href="/trabajos" className="hover:text-white transition-colors">Galería de Trabajos</Link></li>
                             <li><Link href="/nosotros" className="hover:text-white transition-colors">Nosotros</Link></li>
                             <li><Link href="/contacto" className="hover:text-white transition-colors">Contacto</Link></li>
@@ -55,10 +55,10 @@ export default function Footer({ settings }: { settings: any }) {
                     <div>
                         <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-sm">Categorías</h4>
                         <ul className="space-y-2 text-sm">
-                            <li><Link href="/productos" className="hover:text-white transition-colors">Remeras y Polos</Link></li>
-                            <li><Link href="/productos" className="hover:text-white transition-colors">Buzos y Abrigo</Link></li>
-                            <li><Link href="/productos" className="hover:text-white transition-colors">Ropa de Trabajo</Link></li>
-                            <li><Link href="/productos" className="hover:text-white transition-colors">Accesorios</Link></li>
+                            <li><Link href="/categorias" className="hover:text-white transition-colors">Remeras y Polos</Link></li>
+                            <li><Link href="/categorias" className="hover:text-white transition-colors">Buzos y Abrigo</Link></li>
+                            <li><Link href="/categorias" className="hover:text-white transition-colors">Ropa de Trabajo</Link></li>
+                            <li><Link href="/categorias" className="hover:text-white transition-colors">Accesorios</Link></li>
                         </ul>
                     </div>
 
@@ -86,7 +86,6 @@ export default function Footer({ settings }: { settings: any }) {
                     <p>© {year} DL Diseño & Estampado - Diego Horacio Presa Berrondo. Todos los derechos reservados.</p>
                     <div className="flex gap-6">
                         <Link href="/politicas-de-privacidad" className="hover:text-white">Políticas de Privacidad</Link>
-                        <Link href="#" className="hover:text-white">Términos y Condiciones</Link>
                     </div>
                 </div>
             </div>

@@ -8,7 +8,7 @@ export default async function WhyUs() {
     // Fallback if DB is empty
     const reasons = data.length > 0 ? data : [
         { title: "Nos encargamos de todo", description: "Desde la selección de la prenda hasta el estampado final y la logística." },
-        { title: "Presupuesto inmediato", description: "Te damos una respuesta rápida para que no pierdas tiempo en gesitones." },
+        { title: "Presupuesto inmediato", description: "Te damos una respuesta rápida para que no pierdas tiempo en gestiones." },
         { title: "Entrega rápida", description: "Cumplimos con plazos de 24 a 48 horas en pedidos seleccionados." },
         { title: "Experiencia con empresas", description: "Entendemos las necesidades corporativas y los estándares de calidad." },
         { title: "Proceso simple y ágil", description: "Menos burocracia, más soluciones directas para tu equipo." }
