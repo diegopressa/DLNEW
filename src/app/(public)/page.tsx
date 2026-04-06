@@ -2,6 +2,7 @@ import Hero from "@/components/landing/Hero";
 import Industries from "@/components/landing/Industries";
 import BrandSlider from "@/components/landing/BrandSlider";
 import { getBrands } from "@/actions/homeActions";
+import { getFaqItems } from "@/actions/faqActions";
 import Solutions from "@/components/landing/Solutions";
 import Categories from "@/components/landing/Categories";
 import WorksPreview from "@/components/landing/WorksPreview";
@@ -18,6 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
     const brands = await getBrands();
+    const faqItems = await getFaqItems();
 
     return (
         <>
@@ -29,7 +31,7 @@ export default async function HomePage() {
             <BrandSlider brands={brands} />
             <WhyUs />
             <Process />
-            <FAQ />
+            <FAQ items={faqItems} />
             <CTASection />
         </>
     );
