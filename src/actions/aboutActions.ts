@@ -22,17 +22,29 @@ export async function getAboutUs() {
     }
 }
 
-export async function updateAboutUs(data: { title: string; content: string; imageUrl?: string }) {
+export async function updateAboutUs(data: { title: string; content: string; imageUrl?: string; stat1Value?: string; stat1Label?: string; stat2Value?: string; stat2Label?: string }) {
     try {
         const about = await prisma.aboutUs.findFirst();
         if (about) {
             await prisma.aboutUs.update({
                 where: { id: about.id },
-                data
+                data: {
+                    title: data.title,
+                    content: data.content,
+                    imageUrl: data.imageUrl,
+                    ...(data.stat1Value !== undefined && { stat1Value: data.stat1Value }),
+                    ...(data.stat1Label !== undefined && { stat1Label: data.stat1Label }),
+                    ...(data.stat2Value !== undefined && { stat2Value: data.stat2Value }),
+                    ...(data.stat2Label !== undefined && { stat2Label: data.stat2Label }),
+                }
             });
         } else {
             await prisma.aboutUs.create({
-                data
+                data: {
+                    title: data.title,
+                    content: data.content,
+                    imageUrl: data.imageUrl,
+                }
             });
         }
         revalidatePath("/nosotros");

@@ -27,11 +27,15 @@ model GlobalSettings {
 }
 
 model AboutUs {
-  id        Int      @id @default(1)
-  title     String   @default("Sobre Nosotros")
-  content   String   @default("Somos una empresa dedicada a...")
-  imageUrl  String?
-  updatedAt DateTime @updatedAt
+  id         Int      @id @default(1)
+  title      String   @default("Sobre Nosotros")
+  content    String   @default("Somos una empresa dedicada a...")
+  imageUrl   String?
+  stat1Value String   @default("+10")
+  stat1Label String   @default("Años de experiencia")
+  stat2Value String   @default("+500")
+  stat2Label String   @default("Empresas confían")
+  updatedAt  DateTime @updatedAt
 }
 
 model SeoMetadata {
@@ -245,9 +249,40 @@ model CtaSection {
   backgroundColor String @default("#1f2937") // Default slate-800
 }
 model CategoriasHeader {
-  id       Int    @id @default(1)
-  title    String @default("Nuestro Catálogo de Prendas")
-  subtitle String @default("Seleccionamos las mejores telas y cortes para que tu equipo luzca impecable y trabaje con comodidad.")
+  id              Int    @id @default(1)
+  title           String @default("Nuestro Catálogo de Prendas")
+  subtitle        String @default("Seleccionamos las mejores telas y cortes para que tu equipo luzca impecable y trabaje con comodidad.")
+  volumeTitle     String @default("Precio especial por volumen")
+  volumeSubtitle  String @default("Cuantas más unidades pedís, mejor precio por prenda. Consultanos para un presupuesto según tu cantidad.")
+  volumeTier1     String @default("10–50")
+  volumeTier1Label String @default("unidades")
+  volumeTier2     String @default("51–200")
+  volumeTier2Label String @default("precio mejor")
+  volumeTier3     String @default("+200")
+  volumeTier3Label String @default("precio especial")
+}
+
+model Testimonial {
+  id        Int      @id @default(autoincrement())
+  name      String
+  company   String
+  role      String?
+  content   String
+  imageUrl  String?
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model ContactSubmission {
+  id        Int      @id @default(autoincrement())
+  name      String
+  company   String?
+  email     String
+  phone     String?
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 model Brand {

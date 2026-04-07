@@ -12,7 +12,7 @@ export default function CategoriesEditor() {
     const [newCat, setNewCat] = useState({ name: "", imageUrl: "", description: "", showOnHome: false });
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState("");
-    const [header, setHeader] = useState({ title: "", subtitle: "" });
+    const [header, setHeader] = useState({ title: "", subtitle: "", volumeTitle: "", volumeSubtitle: "", volumeTier1: "", volumeTier1Label: "", volumeTier2: "", volumeTier2Label: "", volumeTier3: "", volumeTier3Label: "" });
     const [savingHeader, setSavingHeader] = useState(false);
     const [headerMsg, setHeaderMsg] = useState("");
 
@@ -173,8 +173,50 @@ export default function CategoriesEditor() {
                             placeholder="Seleccionamos las mejores telas..."
                         />
                     </div>
+                    {/* Descuentos por volumen */}
+                    <div className="border-t border-slate-100 pt-6 space-y-4">
+                        <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest">Sección de Descuentos por Volumen</h3>
+                        <div className="grid grid-cols-1 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500">Título del bloque</label>
+                                <input
+                                    value={header.volumeTitle}
+                                    onChange={e => setHeader({...header, volumeTitle: e.target.value})}
+                                    className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl font-bold text-slate-900 focus:ring-2 focus:ring-blue-100 outline-none"
+                                    placeholder="Precio especial por volumen"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500">Descripción del bloque</label>
+                                <input
+                                    value={header.volumeSubtitle}
+                                    onChange={e => setHeader({...header, volumeSubtitle: e.target.value})}
+                                    className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl text-slate-600 focus:ring-2 focus:ring-blue-100 outline-none"
+                                    placeholder="Cuantas más unidades pedís, mejor precio..."
+                                />
+                            </div>
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500">Tier 1 — Rango</label>
+                                    <input value={header.volumeTier1} onChange={e => setHeader({...header, volumeTier1: e.target.value})} className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl font-black text-primary focus:ring-2 focus:ring-blue-100 outline-none" placeholder="10–50" />
+                                    <input value={header.volumeTier1Label} onChange={e => setHeader({...header, volumeTier1Label: e.target.value})} className="w-full bg-slate-50 border border-slate-100 p-2 rounded-xl text-sm text-slate-500 focus:ring-2 focus:ring-blue-100 outline-none" placeholder="unidades" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500">Tier 2 — Rango</label>
+                                    <input value={header.volumeTier2} onChange={e => setHeader({...header, volumeTier2: e.target.value})} className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl font-black text-primary focus:ring-2 focus:ring-blue-100 outline-none" placeholder="51–200" />
+                                    <input value={header.volumeTier2Label} onChange={e => setHeader({...header, volumeTier2Label: e.target.value})} className="w-full bg-slate-50 border border-slate-100 p-2 rounded-xl text-sm text-slate-500 focus:ring-2 focus:ring-blue-100 outline-none" placeholder="precio mejor" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500">Tier 3 — Rango</label>
+                                    <input value={header.volumeTier3} onChange={e => setHeader({...header, volumeTier3: e.target.value})} className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl font-black text-primary focus:ring-2 focus:ring-blue-100 outline-none" placeholder="+200" />
+                                    <input value={header.volumeTier3Label} onChange={e => setHeader({...header, volumeTier3Label: e.target.value})} className="w-full bg-slate-50 border border-slate-100 p-2 rounded-xl text-sm text-slate-500 focus:ring-2 focus:ring-blue-100 outline-none" placeholder="precio especial" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="flex items-center gap-4">
-                        <button 
+                        <button
                             type="submit"
                             disabled={savingHeader}
                             className="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-800 transition-all disabled:opacity-50"

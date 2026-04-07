@@ -75,23 +75,23 @@ export default async function ProductosPage() {
                 {/* Descuento por volumen */}
                 <div className="mt-16 bg-primary/5 border border-primary/15 rounded-2xl p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
                     <div>
-                        <h3 className="text-xl font-black text-slate-900 mb-1">Precio especial por volumen</h3>
-                        <p className="text-slate-500 text-sm">Cuantas más unidades pedís, mejor precio por prenda. Consultanos para un presupuesto según tu cantidad.</p>
+                        <h3 className="text-xl font-black text-slate-900 mb-1">{(headers as any).volumeTitle || "Precio especial por volumen"}</h3>
+                        <p className="text-slate-500 text-sm">{(headers as any).volumeSubtitle || "Cuantas más unidades pedís, mejor precio por prenda. Consultanos para un presupuesto según tu cantidad."}</p>
                     </div>
                     <div className="flex gap-6 text-center shrink-0">
                         <div>
-                            <p className="text-2xl font-black text-primary">10–50</p>
-                            <p className="text-xs text-slate-500 font-medium">unidades</p>
+                            <p className="text-2xl font-black text-primary">{(headers as any).volumeTier1 || "10–50"}</p>
+                            <p className="text-xs text-slate-500 font-medium">{(headers as any).volumeTier1Label || "unidades"}</p>
                         </div>
                         <div className="text-slate-200 self-center text-2xl font-light">/</div>
                         <div>
-                            <p className="text-2xl font-black text-primary">51–200</p>
-                            <p className="text-xs text-slate-500 font-medium">precio mejor</p>
+                            <p className="text-2xl font-black text-primary">{(headers as any).volumeTier2 || "51–200"}</p>
+                            <p className="text-xs text-slate-500 font-medium">{(headers as any).volumeTier2Label || "precio mejor"}</p>
                         </div>
                         <div className="text-slate-200 self-center text-2xl font-light">/</div>
                         <div>
-                            <p className="text-2xl font-black text-primary">+200</p>
-                            <p className="text-xs text-slate-500 font-medium">precio especial</p>
+                            <p className="text-2xl font-black text-primary">{(headers as any).volumeTier3 || "+200"}</p>
+                            <p className="text-xs text-slate-500 font-medium">{(headers as any).volumeTier3Label || "precio especial"}</p>
                         </div>
                     </div>
                 </div>

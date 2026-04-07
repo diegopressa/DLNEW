@@ -153,7 +153,18 @@ export async function getCategoriasHeader() {
     }
 }
 
-export async function updateCategoriasHeader(data: { title: string; subtitle: string }) {
+export async function updateCategoriasHeader(data: {
+    title: string;
+    subtitle: string;
+    volumeTitle?: string;
+    volumeSubtitle?: string;
+    volumeTier1?: string;
+    volumeTier1Label?: string;
+    volumeTier2?: string;
+    volumeTier2Label?: string;
+    volumeTier3?: string;
+    volumeTier3Label?: string;
+}) {
     try {
         await (prisma as any).categoriasHeader.upsert({
             where: { id: 1 },

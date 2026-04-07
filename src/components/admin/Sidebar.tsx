@@ -14,7 +14,9 @@ import {
     Package,
     Info,
     Palette,
-    HelpCircle
+    HelpCircle,
+    Quote,
+    Mail
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logoutAction } from "@/app/login/actions";
@@ -28,6 +30,8 @@ const menuItems = [
     { name: "Categorías", href: "/admin/categorias", icon: Briefcase },
     { name: "Artículos", href: "/admin/articulos", icon: Package },
     { name: "Colores", href: "/admin/colores", icon: Palette },
+    { name: "Testimonios", href: "/admin/testimonios", icon: Quote },
+    { name: "Mensajes", href: "/admin/mensajes", icon: Mail },
     { name: "Preguntas Frec.", href: "/admin/faq", icon: HelpCircle },
     { name: "Políticas Priv.", href: "/admin/politicas-de-privacidad", icon: FileText },
     { name: "SEO / Metadatos", href: "/admin/seo", icon: Search },

@@ -3,6 +3,7 @@ import { Mail, Phone, MapPin, MessageCircle, Clock } from "lucide-react";
 import { getGlobalSettings } from "@/actions/settingsActions";
 import { buildMetadata } from "@/lib/buildMetadata";
 import type { Metadata } from "next";
+import ContactForm from "@/components/contact/ContactForm";
 
 export async function generateMetadata(): Promise<Metadata> {
     return buildMetadata("/contacto");
@@ -106,34 +107,27 @@ export default async function ContactoPage() {
                         </div>
                     </div>
 
-                    {/* Right Card: CTA (The Dark Rectangle) */}
-                    <div className="animate-in fade-in slide-in-from-right duration-700 delay-400">
-                        <div className="bg-[#1e293b] p-12 lg:p-14 rounded-[3.5rem] text-white space-y-10 shadow-2xl shadow-blue-900/10 flex flex-col justify-center min-h-[500px]">
-                            <h2 className="text-4xl lg:text-5xl font-black leading-tight text-center">
-                                ¿Necesitás un presupuesto rápido para tu empresa?
-                            </h2>
-                            <p className="text-slate-400 text-lg font-medium text-center">
-                                Atendemos consultas de empresas en tiempo real. Escribinos para coordinar muestras o presupuestos por volumen.
-                            </p>
-                            
-                            <div className="space-y-8">
-                                <a 
-                                    href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0`} 
-                                    target="_blank"
-                                    className="block w-full bg-[#25D366] hover:bg-[#20ba59] text-white text-center py-6 rounded-[1.8rem] text-2xl font-black shadow-xl shadow-green-500/20 transition-all active:scale-95 flex items-center justify-center gap-4"
-                                >
-                                    <MessageCircle size={32} />
-                                    Hablar ahora
-                                </a>
-                                <div className="text-center space-y-2">
-                                    <div className="flex items-center justify-center gap-2">
-                                        <div className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
-                                        <p className="text-slate-400 font-bold text-[11px] uppercase tracking-[0.2em]">
-                                            Respondemos en menos de 2 horas
-                                        </p>
-                                    </div>
-                                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.1em]">
-                                        Lun–Vie de 9 a 18 hs · También respondemos fuera de horario cuando podemos
+                    {/* Right Card: Form + WhatsApp */}
+                    <div className="animate-in fade-in slide-in-from-right duration-700 delay-400 space-y-6">
+                        {/* Formulario */}
+                        <ContactForm />
+
+                        {/* WhatsApp CTA */}
+                        <div className="bg-[#1e293b] p-8 rounded-[2.5rem] text-white space-y-6 shadow-2xl shadow-blue-900/10">
+                            <p className="text-slate-400 text-sm font-medium text-center">¿Preferís hablar directo?</p>
+                            <a
+                                href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0`}
+                                target="_blank"
+                                className="block w-full bg-[#25D366] hover:bg-[#20ba59] text-white text-center py-5 rounded-[1.5rem] text-xl font-black shadow-xl shadow-green-500/20 transition-all active:scale-95 flex items-center justify-center gap-3"
+                            >
+                                <MessageCircle size={24} />
+                                Hablar por WhatsApp ahora
+                            </a>
+                            <div className="text-center">
+                                <div className="flex items-center justify-center gap-2">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
+                                    <p className="text-slate-400 font-bold text-[11px] uppercase tracking-[0.2em]">
+                                        Respondemos en menos de 2 horas
                                     </p>
                                 </div>
                             </div>

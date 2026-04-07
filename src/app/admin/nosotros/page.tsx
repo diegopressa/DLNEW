@@ -123,7 +123,11 @@ export default function AboutAdmin() {
         const res = await updateAboutUs({
             title: about.title,
             content: about.content,
-            imageUrl
+            imageUrl,
+            stat1Value: about.stat1Value,
+            stat1Label: about.stat1Label,
+            stat2Value: about.stat2Value,
+            stat2Label: about.stat2Label,
         });
 
         setSaving(false);
@@ -196,6 +200,51 @@ export default function AboutAdmin() {
                             className="w-full bg-slate-50 border border-slate-100 p-4 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all min-h-[250px] text-slate-700 leading-relaxed"
                             placeholder="Escribí aquí la historia de tu empresa..."
                         />
+                    </div>
+
+                    {/* Estadísticas */}
+                    <div className="space-y-4">
+                        <label className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                            <Type size={14} className="text-blue-600" /> Estadísticas (debajo del texto)
+                        </label>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <p className="text-xs font-bold text-slate-500">Estadística 1 — Número</p>
+                                <input
+                                    value={about.stat1Value || "+10"}
+                                    onChange={e => setAbout({ ...about, stat1Value: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-800"
+                                    placeholder="+10"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-xs font-bold text-slate-500">Estadística 1 — Etiqueta</p>
+                                <input
+                                    value={about.stat1Label || "Años de experiencia"}
+                                    onChange={e => setAbout({ ...about, stat1Label: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-800"
+                                    placeholder="Años de experiencia"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-xs font-bold text-slate-500">Estadística 2 — Número</p>
+                                <input
+                                    value={about.stat2Value || "+500"}
+                                    onChange={e => setAbout({ ...about, stat2Value: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-800"
+                                    placeholder="+500"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-xs font-bold text-slate-500">Estadística 2 — Etiqueta</p>
+                                <input
+                                    value={about.stat2Label || "Empresas confían"}
+                                    onChange={e => setAbout({ ...about, stat2Label: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-800"
+                                    placeholder="Empresas confían"
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     {/* Imagen */}
