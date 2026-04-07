@@ -59,6 +59,9 @@ export default function HomeEditor() {
         badgeLabel: "",
         badgeTitle: "",
         badgeSubtitle: "",
+        trustStat1: "",
+        trustStat2: "",
+        trustStat3: "",
     });
     const [heroImages, setHeroImages] = useState<any[]>([]);
     const [newImageUrl, setNewImageUrl] = useState("");
@@ -138,6 +141,9 @@ export default function HomeEditor() {
                 badgeLabel: (heroData as any).badgeLabel || "",
                 badgeTitle: (heroData as any).badgeTitle || "",
                 badgeSubtitle: (heroData as any).badgeSubtitle || "",
+                trustStat1: (heroData as any).trustStat1 || "",
+                trustStat2: (heroData as any).trustStat2 || "",
+                trustStat3: (heroData as any).trustStat3 || "",
             });
             setHeroImages(heroData.images || []);
         }
@@ -828,6 +834,33 @@ export default function HomeEditor() {
                                 placeholder="Ej: Pedido mínimo: 10 unidades · Atendemos empresas en todo Uruguay."
                             />
                             <p className="text-xs text-slate-400">Aparece debajo del subtítulo en el inicio. Dejalo vacío para ocultarlo.</p>
+                        </div>
+
+                        <div className="space-y-3 border border-slate-100 rounded-xl p-4 bg-slate-50/50">
+                            <p className="text-sm font-bold text-slate-700">Barra de confianza (debajo de los botones)</p>
+                            <div className="grid grid-cols-1 gap-3">
+                                <input
+                                    type="text"
+                                    value={hero.trustStat1}
+                                    onChange={(e) => setHero({ ...hero, trustStat1: e.target.value })}
+                                    className="w-full bg-white border border-slate-100 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all"
+                                    placeholder="+500 empresas atendidas"
+                                />
+                                <input
+                                    type="text"
+                                    value={hero.trustStat2}
+                                    onChange={(e) => setHero({ ...hero, trustStat2: e.target.value })}
+                                    className="w-full bg-white border border-slate-100 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all"
+                                    placeholder="+10 años de experiencia"
+                                />
+                                <input
+                                    type="text"
+                                    value={hero.trustStat3}
+                                    onChange={(e) => setHero({ ...hero, trustStat3: e.target.value })}
+                                    className="w-full bg-white border border-slate-100 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all"
+                                    placeholder="Envíos a todo Uruguay"
+                                />
+                            </div>
                         </div>
 
                         <div className="space-y-3 border border-slate-100 rounded-xl p-4 bg-slate-50/50">
