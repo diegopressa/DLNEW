@@ -71,6 +71,9 @@ model HeroSection {
   ctaPrimary     String      @default("Solicitar presupuesto por WhatsApp")
   ctaSecondary   String      @default("Ver trabajos realizados")
   minOrderText   String      @default("Pedido mínimo: 10 unidades · Atendemos empresas, instituciones y eventos en todo Uruguay.")
+  badgeLabel     String      @default("48h")
+  badgeTitle     String      @default("Entrega Rápida")
+  badgeSubtitle  String      @default("Desde 48h según volumen")
   images         HeroImage[]
 }
 

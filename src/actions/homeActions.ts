@@ -46,6 +46,9 @@ export async function updateHeroTexts(data: {
     subtitle: string;
     ctaPrimary: string;
     minOrderText?: string;
+    badgeLabel?: string;
+    badgeTitle?: string;
+    badgeSubtitle?: string;
 }) {
     try {
         await prisma.heroSection.update({
@@ -55,6 +58,9 @@ export async function updateHeroTexts(data: {
                 subtitle: data.subtitle,
                 ctaPrimary: data.ctaPrimary,
                 ...(data.minOrderText !== undefined && { minOrderText: data.minOrderText }),
+                ...(data.badgeLabel !== undefined && { badgeLabel: data.badgeLabel }),
+                ...(data.badgeTitle !== undefined && { badgeTitle: data.badgeTitle }),
+                ...(data.badgeSubtitle !== undefined && { badgeSubtitle: data.badgeSubtitle }),
             }
         });
         revalidatePath("/");
