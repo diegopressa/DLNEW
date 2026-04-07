@@ -31,6 +31,9 @@ export default async function Hero() {
         badgeLabel: (data as any)?.badgeLabel || "48h",
         badgeTitle: (data as any)?.badgeTitle || "Entrega Rápida",
         badgeSubtitle: (data as any)?.badgeSubtitle || "Desde 48h según volumen",
+        trustStat1: (data as any)?.trustStat1 || "+500 empresas atendidas",
+        trustStat2: (data as any)?.trustStat2 || "+10 años de experiencia",
+        trustStat3: (data as any)?.trustStat3 || "Envíos a todo Uruguay",
         images: images
     };
 
@@ -82,15 +85,11 @@ export default async function Hero() {
 
                         {/* Trust bar */}
                         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm text-slate-500">
-                            <span className="flex items-center gap-1.5 font-semibold">
-                                <span className="text-primary font-black">+500</span> empresas atendidas
-                            </span>
+                            <span className="font-semibold">{hero.trustStat1}</span>
                             <span className="hidden sm:block text-slate-200">|</span>
-                            <span className="flex items-center gap-1.5 font-semibold">
-                                <span className="text-primary font-black">+10</span> años de experiencia
-                            </span>
+                            <span className="font-semibold">{hero.trustStat2}</span>
                             <span className="hidden sm:block text-slate-200">|</span>
-                            <span className="font-semibold">Envíos a todo Uruguay</span>
+                            <span className="font-semibold">{hero.trustStat3}</span>
                         </div>
                     </div>
 

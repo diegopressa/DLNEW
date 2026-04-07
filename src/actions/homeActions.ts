@@ -49,6 +49,9 @@ export async function updateHeroTexts(data: {
     badgeLabel?: string;
     badgeTitle?: string;
     badgeSubtitle?: string;
+    trustStat1?: string;
+    trustStat2?: string;
+    trustStat3?: string;
 }) {
     try {
         await prisma.heroSection.update({
@@ -61,6 +64,9 @@ export async function updateHeroTexts(data: {
                 ...(data.badgeLabel !== undefined && { badgeLabel: data.badgeLabel }),
                 ...(data.badgeTitle !== undefined && { badgeTitle: data.badgeTitle }),
                 ...(data.badgeSubtitle !== undefined && { badgeSubtitle: data.badgeSubtitle }),
+                ...(data.trustStat1 !== undefined && { trustStat1: data.trustStat1 }),
+                ...(data.trustStat2 !== undefined && { trustStat2: data.trustStat2 }),
+                ...(data.trustStat3 !== undefined && { trustStat3: data.trustStat3 }),
             }
         });
         revalidatePath("/");

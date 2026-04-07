@@ -74,6 +74,9 @@ model HeroSection {
   badgeLabel     String      @default("48h")
   badgeTitle     String      @default("Entrega Rápida")
   badgeSubtitle  String      @default("Desde 48h según volumen")
+  trustStat1     String      @default("+500 empresas atendidas")
+  trustStat2     String      @default("+10 años de experiencia")
+  trustStat3     String      @default("Envíos a todo Uruguay")
   images         HeroImage[]
 }
 
