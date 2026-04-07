@@ -32,12 +32,12 @@ export default async function NosotrosPage() {
 
                         <div className="pt-6 grid grid-cols-2 gap-6 border-t border-slate-100">
                             <div>
-                                <p className="text-3xl font-black text-slate-900">+10</p>
-                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Años de experiencia</p>
+                                <p className="text-3xl font-black text-slate-900">{(about as any).stat1Value || "+10"}</p>
+                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{(about as any).stat1Label || "Años de experiencia"}</p>
                             </div>
                             <div>
-                                <p className="text-3xl font-black text-slate-900">+500</p>
-                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Empresas confían</p>
+                                <p className="text-3xl font-black text-slate-900">{(about as any).stat2Value || "+500"}</p>
+                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{(about as any).stat2Label || "Empresas confían"}</p>
                             </div>
                         </div>
                     </div>
