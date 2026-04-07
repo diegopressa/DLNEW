@@ -27,6 +27,7 @@ export default async function Hero() {
         title: data?.title || "Uniformes personalizados para empresas",
         subtitle: data?.subtitle || "Nos encargamos de todo: prenda, estampado y entrega. Presupuesto inmediato y entrega en 24-48 horas.",
         ctaPrimary: data?.ctaPrimary || "Solicitar presupuesto por WhatsApp",
+        minOrderText: (data as any)?.minOrderText || "Pedido mínimo: 10 unidades · Atendemos empresas, instituciones y eventos en todo Uruguay.",
         images: images
     };
 
@@ -51,9 +52,11 @@ export default async function Hero() {
                             {hero.subtitle}
                         </p>
 
-                        <p className="text-sm text-slate-500 font-medium">
-                            Pedido mínimo: 10 unidades · Atendemos empresas, instituciones y eventos en todo Uruguay.
-                        </p>
+                        {hero.minOrderText && (
+                            <p className="text-sm text-slate-500 font-medium">
+                                {hero.minOrderText}
+                            </p>
+                        )}
 
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
                             <Link

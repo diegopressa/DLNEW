@@ -55,6 +55,7 @@ export default function HomeEditor() {
         title: "",
         subtitle: "",
         ctaPrimary: "",
+        minOrderText: "",
     });
     const [heroImages, setHeroImages] = useState<any[]>([]);
     const [newImageUrl, setNewImageUrl] = useState("");
@@ -130,6 +131,7 @@ export default function HomeEditor() {
                 title: heroData.title,
                 subtitle: heroData.subtitle,
                 ctaPrimary: heroData.ctaPrimary,
+                minOrderText: (heroData as any).minOrderText || "",
             });
             setHeroImages(heroData.images || []);
         }
@@ -809,6 +811,17 @@ export default function HomeEditor() {
                                 onChange={(e) => setHero({ ...hero, ctaPrimary: e.target.value })}
                                 className="w-full bg-slate-50 border border-slate-100 p-4 rounded-xl outline-none focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all"
                             />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700">Texto de pedido mínimo</label>
+                            <input
+                                type="text"
+                                value={hero.minOrderText}
+                                onChange={(e) => setHero({ ...hero, minOrderText: e.target.value })}
+                                className="w-full bg-slate-50 border border-slate-100 p-4 rounded-xl outline-none focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all"
+                                placeholder="Ej: Pedido mínimo: 10 unidades · Atendemos empresas en todo Uruguay."
+                            />
+                            <p className="text-xs text-slate-400">Aparece debajo del subtítulo en el inicio. Dejalo vacío para ocultarlo.</p>
                         </div>
                     </div>
 
