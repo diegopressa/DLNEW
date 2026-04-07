@@ -45,6 +45,7 @@ export async function updateHeroTexts(data: {
     title: string;
     subtitle: string;
     ctaPrimary: string;
+    minOrderText?: string;
 }) {
     try {
         await prisma.heroSection.update({
@@ -53,6 +54,7 @@ export async function updateHeroTexts(data: {
                 title: data.title,
                 subtitle: data.subtitle,
                 ctaPrimary: data.ctaPrimary,
+                ...(data.minOrderText !== undefined && { minOrderText: data.minOrderText }),
             }
         });
         revalidatePath("/");

@@ -65,12 +65,13 @@ model SeoSettings {
 }
 
 model HeroSection {
-  id           Int         @id @default(autoincrement())
-  title        String      @default("Uniformes personalizados para empresas")
-  subtitle     String      @default("Nos encargamos de todo: prenda, estampado y entrega. Presupuesto inmediato y entrega en 24-48 horas.")
-  ctaPrimary   String      @default("Solicitar presupuesto por WhatsApp")
-  ctaSecondary String      @default("Ver trabajos realizados")
-  images       HeroImage[]
+  id             Int         @id @default(autoincrement())
+  title          String      @default("Uniformes personalizados para empresas")
+  subtitle       String      @default("Nos encargamos de todo: prenda, estampado y entrega. Presupuesto inmediato y entrega en 24-48 horas.")
+  ctaPrimary     String      @default("Solicitar presupuesto por WhatsApp")
+  ctaSecondary   String      @default("Ver trabajos realizados")
+  minOrderText   String      @default("Pedido mínimo: 10 unidades · Atendemos empresas, instituciones y eventos en todo Uruguay.")
+  images         HeroImage[]
 }
 
 model HeroImage {
