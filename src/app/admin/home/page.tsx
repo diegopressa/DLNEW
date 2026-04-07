@@ -56,6 +56,9 @@ export default function HomeEditor() {
         subtitle: "",
         ctaPrimary: "",
         minOrderText: "",
+        badgeLabel: "",
+        badgeTitle: "",
+        badgeSubtitle: "",
     });
     const [heroImages, setHeroImages] = useState<any[]>([]);
     const [newImageUrl, setNewImageUrl] = useState("");
@@ -132,6 +135,9 @@ export default function HomeEditor() {
                 subtitle: heroData.subtitle,
                 ctaPrimary: heroData.ctaPrimary,
                 minOrderText: (heroData as any).minOrderText || "",
+                badgeLabel: (heroData as any).badgeLabel || "",
+                badgeTitle: (heroData as any).badgeTitle || "",
+                badgeSubtitle: (heroData as any).badgeSubtitle || "",
             });
             setHeroImages(heroData.images || []);
         }
@@ -822,6 +828,42 @@ export default function HomeEditor() {
                                 placeholder="Ej: Pedido mínimo: 10 unidades · Atendemos empresas en todo Uruguay."
                             />
                             <p className="text-xs text-slate-400">Aparece debajo del subtítulo en el inicio. Dejalo vacío para ocultarlo.</p>
+                        </div>
+
+                        <div className="space-y-3 border border-slate-100 rounded-xl p-4 bg-slate-50/50">
+                            <p className="text-sm font-bold text-slate-700">Badge flotante (tarjeta sobre la imagen)</p>
+                            <div className="grid grid-cols-3 gap-3">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Etiqueta grande</label>
+                                    <input
+                                        type="text"
+                                        value={hero.badgeLabel}
+                                        onChange={(e) => setHero({ ...hero, badgeLabel: e.target.value })}
+                                        className="w-full bg-white border border-slate-100 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all text-center font-black"
+                                        placeholder="48h"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Título</label>
+                                    <input
+                                        type="text"
+                                        value={hero.badgeTitle}
+                                        onChange={(e) => setHero({ ...hero, badgeTitle: e.target.value })}
+                                        className="w-full bg-white border border-slate-100 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all"
+                                        placeholder="Entrega Rápida"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Subtítulo</label>
+                                    <input
+                                        type="text"
+                                        value={hero.badgeSubtitle}
+                                        onChange={(e) => setHero({ ...hero, badgeSubtitle: e.target.value })}
+                                        className="w-full bg-white border border-slate-100 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all"
+                                        placeholder="Desde 48h según volumen"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
 

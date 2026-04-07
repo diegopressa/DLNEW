@@ -28,6 +28,9 @@ export default async function Hero() {
         subtitle: data?.subtitle || "Nos encargamos de todo: prenda, estampado y entrega. Presupuesto inmediato y entrega en 24-48 horas.",
         ctaPrimary: data?.ctaPrimary || "Solicitar presupuesto por WhatsApp",
         minOrderText: (data as any)?.minOrderText || "Pedido mínimo: 10 unidades · Atendemos empresas, instituciones y eventos en todo Uruguay.",
+        badgeLabel: (data as any)?.badgeLabel || "48h",
+        badgeTitle: (data as any)?.badgeTitle || "Entrega Rápida",
+        badgeSubtitle: (data as any)?.badgeSubtitle || "Desde 48h según volumen",
         images: images
     };
 
@@ -98,11 +101,11 @@ export default async function Hero() {
                         <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 hidden sm:block">
                             <div className="flex items-center gap-4">
                                 <div className="bg-primary/10 text-primary p-2 rounded-lg font-black text-xl border border-primary/20">
-                                    48h
+                                    {hero.badgeLabel}
                                 </div>
                                 <div>
-                                    <p className="text-sm font-bold text-slate-900">Entrega Rápida</p>
-                                    <p className="text-xs text-slate-500">Desde 48h según volumen</p>
+                                    <p className="text-sm font-bold text-slate-900">{hero.badgeTitle}</p>
+                                    <p className="text-xs text-slate-500">{hero.badgeSubtitle}</p>
                                 </div>
                             </div>
                         </div>
