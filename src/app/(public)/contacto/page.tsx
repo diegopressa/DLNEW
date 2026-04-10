@@ -48,7 +48,7 @@ export default async function ContactoPage() {
                                     <div>
                                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">WhatsApp</p>
                                         <a 
-                                            href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0`}
+                                            href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`}
                                             target="_blank"
                                             className="text-sm font-bold text-slate-800 hover:text-green-600 transition-colors"
                                         >
@@ -116,7 +116,7 @@ export default async function ContactoPage() {
                         <div className="bg-[#1e293b] p-8 rounded-[2.5rem] text-white space-y-6 shadow-2xl shadow-blue-900/10">
                             <p className="text-slate-400 text-sm font-medium text-center">¿Preferís hablar directo?</p>
                             <a
-                                href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0`}
+                                href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`}
                                 target="_blank"
                                 className="block w-full bg-[#25D366] hover:bg-[#20ba59] text-white text-center py-5 rounded-[1.5rem] text-xl font-black shadow-xl shadow-green-500/20 transition-all active:scale-95 flex items-center justify-center gap-3"
                             >
@@ -127,7 +127,7 @@ export default async function ContactoPage() {
                                 <div className="flex items-center justify-center gap-2">
                                     <div className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
                                     <p className="text-slate-400 font-bold text-[11px] uppercase tracking-[0.2em]">
-                                        Respondemos en menos de 2 horas
+                                        Te respondemos en menos de 10 minutos.
                                     </p>
                                 </div>
                             </div>
