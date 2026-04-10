@@ -46,7 +46,7 @@ export default async function ProductDetailPage({ params }: { params: { category
 
     const category = product.category;
 
-    const waUrl = `https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+te+contacto+a+trav%C3%A9s+de+la+p%C3%A1gina+web.&type=phone_number&app_absent=0`;
+    const waUrl = `https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`;
 
     // Simple logic for related products: other products in the same category
     // In a real scenario, we might want to fetch these from DB
