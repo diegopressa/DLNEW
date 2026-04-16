@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 interface HeroImage {
     id: number;
@@ -23,10 +24,11 @@ export default function HeroCarousel({ images }: { images: HeroImage[] }) {
     if (!images || images.length === 0) {
         return (
             <div className="relative aspect-video lg:aspect-square overflow-hidden rounded-3xl shadow-2xl bg-slate-100 flex items-center justify-center">
-                <img
+                <Image
                     src="/hero-placeholder.jpg"
                     alt="DL Diseño & Estampado"
-                    className="w-full h-full object-cover opacity-50"
+                    fill
+                    className="object-cover opacity-50"
                 />
             </div>
         );
@@ -41,14 +43,17 @@ export default function HeroCarousel({ images }: { images: HeroImage[] }) {
                         index === currentIndex ? "opacity-100" : "opacity-0"
                     }`}
                 >
-                    <img
+                    <Image
                         src={img.url}
                         alt={`Hero Image ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
+                        priority={index === 0}
+                        sizes="(max-width: 1024px) 100vw, 50vw"
                     />
                 </div>
             ))}
-            
+
             {/* Indicators */}
             {images.length > 1 && (
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">

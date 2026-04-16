@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Search, Loader2, X, Package, ArrowRight } from "lucide-react";
 import { searchProducts } from "@/actions/productActions";
 import Link from "next/link";
@@ -83,9 +84,9 @@ export default function FeaturedProductSearch() {
                                         href={`/categorias/lista-${product.category?.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-')}/${product.slug}`}
                                         className="flex gap-4 p-4 rounded-[1.5rem] hover:bg-slate-50 transition-all group border border-slate-50 hover:border-primary/20"
                                     >
-                                        <div className="w-20 h-20 bg-slate-100 rounded-2xl overflow-hidden shrink-0 border border-slate-100">
+                                        <div className="relative w-20 h-20 bg-slate-100 rounded-2xl overflow-hidden shrink-0 border border-slate-100">
                                             {product.images[0] ? (
-                                                <img src={product.images[0].url} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                                <Image src={product.images[0].url} alt={product.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" sizes="80px" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-slate-300">
                                                     <Package size={24} />

@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { getAboutUs } from "@/actions/aboutActions";
 import { buildMetadata } from "@/lib/buildMetadata";
 import type { Metadata } from "next";
@@ -44,11 +45,13 @@ export default async function NosotrosPage() {
 
                     {/* Right: Image */}
                     <div className="relative animate-in fade-in slide-in-from-right duration-1000 delay-200">
-                        <div className="aspect-[4/5] rounded-[4rem] overflow-hidden shadow-2xl shadow-slate-200">
-                            <img 
-                                src={about.imageUrl || "https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=2000"} 
-                                alt="Sobre Nosotros" 
-                                className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110"
+                        <div className="relative aspect-[4/5] rounded-[4rem] overflow-hidden shadow-2xl shadow-slate-200">
+                            <Image
+                                src={about.imageUrl || "https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=2000"}
+                                alt="Sobre Nosotros"
+                                fill
+                                className="object-cover transition-transform duration-1000 hover:scale-110"
+                                sizes="(max-width: 1024px) 100vw, 50vw"
                             />
                         </div>
                         
