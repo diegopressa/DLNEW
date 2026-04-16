@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Project {
@@ -117,11 +118,13 @@ export default function WorksCarousel({ works }: WorksCarouselProps) {
                         key={work.id} 
                         className="min-w-full sm:min-w-[calc(50%-12px)] lg:min-w-[calc(25%-18px)] snap-start space-y-4"
                     >
-                        <div className="aspect-[4/5] overflow-hidden rounded-[2rem] shadow-sm bg-slate-100 border border-slate-100">
-                            <img
+                        <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] shadow-sm bg-slate-100 border border-slate-100">
+                            <Image
                                 src={work.imageUrl}
                                 alt={work.title}
-                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 ease-out"
+                                fill
+                                className="object-cover hover:scale-105 transition-transform duration-700 ease-out"
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                             />
                         </div>
                         <div className="px-2">

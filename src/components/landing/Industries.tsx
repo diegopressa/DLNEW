@@ -1,4 +1,5 @@
 import * as LucideIcons from "lucide-react";
+import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { getIndustriesSection } from "@/actions/homeActions";
 
@@ -27,12 +28,14 @@ export default async function Industries() {
                             key={industry.id}
                             className="bg-white p-6 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all border border-slate-100 group hover:-translate-y-2 flex flex-col items-center text-left"
                         >
-                            <div className="w-full aspect-square rounded-full overflow-hidden mb-8 border-8 border-slate-50 shadow-inner group-hover:scale-105 transition-transform duration-500">
+                            <div className="relative w-full aspect-square rounded-full overflow-hidden mb-8 border-8 border-slate-50 shadow-inner group-hover:scale-105 transition-transform duration-500">
                                 {industry.imageUrl ? (
-                                    <img 
-                                        src={industry.imageUrl} 
-                                        alt={industry.name} 
-                                        className="w-full h-full object-cover"
+                                    <Image
+                                        src={industry.imageUrl}
+                                        alt={industry.name}
+                                        fill
+                                        className="object-cover"
+                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                     />
                                 ) : (
                                     <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-300">

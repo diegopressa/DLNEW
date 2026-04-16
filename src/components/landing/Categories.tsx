@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { getCategoriesSection, getCategories } from "@/actions/homeActions";
 
@@ -44,10 +45,12 @@ export default async function Categories() {
                                 href={`/categorias/lista-${slug}`}
                                 className="group relative h-80 overflow-hidden rounded-2xl cursor-pointer"
                             >
-                                <img
+                                <Image
                                     src={cat.imageUrl}
                                     alt={cat.name}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                    fill
+                                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                                 <div className="absolute bottom-6 left-6">

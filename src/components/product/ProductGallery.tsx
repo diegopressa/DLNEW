@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { ZoomIn, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ProductGalleryProps {
@@ -20,10 +21,13 @@ export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery }
         <>
             {/* Main Image */}
             <div className="relative group rounded-[2rem] overflow-hidden bg-slate-50 border border-slate-100 shadow-sm aspect-square">
-                <img
+                <Image
                     src={images[selectedIndex]}
                     alt="Producto"
-                    className="w-full h-full object-cover transition-all duration-500"
+                    fill
+                    className="object-cover transition-all duration-500"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    priority
                 />
                 {/* Zoom Button */}
                 <button
@@ -83,13 +87,13 @@ export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery }
                     <button
                         key={i}
                         onClick={() => setSelectedIndex(i)}
-                        className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+                        className={`relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
                             i === selectedIndex
                                 ? "border-primary shadow-md shadow-primary/20 scale-105"
                                 : "border-slate-200 hover:border-primary/40 opacity-70 hover:opacity-100"
                         }`}
                     >
-                        <img src={src} alt={`Miniatura ${i + 1}`} className="w-full h-full object-cover" />
+                        <Image src={src} alt={`Miniatura ${i + 1}`} fill className="object-cover" sizes="80px" />
                     </button>
                 ))}
             </div>
