@@ -37,6 +37,7 @@ export default function RootLayout({
               window.gtag = gtag;
               gtag('js', new Date());
               gtag('config', 'AW-723199533');
+              gtag('config', 'G-YT47D5C7GN');
 
               // WhatsApp Conversion Tracking with Delay
               document.addEventListener('click', function(e) {
