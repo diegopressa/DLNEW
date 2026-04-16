@@ -20,6 +20,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "dldisenoyestampado.uy",
       },
+      {
+        protocol: "https",
+        hostname: "**.supabase.co",
+      },
     ],
   },
 };
