@@ -55,18 +55,6 @@ export default async function NosotrosPage() {
                             />
                         </div>
                         
-                        {/* Decorative Badge */}
-                        <div className="absolute -bottom-10 -left-10 bg-white p-8 rounded-[3rem] shadow-2xl shadow-slate-200 border border-slate-50 hidden md:block">
-                            <div className="flex items-center gap-4">
-                                <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-2xl">
-                                    DL
-                                </div>
-                                <div>
-                                    <p className="font-black text-slate-900 leading-none">Diseño & Estampado</p>
-                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Sello de calidad</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
