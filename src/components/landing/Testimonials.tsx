@@ -77,9 +77,11 @@ export default function Testimonials({ items }: Props) {
                                     )}
                                     <div>
                                         <p className="font-bold text-slate-900 text-sm">{t.name}</p>
-                                        <p className="text-xs text-slate-500 font-medium">
-                                            {t.role ? `${t.role} · ` : ""}{t.company}
-                                        </p>
+                                        {(t.company || t.role) && (
+                                            <p className="text-xs text-slate-500 font-medium">
+                                                {t.role && t.company ? `${t.role} · ${t.company}` : t.role || t.company}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </div>
