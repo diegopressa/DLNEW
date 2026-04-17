@@ -43,7 +43,7 @@ export default function TestimoniosAdmin() {
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!form.name || !form.company || !form.content) return;
+        if (!form.name || !form.content) return;
         setSaving(true);
         const res = editingId
             ? await updateTestimonial(editingId, form)
@@ -105,9 +105,8 @@ export default function TestimoniosAdmin() {
                             />
                         </div>
                         <div className="space-y-1">
-                            <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Empresa *</label>
+                            <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Empresa (opcional)</label>
                             <input
-                                required
                                 value={form.company}
                                 onChange={e => setForm({ ...form, company: e.target.value })}
                                 className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl font-bold text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
