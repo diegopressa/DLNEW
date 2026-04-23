@@ -215,6 +215,7 @@ export default function ProductsEditor() {
     const [isEditing, setIsEditing] = useState(false);
     const [editId, setEditId] = useState<number | null>(null);
     const [uploading, setUploading] = useState(false);
+    const [bulkProgress, setBulkProgress] = useState<{ done: number; total: number } | null>(null);
     const [activeTab, setActiveTab] = useState<string>("todos");
 
     const [newProd, setNewProd] = useState(emptyForm);
@@ -256,6 +257,45 @@ export default function ProductsEditor() {
         } finally {
             setUploading(false);
         }
+    };
+
+    const handleBulkFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
+
+        setBulkProgress({ done: 0, total: files.length });
+        let done = 0;
+
+        const uploads = files.map(async (file) => {
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("folder", "articulos");
+            try {
+                const res = await fetch("/api/upload", { method: "POST", body: formData });
+                const data = await res.json();
+                return data.success ? (data.url as string) : null;
+            } catch (err) {
+                console.error("Upload error:", err);
+                return null;
+            } finally {
+                done += 1;
+                setBulkProgress({ done, total: files.length });
+            }
+        });
+
+        const results = await Promise.all(uploads);
+        const urls = results.filter((u): u is string => !!u);
+
+        setNewProd((prev) => {
+            const existing = prev.images.filter((img) => img && img.trim() !== "");
+            return { ...prev, images: [...existing, ...urls] };
+        });
+
+        const failed = results.length - urls.length;
+        if (failed > 0) alert(`${failed} imagen(es) fallaron al subir.`);
+
+        setBulkProgress(null);
+        e.target.value = "";
     };
 
     const addImageField = () => setNewProd({ ...newProd, images: [...newProd.images, ""] });
@@ -436,9 +476,27 @@ export default function ProductsEditor() {
                     <div className="space-y-4">
                         <div className="flex justify-between items-center">
                             <label className="text-sm font-bold text-slate-700">Galería de Imágenes</label>
-                            <button type="button" onClick={addImageField} className="text-blue-600 text-xs font-bold flex items-center gap-1 hover:underline">
-                                <Plus size={14} /> Agregar otra imagen
-                            </button>
+                            <div className="flex items-center gap-3">
+                                {bulkProgress && (
+                                    <span className="text-xs text-slate-500 font-bold">
+                                        Subiendo {bulkProgress.done}/{bulkProgress.total}...
+                                    </span>
+                                )}
+                                <label className="text-green-600 text-xs font-bold flex items-center gap-1 hover:underline cursor-pointer">
+                                    <Upload size={14} /> Subir varias
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        accept="image/*"
+                                        multiple
+                                        disabled={!!bulkProgress}
+                                        onChange={handleBulkFileUpload}
+                                    />
+                                </label>
+                                <button type="button" onClick={addImageField} className="text-blue-600 text-xs font-bold flex items-center gap-1 hover:underline">
+                                    <Plus size={14} /> Agregar otra imagen
+                                </button>
+                            </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {newProd.images.map((img, idx) => (
