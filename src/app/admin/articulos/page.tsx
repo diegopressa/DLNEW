@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrder, toggleProductActive } from "@/actions/productActions";
 import { getCategories } from "@/actions/categoryActions";
 import { getColors } from "@/actions/colorActions";
-import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff, ArrowUp, ArrowDown } from "lucide-react";
 
 // ─── Color Multi-Select Picker ───────────────────────────────────────────────
 function ColorPicker({
@@ -298,6 +298,14 @@ export default function ProductsEditor() {
         e.target.value = "";
     };
 
+    const moveImage = (index: number, direction: -1 | 1) => {
+        const target = index + direction;
+        if (target < 0 || target >= newProd.images.length) return;
+        const updated = [...newProd.images];
+        [updated[index], updated[target]] = [updated[target], updated[index]];
+        setNewProd({ ...newProd, images: updated });
+    };
+
     const addImageField = () => setNewProd({ ...newProd, images: [...newProd.images, ""] });
     const removeImageField = (index: number) => {
         const updated = newProd.images.filter((_, i) => i !== index);
@@ -501,6 +509,27 @@ export default function ProductsEditor() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {newProd.images.map((img, idx) => (
                                 <div key={idx} className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex gap-4">
+                                    <div className="flex flex-col items-center justify-center gap-1">
+                                        <button
+                                            type="button"
+                                            onClick={() => moveImage(idx, -1)}
+                                            disabled={idx === 0}
+                                            className="text-slate-400 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                                            title="Subir"
+                                        >
+                                            <ArrowUp size={16} />
+                                        </button>
+                                        <span className="text-[10px] font-bold text-slate-500">{idx + 1}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => moveImage(idx, 1)}
+                                            disabled={idx === newProd.images.length - 1}
+                                            className="text-slate-400 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                                            title="Bajar"
+                                        >
+                                            <ArrowDown size={16} />
+                                        </button>
+                                    </div>
                                     <div className="flex-1 space-y-2">
                                         <div className="flex items-center gap-2">
                                             <input
