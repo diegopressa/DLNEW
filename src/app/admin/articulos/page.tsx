@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrder, toggleProductActive } from "@/actions/productActions";
 import { getCategories } from "@/actions/categoryActions";
 import { getColors } from "@/actions/colorActions";
-import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff, ArrowUp, ArrowDown, AlertTriangle } from "lucide-react";
 
 // ─── Color Multi-Select Picker ───────────────────────────────────────────────
 function ColorPicker({
@@ -383,9 +383,12 @@ export default function ProductsEditor() {
 
     const filteredProducts = products.filter(p => {
         if (activeTab === "pausados") return !p.isActive;
+        if (activeTab === "faltan-fotos") return p.isActive && (p.images?.length ?? 0) <= 1;
         if (activeTab === "todos") return p.isActive;
         return p.isActive && p.categoryId.toString() === activeTab;
     });
+
+    const productsMissingImages = products.filter(p => p.isActive && (p.images?.length ?? 0) <= 1).length;
 
     if (loading && products.length === 0) return <div className="flex justify-center p-20"><Loader2 className="animate-spin" /></div>;
 
@@ -711,10 +714,20 @@ export default function ProductsEditor() {
                     </button>
                 ))}
                 <button
-                    onClick={() => setActiveTab("pausados")}
+                    onClick={() => setActiveTab("faltan-fotos")}
                     className={`ml-auto px-4 py-2 rounded-t-xl text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
-                        activeTab === "pausados" 
-                        ? "text-amber-600 border-amber-600 bg-amber-50" 
+                        activeTab === "faltan-fotos"
+                        ? "text-amber-600 border-amber-600 bg-amber-50"
+                        : "text-slate-400 border-transparent hover:text-amber-500"
+                    }`}
+                >
+                    <AlertTriangle size={14} /> Faltan fotos ({productsMissingImages})
+                </button>
+                <button
+                    onClick={() => setActiveTab("pausados")}
+                    className={`px-4 py-2 rounded-t-xl text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
+                        activeTab === "pausados"
+                        ? "text-amber-600 border-amber-600 bg-amber-50"
                         : "text-slate-400 border-transparent hover:text-amber-500"
                     }`}
                 >
@@ -737,6 +750,14 @@ export default function ProductsEditor() {
                             <div className="absolute top-3 left-3 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase">
                                 {prod.category?.name}
                             </div>
+                            {(prod.images?.length ?? 0) <= 1 && (
+                                <div
+                                    className="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase flex items-center gap-1 shadow-md"
+                                    title="Este producto solo tiene 1 imagen. Agregá más fotos para generar confianza."
+                                >
+                                    <AlertTriangle size={12} /> Falta fotos
+                                </div>
+                            )}
                             {/* Color swatches on the card */}
                             {prod.colors?.length > 0 && (
                                 <div className="absolute bottom-3 left-3 flex gap-1">
