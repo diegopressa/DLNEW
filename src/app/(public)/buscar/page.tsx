@@ -81,6 +81,13 @@ export default async function SearchResultsPage({
                                         )}
                                     </div>
                                 )}
+
+                                {/* Hover overlay CTA */}
+                                <div className="absolute inset-0 z-10 bg-slate-900/0 group-hover:bg-slate-900/45 transition-all duration-500 flex items-center justify-center pointer-events-none">
+                                    <div className="opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 bg-white text-slate-900 px-5 py-3 rounded-full font-black text-sm uppercase tracking-wider shadow-2xl flex items-center gap-2">
+                                        Ver trabajos reales <ArrowRight size={16} />
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="px-4 pb-4">
