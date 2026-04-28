@@ -1,9 +1,35 @@
 import { ChevronRight, ArrowRight, Package, MessageCircle } from "lucide-react";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { getCategoryBySlug } from "@/actions/categoryActions";
 import { notFound } from "next/navigation";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
+
+export async function generateMetadata({ params }: { params: { categorySlug: string } }): Promise<Metadata> {
+    const slug = params.categorySlug.startsWith("lista-") ? params.categorySlug.replace("lista-", "") : params.categorySlug;
+    const category: any = await getCategoryBySlug(slug);
+    if (!category) return {};
+
+    const baseUrl = "https://dldisenoyestampado.uy";
+    const url = `${baseUrl}/categorias/${params.categorySlug}`;
+    const title = `${category.name} Personalizados para Empresas | DL Uruguay`;
+    const description = `${category.name} para uniformes corporativos en Uruguay. Estampado, bordado y entrega en 24-48h. Pedido mínimo 10 unidades. Montevideo, Canelones y todo el país.`.slice(0, 160);
+
+    return {
+        title,
+        description,
+        alternates: { canonical: url },
+        openGraph: {
+            type: "website",
+            url,
+            title,
+            description,
+            siteName: "DL Diseño & Estampado",
+        },
+        twitter: { card: "summary_large_image", title, description },
+    };
+}
 
 export default async function CategoryListingPage({ params }: { params: { categorySlug: string } }) {
     const slug = params.categorySlug.startsWith("lista-") ? params.categorySlug.replace("lista-", "") : params.categorySlug;
@@ -13,8 +39,20 @@ export default async function CategoryListingPage({ params }: { params: { catego
         notFound();
     }
 
+    const baseUrl = "https://dldisenoyestampado.uy";
+    const breadcrumbJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Inicio", item: baseUrl },
+            { "@type": "ListItem", position: 2, name: "Productos", item: `${baseUrl}/categorias` },
+            { "@type": "ListItem", position: 3, name: category.name, item: `${baseUrl}/categorias/${params.categorySlug}` },
+        ],
+    };
+
     return (
         <div className="pt-32 pb-24 bg-slate-50 min-h-screen">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
             <div className="section-container">
                 {/* ── Breadcrumbs ── */}
                 <nav className="flex items-center gap-2 text-sm text-slate-400 mb-12 bg-white w-fit px-4 py-2 rounded-full shadow-sm border border-slate-100" aria-label="Breadcrumb">
