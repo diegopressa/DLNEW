@@ -1,5 +1,6 @@
 import { MessageCircle, ShieldCheck, Truck, Clock, Star, ChevronRight, ArrowRight, Package, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { getGlobalSettings } from "@/actions/settingsActions";
 import ProductGallery from "@/components/product/ProductGallery";
 import ColorSwatches from "@/components/product/ColorSwatches";
@@ -7,7 +8,39 @@ import { getProductBySlug } from "@/actions/productActions";
 import { getCategoryBySlug } from "@/actions/categoryActions";
 import { notFound } from "next/navigation";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
+
+export async function generateMetadata({ params }: { params: { categorySlug: string; productSlug: string } }): Promise<Metadata> {
+    const product: any = await getProductBySlug(params.productSlug);
+    if (!product) return {};
+
+    const baseUrl = "https://dldisenoyestampado.uy";
+    const url = `${baseUrl}/categorias/${params.categorySlug}/${product.slug}`;
+    const categoryName = product.category?.name || "";
+    const title = `${product.name} Personalizada para Empresas | DL`;
+    const description = (product.description || `${product.name} para uniformes corporativos. Estampado, bordado y entrega en 24-48h. Pedido mínimo 10 unidades. Montevideo y todo Uruguay.`).slice(0, 160);
+    const ogImage = product.images?.[0]?.url;
+
+    return {
+        title,
+        description,
+        alternates: { canonical: url },
+        openGraph: {
+            type: "website",
+            url,
+            title,
+            description,
+            siteName: "DL Diseño & Estampado",
+            images: ogImage ? [{ url: ogImage, width: 1200, height: 1200, alt: `${product.name} - ${categoryName}` }] : undefined,
+        },
+        twitter: {
+            card: "summary_large_image",
+            title,
+            description,
+            images: ogImage ? [ogImage] : undefined,
+        },
+    };
+}
 
 // Reviews data (shared across products for consistency)
 const REVIEWS = [
@@ -52,8 +85,41 @@ export default async function ProductDetailPage({ params }: { params: { category
     // In a real scenario, we might want to fetch these from DB
     const relatedProducts = (category as any).products?.filter((p: any) => p.id !== product.id).slice(0, 3) || [];
 
+    const baseUrl = "https://dldisenoyestampado.uy";
+    const productUrl = `${baseUrl}/categorias/${params.categorySlug}/${product.slug}`;
+    const productJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: product.name,
+        description: product.description,
+        image: product.images?.map((img: any) => img.url) || [],
+        sku: product.slug,
+        brand: { "@type": "Brand", "name": "DL Diseño & Estampado" },
+        category: category?.name,
+        url: productUrl,
+        offers: {
+            "@type": "Offer",
+            availability: "https://schema.org/InStock",
+            priceCurrency: "UYU",
+            url: productUrl,
+            seller: { "@type": "Organization", "name": "DL Diseño & Estampado" },
+        },
+    };
+    const breadcrumbJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Inicio", item: baseUrl },
+            { "@type": "ListItem", position: 2, name: "Productos", item: `${baseUrl}/categorias` },
+            { "@type": "ListItem", position: 3, name: category?.name, item: `${baseUrl}/categorias/${params.categorySlug}` },
+            { "@type": "ListItem", position: 4, name: product.name, item: productUrl },
+        ],
+    };
+
     return (
         <div className="pt-28 pb-24 bg-white">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
             <div className="section-container">
 
                 {/* ── Breadcrumb ── */}

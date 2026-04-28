@@ -44,21 +44,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
     ];
 
-    // Categorías dinámicas desde la DB
+    // Categorías y productos dinámicos desde la DB
     let categoryPages: MetadataRoute.Sitemap = [];
+    let productPages: MetadataRoute.Sitemap = [];
     try {
-        const categories = await prisma.category.findMany({
-            select: { slug: true, updatedAt: true },
-        });
+        const [categories, products] = await Promise.all([
+            prisma.category.findMany({ select: { slug: true, updatedAt: true } }),
+            (prisma as any).product.findMany({
+                where: { isActive: true },
+                select: { slug: true, updatedAt: true, category: { select: { slug: true } } },
+            }),
+        ]);
         categoryPages = categories.map((cat) => ({
-            url: `${baseUrl}/categorias/${cat.slug}`,
+            url: `${baseUrl}/categorias/lista-${cat.slug}`,
             lastModified: cat.updatedAt,
             changeFrequency: "weekly" as const,
             priority: 0.7,
         }));
+        productPages = products
+            .filter((p: any) => p.category?.slug && p.slug)
+            .map((p: any) => ({
+                url: `${baseUrl}/categorias/lista-${p.category.slug}/${p.slug}`,
+                lastModified: p.updatedAt,
+                changeFrequency: "monthly" as const,
+                priority: 0.6,
+            }));
     } catch (e) {
         // DB not ready
     }
 
-    return [...staticPages, ...categoryPages];
+    return [...staticPages, ...categoryPages, ...productPages];
 }
