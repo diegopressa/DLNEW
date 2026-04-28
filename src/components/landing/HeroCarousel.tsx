@@ -34,25 +34,33 @@ export default function HeroCarousel({ images }: { images: HeroImage[] }) {
         );
     }
 
+    const nextIndex = (currentIndex + 1) % images.length;
+
     return (
         <div className="relative aspect-video lg:aspect-square overflow-hidden rounded-3xl shadow-2xl bg-slate-100">
-            {images.map((img, index) => (
-                <div
-                    key={img.id}
-                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                        index === currentIndex ? "opacity-100" : "opacity-0"
-                    }`}
-                >
-                    <Image
-                        src={img.url}
-                        alt={`Hero Image ${index + 1}`}
-                        fill
-                        className="object-cover"
-                        priority={index === 0}
-                        sizes="(max-width: 1024px) 100vw, 50vw"
-                    />
-                </div>
-            ))}
+            {images.map((img, index) => {
+                const isActive = index === currentIndex;
+                const isNext = index === nextIndex;
+                if (!isActive && !isNext && index !== 0) return null;
+                return (
+                    <div
+                        key={img.id}
+                        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                            isActive ? "opacity-100" : "opacity-0"
+                        }`}
+                    >
+                        <Image
+                            src={img.url}
+                            alt={`Hero Image ${index + 1}`}
+                            fill
+                            className="object-cover"
+                            priority={index === 0}
+                            loading={index === 0 ? undefined : "lazy"}
+                            sizes="(max-width: 1024px) 100vw, 50vw"
+                        />
+                    </div>
+                );
+            })}
 
             {/* Indicators */}
             {images.length > 1 && (
