@@ -2,8 +2,25 @@ import { searchProducts } from "@/actions/productActions";
 import Link from "next/link";
 import { ArrowRight, Package, Search, ChevronRight, MessageCircle } from "lucide-react";
 import { getGlobalSettings } from "@/actions/settingsActions";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ searchParams }: { searchParams: { q?: string } }): Promise<Metadata> {
+    const query = (searchParams.q || "").trim();
+    const title = query
+        ? `Buscar "${query}" | DL Diseño & Estampado`
+        : `Buscar productos | DL Diseño & Estampado`;
+    const description = query
+        ? `Resultados para "${query}" en uniformes corporativos para empresas en Uruguay.`
+        : `Encontrá productos para uniformes empresariales: remeras, polos, buzos, camperas y más. Estampado y bordado.`;
+
+    return {
+        title,
+        description,
+        robots: { index: false, follow: true },
+    };
+}
 
 export default async function SearchResultsPage({
     searchParams

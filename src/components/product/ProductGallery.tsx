@@ -8,9 +8,11 @@ interface ProductGalleryProps {
     images: string[];
     hasScreenPrint?: boolean;
     hasEmbroidery?: boolean;
+    productName?: string;
 }
 
-export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery }: ProductGalleryProps) {
+export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery, productName }: ProductGalleryProps) {
+    const altBase = productName || "Producto";
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [lightboxOpen, setLightboxOpen] = useState(false);
 
@@ -23,7 +25,7 @@ export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery }
             <div className="relative group rounded-[2rem] overflow-hidden bg-slate-50 border border-slate-100 shadow-sm aspect-square">
                 <Image
                     src={images[selectedIndex]}
-                    alt="Producto"
+                    alt={`${altBase} - foto ${selectedIndex + 1}`}
                     fill
                     className="object-cover transition-all duration-500"
                     sizes="(max-width: 1024px) 100vw, 50vw"
@@ -90,7 +92,7 @@ export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery }
                                 : "border-slate-200 hover:border-primary/40 opacity-80 hover:opacity-100"
                         }`}
                     >
-                        <Image src={src} alt={`Miniatura ${i + 1}`} fill className="object-cover" sizes="(max-width: 640px) 80px, 96px" />
+                        <Image src={src} alt={`${altBase} - miniatura ${i + 1}`} fill className="object-cover" sizes="(max-width: 640px) 80px, 96px" />
                     </button>
                 ))}
             </div>
@@ -104,7 +106,7 @@ export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery }
                     <div className="relative max-w-4xl w-full max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
                         <img
                             src={images[selectedIndex]}
-                            alt="Producto ampliado"
+                            alt={`${altBase} - foto ampliada ${selectedIndex + 1}`}
                             className="w-full h-full object-contain rounded-2xl max-h-[85vh]"
                         />
                         {images.length > 1 && (

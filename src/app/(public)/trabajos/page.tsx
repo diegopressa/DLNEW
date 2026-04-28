@@ -1,6 +1,20 @@
 import { getProjects } from "@/actions/galleryActions";
+import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
+
+export const metadata: Metadata = {
+    title: "Trabajos Realizados para Empresas en Uruguay | DL Diseño & Estampado",
+    description: "Casos reales de uniformes, estampado y bordado para empresas e instituciones en Uruguay. Mirá los trabajos que ya entregamos.",
+    alternates: { canonical: "https://dldisenoyestampado.uy/trabajos" },
+    openGraph: {
+        type: "website",
+        url: "https://dldisenoyestampado.uy/trabajos",
+        title: "Trabajos Realizados para Empresas | DL Diseño & Estampado",
+        description: "Casos reales de uniformes y personalización para empresas uruguayas. +500 empresas atendidas.",
+        siteName: "DL Diseño & Estampado",
+    },
+};
 
 export default async function TrabajosPage() {
     const dbProjects = await getProjects();
