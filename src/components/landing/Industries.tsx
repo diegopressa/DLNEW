@@ -4,11 +4,10 @@ import prisma from "@/lib/prisma";
 import { getIndustriesSection } from "@/actions/homeActions";
 
 export default async function Industries() {
-    const industries: any[] = await prisma.industry.findMany({
-        orderBy: { order: "asc" }
-    });
-
-    const sectionData = await getIndustriesSection();
+    const [industries, sectionData] = await Promise.all([
+        prisma.industry.findMany({ orderBy: { order: "asc" } }) as Promise<any[]>,
+        getIndustriesSection(),
+    ]);
 
     return (
         <section className="bg-slate-50 pt-10 pb-12">

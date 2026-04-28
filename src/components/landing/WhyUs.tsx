@@ -2,8 +2,10 @@ import { CheckCircle2 } from "lucide-react";
 import { getWhyUs, getWhyUsSection } from "@/actions/homeActions";
 
 export default async function WhyUs() {
-    const data = await getWhyUs();
-    const sectionData = await getWhyUsSection();
+    const [data, sectionData] = await Promise.all([
+        getWhyUs(),
+        getWhyUsSection(),
+    ]);
 
     // Fallback if DB is empty
     const reasons = data.length > 0 ? data : [

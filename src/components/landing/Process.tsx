@@ -1,8 +1,10 @@
 import { getProcessSteps, getProcessSection } from "@/actions/homeActions";
 
 export default async function Process() {
-    const data = await getProcessSteps();
-    const sectionData = await getProcessSection();
+    const [data, sectionData] = await Promise.all([
+        getProcessSteps(),
+        getProcessSection(),
+    ]);
 
     const steps = data.length > 0 ? data : [
         { number: 1, title: "Nos escribís", description: "Contactanos por WhatsApp con tu idea inicial." },
