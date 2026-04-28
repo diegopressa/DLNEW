@@ -8,15 +8,18 @@ export default async function PublicLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const settings = await getGlobalSettings();
+    const settings: any = await getGlobalSettings();
     const whatsapp = settings?.whatsapp || "59897534866";
     const phone = settings?.phone || "59829250584";
     const email = settings?.email || "info@dldiseno.uy";
     const address = settings?.address || "Montevideo, Uruguay";
 
+    const sameAs = [settings?.facebookUrl, settings?.instagramUrl].filter(Boolean);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
+        "@id": "https://dldisenoyestampado.uy/#localbusiness",
         name: "DL Diseño & Estampado",
         description: "Uniformes personalizados para empresas. Estampado, bordado y entrega en todo Uruguay.",
         url: "https://dldisenoyestampado.uy",
@@ -33,10 +36,12 @@ export default async function PublicLayout({
             latitude: -34.9011,
             longitude: -56.1645,
         },
-        areaServed: {
-            "@type": "Country",
-            name: "Uruguay",
-        },
+        areaServed: [
+            { "@type": "Country", name: "Uruguay" },
+            { "@type": "AdministrativeArea", name: "Montevideo" },
+            { "@type": "AdministrativeArea", name: "Canelones" },
+            { "@type": "AdministrativeArea", name: "Maldonado" },
+        ],
         openingHoursSpecification: {
             "@type": "OpeningHoursSpecification",
             dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
@@ -44,8 +49,26 @@ export default async function PublicLayout({
             closes: "18:00",
         },
         priceRange: "$$",
-        image: "https://dldisenoyestampado.uy/favicon.png",
-        sameAs: [],
+        image: "https://dldisenoyestampado.uy/og-image.jpg",
+        logo: "https://dldisenoyestampado.uy/logo.png",
+        sameAs,
+    };
+
+    const organizationJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": "https://dldisenoyestampado.uy/#organization",
+        name: "DL Diseño & Estampado",
+        url: "https://dldisenoyestampado.uy",
+        logo: "https://dldisenoyestampado.uy/logo.png",
+        contactPoint: {
+            "@type": "ContactPoint",
+            telephone: `+${phone}`,
+            contactType: "customer service",
+            areaServed: "UY",
+            availableLanguage: "es",
+        },
+        sameAs,
     };
 
     return (
@@ -53,6 +76,10 @@ export default async function PublicLayout({
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
             />
             <Navbar whatsapp={whatsapp} />
             <main className="flex-grow">{children}</main>

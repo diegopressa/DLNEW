@@ -51,7 +51,7 @@ export default function HeroCarousel({ images }: { images: HeroImage[] }) {
                     >
                         <Image
                             src={img.url}
-                            alt={`Hero Image ${index + 1}`}
+                            alt={`Uniformes corporativos personalizados DL - imagen ${index + 1}`}
                             fill
                             className="object-cover"
                             priority={index === 0}
