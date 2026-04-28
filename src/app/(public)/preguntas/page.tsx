@@ -10,8 +10,22 @@ export const metadata: Metadata = {
 export default async function PreguntasPage() {
     const faqItems = await getFaqItems();
 
+    const faqJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: (faqItems || []).map((item: any) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: {
+                "@type": "Answer",
+                text: item.answer,
+            },
+        })),
+    };
+
     return (
         <div className="pt-32 pb-20 bg-slate-50 min-h-screen">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
             <FAQ items={faqItems} />
         </div>
     );

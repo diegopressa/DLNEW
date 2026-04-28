@@ -136,10 +136,11 @@ export default async function ProductDetailPage({ params }: { params: { category
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-20 items-start">
                     {/* Left: Gallery */}
                     <div className="lg:sticky lg:top-24">
-                        <ProductGallery 
-                            images={product.images.map((img: any) => img.url)} 
+                        <ProductGallery
+                            images={product.images.map((img: any) => img.url)}
                             hasScreenPrint={product.hasScreenPrint}
                             hasEmbroidery={product.hasEmbroidery}
+                            productName={product.name}
                         />
                     </div>
 
