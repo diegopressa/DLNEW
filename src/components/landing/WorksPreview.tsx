@@ -2,8 +2,10 @@ import { getProjectsSection, getProjects } from "@/actions/homeActions";
 import WorksCarousel from "./WorksCarousel";
 
 export default async function WorksPreview() {
-    const data = await getProjects();
-    const sectionData = await getProjectsSection();
+    const [data, sectionData] = await Promise.all([
+        getProjects(),
+        getProjectsSection(),
+    ]);
 
     const works = data.length > 0 ? data : [
         {

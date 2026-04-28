@@ -3,11 +3,10 @@ import prisma from "@/lib/prisma";
 import { getSolutionsSection } from "@/actions/homeActions";
 
 export default async function Solutions() {
-    const solutions: any[] = await prisma.businessSolution.findMany({
-        orderBy: { order: "asc" }
-    });
-
-    const sectionData = await getSolutionsSection();
+    const [solutions, sectionData] = await Promise.all([
+        prisma.businessSolution.findMany({ orderBy: { order: "asc" } }) as Promise<any[]>,
+        getSolutionsSection(),
+    ]);
 
     return (
         <section className="pt-12 pb-24">

@@ -6,22 +6,18 @@ import { getGlobalSettings } from "@/actions/settingsActions";
 import HeroCarousel from "./HeroCarousel";
 
 export default async function Hero() {
-    const data = await prisma.heroSection.findUnique({
-        where: { id: 1 }
-    });
-    const settings = await getGlobalSettings();
-    const whatsapp = settings?.whatsapp || "59897534866";
-
-    // Consultamos las imágenes por separado para evitar errores si prisma generate no se completó
-    let images: any[] = [];
-    try {
-        images = await (prisma as any).heroImage.findMany({
+    const [data, settings, images] = await Promise.all([
+        prisma.heroSection.findUnique({ where: { id: 1 } }),
+        getGlobalSettings(),
+        (prisma as any).heroImage.findMany({
             where: { heroId: 1 },
             orderBy: { order: "asc" }
-        });
-    } catch (e) {
-        console.error("HeroImage table not ready yet:", e);
-    }
+        }).catch((e: any) => {
+            console.error("HeroImage table not ready yet:", e);
+            return [] as any[];
+        }) as Promise<any[]>,
+    ]);
+    const whatsapp = settings?.whatsapp || "59897534866";
 
     const hero = {
         title: data?.title || "Uniformes personalizados para empresas",

@@ -20,9 +20,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-    const brands = await getBrands();
-    const faqItems = await getFaqItems();
-    const testimonials = await getTestimonials();
+    const [brands, faqItems, testimonials] = await Promise.all([
+        getBrands(),
+        getFaqItems(),
+        getTestimonials(),
+    ]);
 
     return (
         <>

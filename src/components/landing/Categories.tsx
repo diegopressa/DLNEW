@@ -4,8 +4,10 @@ import { ArrowRight } from "lucide-react";
 import { getCategoriesSection, getCategories } from "@/actions/homeActions";
 
 export default async function Categories() {
-    const data = await getCategories();
-    const sectionData = await getCategoriesSection();
+    const [data, sectionData] = await Promise.all([
+        getCategories(),
+        getCategoriesSection(),
+    ]);
 
     const categories = data.length > 0 ? data : [
         { name: "Remeras y Polos", imageUrl: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=600" },
