@@ -59,9 +59,6 @@ export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery }
                 {(hasScreenPrint || hasEmbroidery) && (
                     <div className="absolute top-4 right-4 sm:right-6 z-20 animate-in fade-in slide-in-from-right-4 duration-500 origin-top-right scale-[0.8] sm:scale-100">
                         <div className="flex flex-col items-center gap-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.05)]">
-                            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest leading-none mb-1">
-                                Personalización
-                            </span>
                             <div className="flex flex-col gap-2 w-32">
                                 {hasScreenPrint && (
                                     <div className="flex items-center justify-center gap-2 bg-[#10b981] text-white px-3 py-2.5 rounded-2xl shadow-lg shadow-emerald-500/20 w-full">
@@ -82,18 +79,18 @@ export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery }
             </div>
 
             {/* Thumbnails */}
-            <div className="flex gap-3 mt-4 overflow-x-auto pb-1">
+            <div className="flex gap-3 mt-4 overflow-x-auto pb-2 px-1 -mx-1 snap-x snap-mandatory scrollbar-thin">
                 {images.map((src, i) => (
                     <button
                         key={i}
                         onClick={() => setSelectedIndex(i)}
-                        className={`relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+                        className={`relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-slate-50 border-2 transition-all duration-200 snap-start ${
                             i === selectedIndex
-                                ? "border-primary shadow-md shadow-primary/20 scale-105"
-                                : "border-slate-200 hover:border-primary/40 opacity-70 hover:opacity-100"
+                                ? "border-primary ring-2 ring-primary/20"
+                                : "border-slate-200 hover:border-primary/40 opacity-80 hover:opacity-100"
                         }`}
                     >
-                        <Image src={src} alt={`Miniatura ${i + 1}`} fill className="object-cover" sizes="80px" />
+                        <Image src={src} alt={`Miniatura ${i + 1}`} fill className="object-cover" sizes="(max-width: 640px) 80px, 96px" />
                     </button>
                 ))}
             </div>
