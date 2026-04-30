@@ -2,6 +2,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
 import { getGlobalSettings } from "@/actions/settingsActions";
+import { getCategories } from "@/actions/categoryActions";
 
 export default async function PublicLayout({
     children,
@@ -10,6 +11,17 @@ export default async function PublicLayout({
 }) {
     const settings: any = await getGlobalSettings();
     const whatsapp = settings?.whatsapp || "59897534866";
+
+    const dbCategories = await getCategories();
+    const navCategories = dbCategories.map((c: any) => ({
+        name: c.name,
+        href: `/categorias/lista-${c.name
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[̀-ͯ]/g, "")
+            .replace(/\s+/g, "-")}`,
+        image: c.imageUrl,
+    }));
     const phone = settings?.phone || "59829250584";
     const email = settings?.email || "info@dldiseno.uy";
     const address = settings?.address || "Montevideo, Uruguay";
@@ -81,7 +93,7 @@ export default async function PublicLayout({
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
             />
-            <Navbar whatsapp={whatsapp} />
+            <Navbar whatsapp={whatsapp} categories={navCategories} />
             <main className="flex-grow">{children}</main>
             <Footer settings={settings} />
             <FloatingWhatsApp whatsapp={whatsapp} />
