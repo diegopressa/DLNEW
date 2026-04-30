@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getCategories, getCategoriasHeader } from "@/actions/categoryActions";
 import { getGlobalSettings } from "@/actions/settingsActions";
 import FeaturedProductSearch from "@/components/product/FeaturedProductSearch";
+import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 
 export const dynamic = "force-dynamic";
 
@@ -113,6 +114,7 @@ export default async function ProductosPage() {
                     </Link>
                 </div>
             </div>
+            <AdminEditButtonGate href="/admin/categorias" label="Editar Categorías" />
         </div>
     );
 }

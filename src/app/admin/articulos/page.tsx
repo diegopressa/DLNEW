@@ -222,6 +222,23 @@ export default function ProductsEditor() {
 
     useEffect(() => { loadData(); }, []);
 
+    // Auto-open edit modal if ?edit=ID is present in the URL
+    useEffect(() => {
+        if (loading || products.length === 0) return;
+        const params = new URLSearchParams(window.location.search);
+        const editParam = params.get("edit");
+        if (!editParam) return;
+        const id = parseInt(editParam, 10);
+        if (Number.isNaN(id)) return;
+        const prod = products.find((p) => p.id === id);
+        if (prod) {
+            handleEdit(prod);
+            const url = new URL(window.location.href);
+            url.searchParams.delete("edit");
+            window.history.replaceState({}, "", url.toString());
+        }
+    }, [loading, products]);
+
     const loadData = async () => {
         const [prodData, catData, colorData] = await Promise.all([
             getProducts(),

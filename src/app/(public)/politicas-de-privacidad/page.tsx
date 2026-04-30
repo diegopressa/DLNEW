@@ -1,5 +1,6 @@
 import React from "react";
 import { getPrivacyPolicy } from "@/actions/privacyActions";
+import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 import { buildMetadata } from "@/lib/buildMetadata";
 import type { Metadata } from "next";
 
@@ -34,6 +35,7 @@ export default async function PrivacyPolicyPage() {
                     </div>
                 </div>
             </div>
+            <AdminEditButtonGate href="/admin/politicas-de-privacidad" label="Editar Políticas" />
         </div>
     );
 }

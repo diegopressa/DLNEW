@@ -4,6 +4,7 @@ import { getGlobalSettings } from "@/actions/settingsActions";
 import { buildMetadata } from "@/lib/buildMetadata";
 import type { Metadata } from "next";
 import ContactForm from "@/components/contact/ContactForm";
+import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 
 export async function generateMetadata(): Promise<Metadata> {
     return buildMetadata("/contacto");
@@ -135,6 +136,7 @@ export default async function ContactoPage() {
                     </div>
                 </div>
             </div>
+            <AdminEditButtonGate href="/admin/settings" label="Editar Contacto" />
         </div>
     );
 }
