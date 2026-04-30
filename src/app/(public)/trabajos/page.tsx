@@ -1,4 +1,5 @@
 import { getProjects } from "@/actions/galleryActions";
+import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 import type { Metadata } from "next";
 
 export const revalidate = 3600;
@@ -59,6 +60,7 @@ export default async function TrabajosPage() {
                     </div>
                 )}
             </div>
+            <AdminEditButtonGate href="/admin/trabajos" label="Editar Trabajos" />
         </div>
     );
 }

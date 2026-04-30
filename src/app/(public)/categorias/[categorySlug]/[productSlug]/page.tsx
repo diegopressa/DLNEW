@@ -6,6 +6,7 @@ import ProductGallery from "@/components/product/ProductGallery";
 import ColorSwatches from "@/components/product/ColorSwatches";
 import { getProductBySlug } from "@/actions/productActions";
 import { getCategoryBySlug } from "@/actions/categoryActions";
+import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
@@ -205,6 +206,8 @@ export default async function ProductDetailPage({ params }: { params: { category
                         </div>
                     </div>
                 </div>
+
+                <AdminEditButtonGate href={`/admin/articulos?edit=${product.id}`} label={`Editar ${product.name}`} />
 
                 {/* Reviews */}
                 <section className="mt-24">

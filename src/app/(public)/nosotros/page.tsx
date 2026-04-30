@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { getAboutUs } from "@/actions/aboutActions";
+import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 import { buildMetadata } from "@/lib/buildMetadata";
 import type { Metadata } from "next";
 
@@ -58,6 +59,7 @@ export default async function NosotrosPage() {
                     </div>
                 </div>
             </div>
+            <AdminEditButtonGate href="/admin/nosotros" label="Editar Nosotros" />
         </div>
     );
 }

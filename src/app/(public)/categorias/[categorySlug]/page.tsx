@@ -2,6 +2,7 @@ import { ChevronRight, ArrowRight, Package, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getCategoryBySlug } from "@/actions/categoryActions";
+import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
@@ -171,6 +172,7 @@ export default async function CategoryListingPage({ params }: { params: { catego
                 )}
 
             </div>
+            <AdminEditButtonGate href={`/admin/categorias?edit=${category.id}`} label={`Editar ${category.name}`} />
         </div>
     );
 }

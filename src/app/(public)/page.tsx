@@ -12,6 +12,7 @@ import Process from "@/components/landing/Process";
 import FAQ from "@/components/landing/FAQ";
 import CTASection from "@/components/landing/CTASection";
 import Testimonials from "@/components/landing/Testimonials";
+import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 import { buildMetadata } from "@/lib/buildMetadata";
 import type { Metadata } from "next";
 
@@ -39,6 +40,7 @@ export default async function HomePage() {
             <Testimonials items={testimonials} />
             <FAQ items={faqItems} />
             <CTASection />
+            <AdminEditButtonGate href="/admin/home" label="Editar Inicio" />
         </>
     );
 }

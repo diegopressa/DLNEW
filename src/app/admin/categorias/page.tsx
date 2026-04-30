@@ -20,6 +20,23 @@ export default function CategoriesEditor() {
         loadData();
     }, []);
 
+    // Auto-open edit modal if ?edit=ID is present in the URL
+    useEffect(() => {
+        if (loading || categories.length === 0) return;
+        const params = new URLSearchParams(window.location.search);
+        const editParam = params.get("edit");
+        if (!editParam) return;
+        const id = parseInt(editParam, 10);
+        if (Number.isNaN(id)) return;
+        const cat = categories.find((c) => c.id === id);
+        if (cat) {
+            handleEdit(cat);
+            const url = new URL(window.location.href);
+            url.searchParams.delete("edit");
+            window.history.replaceState({}, "", url.toString());
+        }
+    }, [loading, categories]);
+
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
