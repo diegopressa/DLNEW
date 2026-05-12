@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         const { data, error } = await supabase.storage
             .from(bucket)
             .upload(filename, file, {
-                cacheControl: '3600',
+                cacheControl: '2592000',
                 upsert: false
             });
 
