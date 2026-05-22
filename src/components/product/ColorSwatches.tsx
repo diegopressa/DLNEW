@@ -22,10 +22,7 @@ export default function ColorSwatches({ colors }: ColorSwatchesProps) {
     return (
         <div>
             <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                Colores disponibles 
-                <span className="ml-2 text-primary font-bold normal-case tracking-normal">
-                    — {normalizedColors[selected]?.name}
-                </span>
+                Colores disponibles
             </p>
             <div className="flex flex-wrap gap-3">
                 {normalizedColors.map((color, i) => (
