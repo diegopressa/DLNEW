@@ -171,13 +171,6 @@ export default async function ProductDetailPage({ params }: { params: { category
                             </div>
                         </div>
 
-                        <div className="bg-primary/5 border border-primary/15 rounded-2xl p-5">
-                            <p className="text-base font-bold text-slate-900 flex items-center gap-2">
-                                <span className="text-primary">✦</span>
-                                {product.name} para Empresas — {product.highlight}
-                            </p>
-                        </div>
-
                         {product.colors.length > 0 && <ColorSwatches colors={product.colors} />}
 
                         {product.features.length > 0 && (
