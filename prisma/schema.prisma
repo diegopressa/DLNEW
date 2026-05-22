@@ -24,6 +24,7 @@ model GlobalSettings {
   hoursWeek    String? @default("09:00 - 18:00 hs")
   hoursSat     String? @default("09:00 - 13:00 hs")
   mapEmbedUrl  String?
+  logoUrl      String?
 }
 
 model AboutUs {

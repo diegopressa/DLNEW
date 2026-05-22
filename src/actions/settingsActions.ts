@@ -33,7 +33,7 @@ export async function updateGlobalSettings(data: any) {
             update: data,
             create: { id: 1, ...data }
         });
-        revalidatePath("/");
+        revalidatePath("/", "layout");
         return { success: true };
     } catch (error) {
         return { success: false };

@@ -17,9 +17,9 @@ export default function Footer({ settings }: { settings: any }) {
                     <div className="space-y-4">
                         <Link href="/" className="inline-block">
                             <img
-                                src="/logo.png"
+                                src={settings?.logoUrl || "/logo.png"}
                                 alt="DL Diseño & Estampado"
-                                className="h-10 w-auto object-contain brightness-0 invert"
+                                className={`h-10 w-auto object-contain ${settings?.logoUrl ? "" : "brightness-0 invert"}`}
                             />
                         </Link>
                         <p className="text-sm leading-relaxed">
