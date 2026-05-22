@@ -11,9 +11,11 @@ type NavCategory = { name: string; href: string; image?: string | null };
 const Navbar = ({
     whatsapp = "59899000000",
     categories = [],
+    logoUrl,
 }: {
     whatsapp?: string;
     categories?: NavCategory[];
+    logoUrl?: string | null;
 }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -59,7 +61,7 @@ const Navbar = ({
                 <div className="flex justify-between items-center">
                     <Link href="/" className="flex items-center">
                         <img
-                            src="/logo.png"
+                            src={logoUrl || "/logo.png"}
                             alt="DL Diseño & Estampado"
                             className="h-12 w-auto object-contain"
                         />

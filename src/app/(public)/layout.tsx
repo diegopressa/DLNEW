@@ -93,7 +93,7 @@ export default async function PublicLayout({
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
             />
-            <Navbar whatsapp={whatsapp} categories={navCategories} />
+            <Navbar whatsapp={whatsapp} categories={navCategories} logoUrl={settings?.logoUrl} />
             <main className="flex-grow">{children}</main>
             <Footer settings={settings} />
             <FloatingWhatsApp whatsapp={whatsapp} />
