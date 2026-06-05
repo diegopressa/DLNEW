@@ -10,11 +10,13 @@ export default async function CTASection() {
 
     // Determine target based on what buttonLink contains
     const rawLink = ctaData?.buttonLink || "#";
-    const buttonLink = rawLink.startsWith('#') 
-        ? rawLink 
-        : (rawLink.includes('wa.me') || rawLink === '#whatsapp') 
-            ? `https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0` 
-            : rawLink;
+    const isWhatsAppLink =
+        rawLink === "#whatsapp" ||
+        rawLink.includes("wa.me") ||
+        rawLink.includes("api.whatsapp.com");
+    const buttonLink = isWhatsAppLink
+        ? `https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`
+        : rawLink;
 
     return (
         <section className="py-14 bg-slate-50">
