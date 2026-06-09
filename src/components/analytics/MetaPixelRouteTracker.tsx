@@ -1,20 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-// Dispara `fbq('track','PageView')` en cada navegación SPA del App Router.
-// El primer PageView lo dispara el snippet base del pixel; este componente
-// cubre los cambios de ruta posteriores que ese snippet no captura.
+// Único disparador de `fbq('track','PageView')` para el pixel de Meta.
+// Cubre la carga inicial y cada navegación del App Router, evitando el doble
+// hit que ocurre cuando el snippet base también dispara PageView en SPAs.
 export default function MetaPixelRouteTracker() {
     const pathname = usePathname();
-    const isFirst = useRef(true);
 
     useEffect(() => {
-        if (isFirst.current) {
-            isFirst.current = false;
-            return;
-        }
         const fbq = (window as any).fbq;
         if (typeof fbq === "function") {
             fbq("track", "PageView");
