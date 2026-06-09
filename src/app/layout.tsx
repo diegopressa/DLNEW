@@ -63,7 +63,9 @@ export default function RootLayout({
         <Analytics />
         <MetaPixelRouteTracker />
 
-        {/* Meta Pixel — base + PageView inicial */}
+        {/* Meta Pixel — solo init. Los PageView los dispara MetaPixelRouteTracker
+            en cada navegación del App Router (incluida la carga inicial), así
+            evitamos el doble disparo del primer hit en SPAs. */}
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
             !function(f,b,e,v,n,t,s)
@@ -75,7 +77,6 @@ export default function RootLayout({
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
             fbq('init', '${META_PIXEL_ID}');
-            fbq('track', 'PageView');
           `}
         </Script>
         <noscript>
