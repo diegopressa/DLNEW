@@ -103,12 +103,66 @@ export default function RootLayout({
             gtag('config', 'AW-723199533');
             gtag('config', 'G-YT47D5C7GN');
 
+            // --- Atribución DL: captura gclid/fbclid + código de prioridad ---
+            var DL_WEBHOOK = 'https://hook.us2.make.com/jh332psvccj3g3l12p0l592r5dbslult';
+            var DL_STORE = 'dl_attr';
+            var DL_MAXAGE = 90 * 24 * 60 * 60 * 1000;
+            function dlGenCode() {
+              return ('DL' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)).toUpperCase();
+            }
+            function dlGetAttr() {
+              try { return JSON.parse(localStorage.getItem(DL_STORE) || 'null'); } catch (e) { return null; }
+            }
+            function dlSetAttr(v) {
+              try { localStorage.setItem(DL_STORE, JSON.stringify(v)); } catch (e) {}
+            }
+            try {
+              var dlParams = new URLSearchParams(window.location.search);
+              var dlGclid = dlParams.get('gclid');
+              var dlFbclid = dlParams.get('fbclid');
+              var dlAttr = dlGetAttr();
+              var dlNow = Date.now();
+              if (dlGclid || dlFbclid) {
+                dlAttr = { code: dlGenCode(), gclid: dlGclid || '', fbclid: dlFbclid || '', ts: dlNow };
+                dlSetAttr(dlAttr);
+              } else if (!dlAttr || !dlAttr.code || (dlNow - dlAttr.ts) > DL_MAXAGE) {
+                dlAttr = { code: dlGenCode(), gclid: '', fbclid: '', ts: dlNow };
+                dlSetAttr(dlAttr);
+              }
+            } catch (e) {}
+
             document.addEventListener('click', function(e) {
               var el = e.target.closest('a, button');
               if (el) {
                 var url = el.href || (el.getAttribute && el.getAttribute('href')) || '';
                 if (/wa\\.me|api\\.whatsapp\\.com/.test(url)) {
                   e.preventDefault();
+
+                  var a = dlGetAttr() || { code: '', gclid: '', fbclid: '' };
+                  var page = window.location.pathname.replace(/^\\//, '') || 'home';
+
+                  // 1) registrar en la libretita (Make -> Google Sheet)
+                  try {
+                    if (a.code) {
+                      fetch(DL_WEBHOOK +
+                        '?code=' + encodeURIComponent(a.code) +
+                        '&gclid=' + encodeURIComponent(a.gclid || '') +
+                        '&fbclid=' + encodeURIComponent(a.fbclid || '') +
+                        '&page=' + encodeURIComponent(page),
+                        { mode: 'no-cors', keepalive: true }
+                      ).catch(function() {});
+                    }
+                  } catch (err) {}
+
+                  // 2) reescribir el mensaje de WhatsApp con el código
+                  try {
+                    if (a.code) {
+                      var u = new URL(url);
+                      u.searchParams.set('text', 'Hola, te escribo desde la web, mi código de prioridad es: ' + a.code);
+                      url = u.toString();
+                    }
+                  } catch (err2) {}
+
                   if (typeof window.gtag === 'function') {
                     window.gtag('event', 'conversion', {
                       'send_to': 'AW-723199533/HMUhCLKtn5McEK3M7NgC'
