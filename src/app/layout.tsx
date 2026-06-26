@@ -59,51 +59,13 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`${inter.className} antialiased`}>
-        {children}
-        <Analytics />
-        <MetaPixelRouteTracker />
-
-        {/* Meta Pixel — solo init. Los PageView los dispara MetaPixelRouteTracker
-            en cada navegación del App Router (incluida la carga inicial), así
-            evitamos el doble disparo del primer hit en SPAs. */}
-        <Script id="meta-pixel" strategy="afterInteractive">
-          {`
-            !function(f,b,e,v,n,t,s)
-            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '${META_PIXEL_ID}');
-          `}
-        </Script>
-        <noscript>
-          <img
-            height="1"
-            width="1"
-            style={{ display: "none" }}
-            alt=""
-            src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
-          />
-        </noscript>
-
-        {/* Google tag (gtag.js) — carga diferida para no bloquear renderizado */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=AW-723199533"
-          strategy="afterInteractive"
-        />
-        <Script id="gtag-init" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            window.gtag = gtag;
-            gtag('js', new Date());
-            gtag('config', 'AW-723199533');
-            gtag('config', 'G-YT47D5C7GN');
-
-            // --- Atribución DL: captura gclid/fbclid + código de prioridad ---
+        {/* Atribución DL — corre ANTES de {children} (apenas parsea el body) para
+            que ni el clic más rápido en el botón del Hero, que está arriba de
+            todo, se escape sin el código. Antes esto vivía en gtag-init
+            (afterInteractive) y tardaba ~1s en cargar. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
             var DL_WEBHOOK = 'https://hook.us2.make.com/jh332psvccj3g3l12p0l592r5dbslult';
             var DL_STORE = 'dl_attr';
             var DL_MAXAGE = 90 * 24 * 60 * 60 * 1000;
@@ -177,6 +139,52 @@ export default function RootLayout({
                 }
               }
             });
+          `,
+          }}
+        />
+        {children}
+        <Analytics />
+        <MetaPixelRouteTracker />
+
+        {/* Meta Pixel — solo init. Los PageView los dispara MetaPixelRouteTracker
+            en cada navegación del App Router (incluida la carga inicial), así
+            evitamos el doble disparo del primer hit en SPAs. */}
+        <Script id="meta-pixel" strategy="afterInteractive">
+          {`
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '${META_PIXEL_ID}');
+          `}
+        </Script>
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style={{ display: "none" }}
+            alt=""
+            src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
+          />
+        </noscript>
+
+        {/* Google tag (gtag.js) — carga diferida para no bloquear renderizado */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-723199533"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            window.gtag = gtag;
+            gtag('js', new Date());
+            gtag('config', 'AW-723199533');
+            gtag('config', 'G-YT47D5C7GN');
           `}
         </Script>
       </body>
