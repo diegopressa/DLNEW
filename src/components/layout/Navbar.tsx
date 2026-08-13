@@ -21,8 +21,8 @@ const Navbar = ({
             <div className="bg-grafito text-slate-300 text-xs sm:text-[13px]">
                 <div className="max-w-[1240px] mx-auto px-4 sm:px-6 py-2 flex justify-between items-center gap-4">
                     <span className="truncate">
-                        Envíos a <b className="text-white font-semibold">todo Uruguay</b>
-                        <span className="hidden sm:inline"> · Presupuesto en menos de <b className="text-white font-semibold">2 horas</b></span>
+                        Estamos en <b className="text-white font-semibold">Yaguarón 1838</b> esq. Nueva York
+                        <span className="hidden sm:inline"> · Envíos en <b className="text-white font-semibold">Montevideo y todo el Uruguay</b></span>
                     </span>
                     <a href={waHref} target="_blank" rel="noopener noreferrer" className="shrink-0 hover:text-white transition-colors">
                         WhatsApp: <b className="text-white font-semibold">097 534 866</b>
