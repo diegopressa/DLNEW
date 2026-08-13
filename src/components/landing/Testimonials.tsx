@@ -9,6 +9,11 @@ interface Testimonial {
     imageUrl?: string;
 }
 
+// Perfil de Google Business de DL (place_id encontrado en el listado del negocio).
+// VERIFICAR con Diego que abre su ficha correcta antes del lanzamiento.
+const GOOGLE_REVIEWS_URL =
+    "https://www.google.com/maps/place/?q=place_id:ChIJaQbG8iuBn5URN69g_bK4BRk";
+
 function Estrellas() {
     return (
         <div className="flex gap-0.5" aria-label="5 de 5 estrellas">
@@ -19,28 +24,42 @@ function Estrellas() {
     );
 }
 
-// Testimonios con 5 estrellas estilo Google: prueba social que llama la atención.
+// Testimonios con 5 estrellas tipo Google; cada tarjeta linkea a las reseñas reales.
 export default function Testimonials({ items }: { items: Testimonial[] }) {
     if (!items || items.length === 0) return null;
     const destacados = items.slice(0, 3);
 
     return (
-        <section className="bg-white py-14 sm:py-20">
+        <section className="bg-[#F7F7F7] py-14 sm:py-20">
             <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
-                <div className="mb-8 sm:mb-10">
-                    <h2 className="font-display uppercase text-4xl sm:text-5xl text-grafito">
-                        Lo que dicen nuestros clientes
-                    </h2>
-                    <div className="mt-3 flex items-center gap-2.5">
-                        <Estrellas />
-                        <span className="text-sm font-semibold text-slate-500">Opiniones reales de empresas que ya pidieron</span>
+                <div className="mb-8 sm:mb-10 flex flex-wrap items-end justify-between gap-4">
+                    <div>
+                        <h2 className="font-display uppercase text-4xl sm:text-5xl text-grafito">
+                            Lo que dicen nuestros clientes
+                        </h2>
+                        <div className="mt-3 flex items-center gap-2.5">
+                            <Estrellas />
+                            <span className="text-sm font-semibold text-slate-500">Opiniones reales de empresas que ya pidieron</span>
+                        </div>
                     </div>
+                    <a
+                        href={GOOGLE_REVIEWS_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-bold text-sm text-grafito border-b-2 border-primary pb-0.5 hover:text-primary transition-colors"
+                    >
+                        Ver todas las opiniones en Google →
+                    </a>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                     {destacados.map((t) => (
-                        <div
+                        <a
                             key={t.id}
+                            href={GOOGLE_REVIEWS_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Ver las reseñas en Google"
                             className="bg-white border border-slate-200 rounded-md p-6 shadow-sm hover:shadow-lg hover:border-primary/40 transition-all flex flex-col"
                         >
                             <Estrellas />
@@ -68,7 +87,7 @@ export default function Testimonials({ items }: { items: Testimonial[] }) {
                                     )}
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     ))}
                 </div>
             </div>
