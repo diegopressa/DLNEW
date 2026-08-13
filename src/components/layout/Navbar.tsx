@@ -41,8 +41,8 @@ const Navbar = ({
                         />
                     </Link>
 
-                    {/* Buscador (desktop) */}
-                    <form action="/buscar" className="hidden md:flex flex-1 max-w-[560px] border-2 border-grafito rounded-md overflow-hidden">
+                    {/* Buscador (desktop), centrado entre el logo y el CTA */}
+                    <form action="/buscar" className="hidden md:flex flex-1 max-w-[560px] mx-auto border-2 border-grafito rounded-md overflow-hidden">
                         <input
                             type="text"
                             name="q"
@@ -55,7 +55,7 @@ const Navbar = ({
                         </button>
                     </form>
 
-                    <div className="ml-auto flex items-center gap-3">
+                    <div className="ml-auto md:ml-0 flex items-center gap-3 shrink-0">
                         {/* Lupa (mobile) */}
                         <Link href="/buscar" aria-label="Buscar" className="md:hidden p-2 text-grafito">
                             <Search className="w-5 h-5" />

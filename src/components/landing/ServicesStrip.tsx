@@ -15,7 +15,7 @@ export default function ServicesStrip() {
                         key={s.titulo}
                         className={`flex items-start gap-3.5 py-5 px-2 sm:px-5 ${i > 0 ? "lg:border-l lg:border-slate-100" : ""} ${i % 2 === 1 ? "border-l border-slate-100 lg:border-l" : ""} ${i > 1 ? "border-t border-slate-100 lg:border-t-0" : ""}`}
                     >
-                        <span className="w-10 h-10 shrink-0 rounded-full bg-resalte text-grafito grid place-items-center font-extrabold text-xs">
+                        <span className="w-10 h-10 shrink-0 rounded-full bg-primary text-white grid place-items-center font-extrabold text-xs">
                             {s.icono}
                         </span>
                         <span>

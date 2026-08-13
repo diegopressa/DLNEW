@@ -37,7 +37,7 @@ export default async function Hero() {
             )}
             <div className="relative max-w-[1240px] mx-auto px-4 sm:px-6">
                 <div className="max-w-[640px] py-16 sm:py-24 lg:py-32 text-white">
-                    <span className="inline-block bg-resalte text-grafito font-bold text-[11px] sm:text-xs uppercase tracking-[0.1em] px-3 py-1.5 rounded-sm mb-5">
+                    <span className="inline-block bg-primary text-white font-bold text-[11px] sm:text-xs uppercase tracking-[0.1em] px-3 py-1.5 rounded-sm mb-5">
                         Uniformes para empresas · Uruguay
                     </span>
                     <h1 className="font-display uppercase leading-[0.98] text-5xl sm:text-6xl lg:text-[4.6rem] text-white">

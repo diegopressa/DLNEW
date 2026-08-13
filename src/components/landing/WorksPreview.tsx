@@ -21,7 +21,7 @@ export default async function WorksPreview() {
                     </h2>
                     <Link
                         href="/trabajos"
-                        className="font-bold text-sm text-grafito border-b-2 border-resalte pb-0.5 hover:text-primary transition-colors"
+                        className="font-bold text-sm text-grafito border-b-2 border-primary pb-0.5 hover:text-primary transition-colors"
                     >
                         Ver todos →
                     </Link>
@@ -50,7 +50,7 @@ export default async function WorksPreview() {
                                 <h3 className="font-bold text-[15px] text-grafito mb-2 leading-snug">
                                     {work.category || work.title}
                                 </h3>
-                                <span className="text-[13px] font-bold text-grafito border-b-2 border-resalte pb-0.5">
+                                <span className="text-[13px] font-bold text-grafito border-b-2 border-primary pb-0.5">
                                     Quiero algo así →
                                 </span>
                             </div>

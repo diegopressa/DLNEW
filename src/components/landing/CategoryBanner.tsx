@@ -32,7 +32,7 @@ export default async function CategoryBanner() {
                         </p>
                         <Link
                             href={`/categorias/lista-${slug}`}
-                            className="inline-block bg-resalte text-grafito px-7 py-3.5 rounded-md font-bold uppercase tracking-wide text-sm hover:bg-[#EDD500] transition-colors"
+                            className="inline-block bg-primary text-white px-7 py-3.5 rounded-md font-bold uppercase tracking-wide text-sm hover:bg-primary/90 transition-colors"
                         >
                             Ver alta visibilidad
                         </Link>

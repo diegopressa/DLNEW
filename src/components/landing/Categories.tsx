@@ -20,7 +20,7 @@ export default async function Categories() {
                     </h2>
                     <Link
                         href="/categorias"
-                        className="font-bold text-sm text-grafito border-b-2 border-resalte pb-0.5 hover:text-primary transition-colors"
+                        className="font-bold text-sm text-grafito border-b-2 border-celeste pb-0.5 hover:text-primary transition-colors"
                     >
                         Ver catálogo completo →
                     </Link>
@@ -45,7 +45,7 @@ export default async function Categories() {
                                     />
                                 </div>
                                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-grafito/90 to-transparent pt-9 pb-3.5 px-3.5">
-                                    <span className="text-white font-bold text-sm border-b-2 border-resalte pb-0.5">
+                                    <span className="text-white font-bold text-sm border-b-2 border-celeste pb-0.5">
                                         {cat.name}
                                     </span>
                                 </div>

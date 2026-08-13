@@ -22,7 +22,7 @@ export default function Testimonials({ items }: { items: Testimonial[] }) {
                     {destacados.map((t) => (
                         <blockquote
                             key={t.id}
-                            className="bg-white border border-slate-200 border-l-4 border-l-resalte rounded-md p-6"
+                            className="bg-white border border-slate-200 border-l-4 border-l-primary rounded-md p-6"
                         >
                             <p className="text-lg font-semibold text-grafito leading-snug mb-3">
                                 “{t.content}”
