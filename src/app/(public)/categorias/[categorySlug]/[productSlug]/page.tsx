@@ -47,7 +47,7 @@ const PASOS = [
     { n: 1, titulo: "Nos escribís", texto: "Por WhatsApp, con tu logo y la cantidad aproximada." },
     { n: 2, titulo: "Cotizamos", texto: "Presupuesto en menos de 2 horas, en horario laboral." },
     { n: 3, titulo: "Definimos", texto: "Colores, talles y dónde va el logo. Te asesoramos." },
-    { n: 4, titulo: "Entregamos", texto: "En 24–48 h según volumen, en todo el país." },
+    { n: 4, titulo: "Entregamos", texto: "En 24–48 Hs según volumen, en todo el país." },
 ];
 
 export default async function ProductDetailPage({ params }: { params: { categorySlug: string; productSlug: string } }) {
@@ -196,8 +196,8 @@ export default async function ProductDetailPage({ params }: { params: { category
                                 Pedir presupuesto de esta prenda
                             </a>
                             <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-4 text-xs font-semibold text-slate-500">
-                                <span className="before:content-['✓_'] before:text-primary before:font-extrabold">Respuesta en menos de 2 h</span>
-                                <span className="before:content-['✓_'] before:text-primary before:font-extrabold">Entrega 24–48 h</span>
+                                <span className="before:content-['✓_'] before:text-primary before:font-extrabold">Respuesta en menos de 2 Hs</span>
+                                <span className="before:content-['✓_'] before:text-primary before:font-extrabold">Entrega 24–48 Hs</span>
                                 <span className="before:content-['✓_'] before:text-primary before:font-extrabold">Sin compromiso</span>
                             </div>
                         </div>

@@ -18,7 +18,7 @@ export default async function Hero() {
 
     const hero = {
         title: data?.title || "El uniforme de tu equipo, resuelto",
-        subtitle: data?.subtitle || "Prenda + logo + entrega en 24–48 h. Un solo proveedor para uniformar a tu empresa.",
+        subtitle: data?.subtitle || "Prenda + logo + entrega en 24–48 Hs. Un solo proveedor para uniformar a tu empresa.",
         ctaPrimary: data?.ctaPrimary || "Pedir presupuesto por WhatsApp",
         bgImage: images[0]?.url as string | undefined,
     };
