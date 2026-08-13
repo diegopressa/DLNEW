@@ -1,3 +1,6 @@
+"use client";
+
+import React from "react";
 import Image from "next/image";
 
 interface Brand {
@@ -6,39 +9,51 @@ interface Brand {
     imageUrl: string;
 }
 
-// Logos de clientes en tarjetas blancas, a color y con buen tamaño:
-// es el activo de confianza más fuerte y tiene que resaltar.
-export default function BrandSlider({ brands }: { brands: Brand[] }) {
+interface BrandSliderProps {
+    brands: Brand[];
+}
+
+export default function BrandSlider({ brands }: BrandSliderProps) {
     if (brands.length === 0) return null;
 
+    // Duplicamos las marcas varias veces para asegurar que el marquee siempre tenga contenido.
+    // Solo el primer set lleva alt real; las copias se marcan como decorativas (aria-hidden) para
+    // que un lector de pantalla no anuncie cada marca 4 veces.
+    const sets = 4;
+    const displayBrands = Array.from({ length: sets }).flatMap((_, setIndex) =>
+        brands.map((brand) => ({ ...brand, _setIndex: setIndex }))
+    );
+
     return (
-        <section className="bg-grafito py-14 sm:py-20">
-            <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
-                <div className="mb-8 sm:mb-10">
-                    <h2 className="font-display uppercase text-4xl sm:text-5xl text-white">
-                        Empresas que confiaron en nosotros
-                    </h2>
-                    <p className="mt-2 text-slate-400 font-medium max-w-[60ch]">
-                        Instituciones, empresas y clubes de todo Uruguay ya uniformaron a sus equipos con DL.
-                    </p>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {brands.map((brand) => (
+        <div className="pt-14 sm:pt-20 pb-16 bg-white border-b border-slate-50 overflow-hidden relative">
+            <div className="max-w-[1240px] mx-auto px-4 sm:px-6 mb-8 sm:mb-10">
+                <h2 className="font-display uppercase text-4xl sm:text-5xl text-grafito">
+                    Empresas que confiaron en nosotros
+                </h2>
+            </div>
+            <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white to-transparent z-10" />
+            <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white to-transparent z-10" />
+
+            <div className="flex animate-marquee whitespace-nowrap gap-12 items-center">
+                {displayBrands.map((brand, index) => {
+                    const isFirstSet = brand._setIndex === 0;
+                    return (
                         <div
-                            key={brand.id}
-                            className="bg-white rounded-md h-24 sm:h-28 grid place-items-center p-4 hover:ring-2 hover:ring-celeste transition-all"
+                            key={`${brand.id}-${index}`}
+                            className="flex-shrink-0 hover:scale-110 transition-all duration-500 px-4 relative h-20 md:h-28 w-[180px] md:w-[240px]"
+                            aria-hidden={isFirstSet ? undefined : true}
                         >
                             <Image
                                 src={brand.imageUrl}
-                                alt={`Logo ${brand.name}`}
-                                width={180}
-                                height={72}
-                                className="max-h-14 sm:max-h-16 w-auto object-contain"
+                                alt={isFirstSet ? `Logo ${brand.name}` : ""}
+                                fill
+                                className="object-contain"
+                                sizes="240px"
                             />
                         </div>
-                    ))}
-                </div>
+                    );
+                })}
             </div>
-        </section>
+        </div>
     );
 }
