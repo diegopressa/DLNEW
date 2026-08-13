@@ -1,29 +1,33 @@
-// Tira de servicios bajo el hero: los 4 datos clave, una sola vez en toda la home.
-const SERVICIOS = [
-    { icono: "48h", titulo: "Entrega rápida", detalle: "24–48 h según volumen" },
-    { icono: "2h", titulo: "Presupuesto inmediato", detalle: "en horario laboral" },
-    { icono: "UY", titulo: "Envíos a todo el país", detalle: "Montevideo e interior" },
-    { icono: "1", titulo: "Un solo proveedor", detalle: "prenda, logo y entrega" },
-];
+import * as LucideIcons from "lucide-react";
+import prisma from "@/lib/prisma";
 
-export default function ServicesStrip() {
+// Pilares de servicio bajo el hero: tarjetas con icono (Prenda / Personalización /
+// Entrega / Rapidez). El contenido sale del admin (/admin/home), igual que antes.
+export default async function ServicesStrip() {
+    const solutions = (await prisma.businessSolution
+        .findMany({ orderBy: { order: "asc" } })
+        .catch(() => [])) as any[];
+
+    if (!solutions || solutions.length === 0) return null;
+
     return (
         <div className="bg-white border-b border-slate-100">
-            <div className="max-w-[1240px] mx-auto px-4 sm:px-6 grid grid-cols-2 lg:grid-cols-4">
-                {SERVICIOS.map((s, i) => (
-                    <div
-                        key={s.titulo}
-                        className={`flex items-start gap-3.5 py-5 px-2 sm:px-5 ${i > 0 ? "lg:border-l lg:border-slate-100" : ""} ${i % 2 === 1 ? "border-l border-slate-100 lg:border-l" : ""} ${i > 1 ? "border-t border-slate-100 lg:border-t-0" : ""}`}
-                    >
-                        <span className="w-10 h-10 shrink-0 rounded-full bg-primary text-white grid place-items-center font-extrabold text-xs">
-                            {s.icono}
-                        </span>
-                        <span>
-                            <span className="block font-bold text-sm text-grafito">{s.titulo}</span>
-                            <span className="block text-xs text-slate-500">{s.detalle}</span>
-                        </span>
-                    </div>
-                ))}
+            <div className="max-w-[1240px] mx-auto px-4 sm:px-6 py-10 sm:py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {solutions.map((item) => {
+                    const IconComponent = (LucideIcons as any)[item.iconName || "Shirt"] || LucideIcons.Shirt;
+                    return (
+                        <div
+                            key={item.id}
+                            className="border border-slate-200 rounded-md p-6 hover:border-primary/40 hover:shadow-md transition-all"
+                        >
+                            <div className="w-12 h-12 rounded-md bg-primary/10 text-primary grid place-items-center mb-4">
+                                <IconComponent size={24} />
+                            </div>
+                            <h3 className="font-bold text-lg text-grafito mb-1.5">{item.title}</h3>
+                            <p className="text-sm text-slate-600 leading-relaxed">{item.description}</p>
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
