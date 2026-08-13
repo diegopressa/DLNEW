@@ -22,7 +22,7 @@ export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery, 
     return (
         <>
             {/* Main Image */}
-            <div className="relative group rounded-[2rem] overflow-hidden bg-slate-50 border border-slate-100 shadow-sm aspect-square">
+            <div className="relative group rounded-md overflow-hidden bg-[#F7F7F7] border border-slate-200 aspect-square">
                 <Image
                     src={images[selectedIndex]}
                     alt={`${altBase} - foto ${selectedIndex + 1}`}
@@ -59,23 +59,17 @@ export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery, 
                 )}
 
                 {(hasScreenPrint || hasEmbroidery) && (
-                    <div className="absolute top-4 right-4 sm:right-6 z-20 animate-in fade-in slide-in-from-right-4 duration-500 origin-top-right scale-[0.8] sm:scale-100">
-                        <div className="flex flex-col items-center gap-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.05)]">
-                            <div className="flex flex-col gap-2 w-32">
-                                {hasScreenPrint && (
-                                    <div className="flex items-center justify-center gap-2 bg-[#10b981] text-white px-3 py-2.5 rounded-2xl shadow-lg shadow-emerald-500/20 w-full">
-                                        <span className="text-sm">🎨</span>
-                                        <span className="text-[10px] font-black uppercase tracking-wider">Estampado</span>
-                                    </div>
-                                )}
-                                {hasEmbroidery && (
-                                    <div className="flex items-center justify-center gap-2 bg-[#8b5cf6] text-white px-3 py-2.5 rounded-2xl shadow-lg shadow-violet-500/20 w-full">
-                                        <span className="text-sm">🧵</span>
-                                        <span className="text-[10px] font-black uppercase tracking-wider">Bordado</span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                    <div className="absolute top-4 right-4 z-20 flex flex-col items-end gap-1.5">
+                        {hasScreenPrint && (
+                            <span className="bg-white/95 text-slate-900 px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em] border border-slate-200">
+                                Estampado
+                            </span>
+                        )}
+                        {hasEmbroidery && (
+                            <span className="bg-white/95 text-slate-900 px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em] border border-slate-200">
+                                Bordado
+                            </span>
+                        )}
                     </div>
                 )}
             </div>
@@ -86,7 +80,7 @@ export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery, 
                     <button
                         key={i}
                         onClick={() => setSelectedIndex(i)}
-                        className={`relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-slate-50 border-2 transition-all duration-200 snap-start ${
+                        className={`relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-md overflow-hidden bg-[#F7F7F7] border-2 transition-all duration-200 snap-start ${
                             i === selectedIndex
                                 ? "border-primary ring-2 ring-primary/20"
                                 : "border-slate-200 hover:border-primary/40 opacity-80 hover:opacity-100"
