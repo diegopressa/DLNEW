@@ -1,97 +1,72 @@
 // src/components/layout/Footer.tsx
 import Link from "next/link";
-import { Mail, MapPin, Phone, Instagram, Facebook, Clock } from "lucide-react";
+import { Instagram, Facebook } from "lucide-react";
 
 export default function Footer({ settings }: { settings: any }) {
     const year = new Date().getFullYear();
     const contact = settings || {
         address: "Montevideo, Uruguay",
-        phone: "+598 99 000 000",
+        phone: "+598 97 534 866",
         email: "info@dldiseno.uy"
     };
 
     return (
-        <footer className="bg-slate-900 text-slate-300 pt-16 pb-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-                    <div className="space-y-4">
-                        <Link href="/" className="inline-block">
-                            <img
-                                src={settings?.logoUrl || "/logo.png"}
-                                alt="DL Diseño & Estampado"
-                                className={`h-10 w-auto object-contain ${settings?.logoUrl ? "" : "brightness-0 invert"}`}
-                            />
-                        </Link>
-                        <p className="text-sm leading-relaxed">
-                            Expertos en uniformes corporativos. Resolvemos todo: prenda, estampado y entrega para tu empresa.
-                        </p>
-                        <div className="flex gap-4">
-                            {settings?.instagramUrl && (
-                                <a href={settings.instagramUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-                                    <Instagram size={20} />
-                                </a>
-                            )}
-                            {settings?.facebookUrl && (
-                                <a href={settings.facebookUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-                                    <Facebook size={20} />
-                                </a>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Quick Links */}
-                    <div>
-                        <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-sm">Empresa</h4>
-                        <ul className="space-y-2 text-sm">
-                            <li><Link href="/categorias" className="hover:text-white transition-colors">Productos</Link></li>
-                            <li><Link href="/trabajos" className="hover:text-white transition-colors">Galería de Trabajos</Link></li>
-                            <li><Link href="/nosotros" className="hover:text-white transition-colors">Nosotros</Link></li>
-                            <li><Link href="/contacto" className="hover:text-white transition-colors">Contacto</Link></li>
-                            <li><Link href="/preguntas" className="hover:text-white transition-colors">Preguntas Frecuentes</Link></li>
-                            <li><Link href="/politicas-de-privacidad" className="hover:text-white transition-colors">Políticas de Privacidad</Link></li>
-                        </ul>
-                    </div>
-
-                    {/* Categories */}
-                    <div>
-                        <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-sm">Categorías</h4>
-                        <ul className="space-y-2 text-sm">
-                            <li><Link href="/categorias" className="hover:text-white transition-colors">Remeras y Polos</Link></li>
-                            <li><Link href="/categorias" className="hover:text-white transition-colors">Buzos y Abrigo</Link></li>
-                            <li><Link href="/categorias" className="hover:text-white transition-colors">Ropa de Trabajo</Link></li>
-                            <li><Link href="/categorias" className="hover:text-white transition-colors">Accesorios</Link></li>
-                        </ul>
-                    </div>
-
-                    {/* Contact */}
-                    <div>
-                        <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-sm">Contacto</h4>
-                        <ul className="space-y-3 text-sm">
-                            <li className="flex items-center gap-3">
-                                <MapPin size={18} className="text-blue-500" />
-                                <span>{contact.address}</span>
-                            </li>
-                            <li className="flex items-center gap-3">
-                                <Phone size={18} className="text-blue-500" />
-                                <span>{contact.phone}</span>
-                            </li>
-                            <li className="flex items-center gap-3">
-                                <Mail size={18} className="text-blue-500" />
-                                <span>{contact.email}</span>
-                            </li>
-                            <li className="flex items-center gap-3">
-                                <Clock size={18} className="text-blue-500" />
-                                <span>Lun–Vie, 9 a 18 hs</span>
-                            </li>
-                        </ul>
+        <footer className="bg-grafito text-slate-400">
+            <div className="max-w-[1240px] mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr] gap-10 md:gap-12 py-14">
+                <div>
+                    <Link href="/" className="inline-block mb-4">
+                        <img
+                            src={settings?.logoUrl || "/logo.png"}
+                            alt="DL Diseño & Estampado"
+                            className="h-10 w-auto object-contain brightness-0 invert"
+                        />
+                    </Link>
+                    <p className="text-sm leading-relaxed max-w-xs">
+                        Uniformes personalizados para empresas. Prenda, estampado o bordado y entrega en un solo lugar. {contact.address}.
+                    </p>
+                    <div className="flex gap-4 mt-5">
+                        {settings?.instagramUrl && (
+                            <a href={settings.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-celeste transition-colors">
+                                <Instagram size={20} />
+                            </a>
+                        )}
+                        {settings?.facebookUrl && (
+                            <a href={settings.facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-celeste transition-colors">
+                                <Facebook size={20} />
+                            </a>
+                        )}
                     </div>
                 </div>
 
-                <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
-                    <p>© {year} DL Diseño & Estampado - Diego Horacio Presa Berrondo. Todos los derechos reservados.</p>
-                    <div className="flex gap-6">
-                        <Link href="/politicas-de-privacidad" className="hover:text-white">Políticas de Privacidad</Link>
-                    </div>
+                <div>
+                    <h4 className="text-white font-bold mb-4 uppercase tracking-[0.1em] text-xs">Productos</h4>
+                    <ul className="space-y-1.5 text-sm">
+                        <li><Link href="/categorias" className="hover:text-celeste transition-colors">Catálogo completo</Link></li>
+                        <li><Link href="/trabajos" className="hover:text-celeste transition-colors">Trabajos realizados</Link></li>
+                        <li><Link href="/buscar" className="hover:text-celeste transition-colors">Buscar prendas</Link></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 className="text-white font-bold mb-4 uppercase tracking-[0.1em] text-xs">Empresa</h4>
+                    <ul className="space-y-1.5 text-sm">
+                        <li><Link href="/nosotros" className="hover:text-celeste transition-colors">Nosotros</Link></li>
+                        <li><Link href="/preguntas" className="hover:text-celeste transition-colors">Preguntas frecuentes</Link></li>
+                        <li><Link href="/contacto" className="hover:text-celeste transition-colors">Contacto</Link></li>
+                        <li><Link href="/politicas-de-privacidad" className="hover:text-celeste transition-colors">Políticas de privacidad</Link></li>
+                    </ul>
+                    <ul className="space-y-1.5 text-sm mt-5">
+                        <li>{contact.phone}</li>
+                        <li>{contact.email}</li>
+                        <li>Lun–Vie, 9 a 18 hs</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div className="border-t border-[#333B44]">
+                <div className="max-w-[1240px] mx-auto px-4 sm:px-6 py-5 flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-slate-500">
+                    <p>© {year} DL Diseño & Estampado — Diego Horacio Presa Berrondo. Todos los derechos reservados.</p>
+                    <Link href="/politicas-de-privacidad" className="hover:text-celeste">Políticas de privacidad</Link>
                 </div>
             </div>
         </footer>

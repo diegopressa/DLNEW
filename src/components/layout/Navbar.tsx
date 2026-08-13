@@ -1,13 +1,9 @@
-"use client";
-
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
-import { MessageCircle, Menu, X, ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import ProductSearch from "@/components/product/ProductSearch";
+import { MessageCircle, Search } from "lucide-react";
 
 type NavCategory = { name: string; href: string; image?: string | null };
 
+// Header estilo tienda de workwear: barra superior grafito + logo/buscador/CTA + tira de categorías.
 const Navbar = ({
     whatsapp = "59899000000",
     categories = [],
@@ -17,224 +13,97 @@ const Navbar = ({
     categories?: NavCategory[];
     logoUrl?: string | null;
 }) => {
-    const [isScrolled, setIsScrolled] = useState(false);
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isProductsOpen, setIsProductsOpen] = useState(false);
-    const [isMobileProductsOpen, setIsMobileProductsOpen] = useState(false);
-    const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 20);
-        };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    const navLinks = [
-        { name: "Inicio", href: "/" },
-        { name: "Productos", href: "/categorias", hasDropdown: true },
-        { name: "Trabajos Realizados", href: "/trabajos" },
-        { name: "Nosotros", href: "/nosotros" },
-        { name: "Contacto", href: "/contacto" },
-    ];
-
-    const openProducts = () => {
-        if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-        setIsProductsOpen(true);
-    };
-    const scheduleCloseProducts = () => {
-        if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-        closeTimeoutRef.current = setTimeout(() => setIsProductsOpen(false), 120);
-    };
+    const waHref = `https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`;
 
     return (
-        <nav
-            className={cn(
-                "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-                isScrolled
-                    ? "bg-white/80 backdrop-blur-md shadow-sm py-2"
-                    : "bg-transparent py-4"
-            )}
-        >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center">
-                    <Link href="/" className="flex items-center">
+        <header className="relative z-50">
+            {/* Barra superior */}
+            <div className="bg-grafito text-slate-300 text-xs sm:text-[13px]">
+                <div className="max-w-[1240px] mx-auto px-4 sm:px-6 py-2 flex justify-between items-center gap-4">
+                    <span className="truncate">
+                        Envíos a <b className="text-white font-semibold">todo Uruguay</b>
+                        <span className="hidden sm:inline"> · Presupuesto en menos de <b className="text-white font-semibold">2 horas</b></span>
+                    </span>
+                    <a href={waHref} target="_blank" rel="noopener noreferrer" className="shrink-0 hover:text-white transition-colors">
+                        WhatsApp: <b className="text-white font-semibold">097 534 866</b>
+                    </a>
+                </div>
+            </div>
+
+            {/* Header principal: logo + buscador + CTA */}
+            <div className="bg-white border-b border-slate-100">
+                <div className="max-w-[1240px] mx-auto px-4 sm:px-6 py-4 flex items-center gap-4 md:gap-8">
+                    <Link href="/" className="shrink-0">
                         <img
                             src={logoUrl || "/logo.png"}
                             alt="DL Diseño & Estampado"
-                            className="h-12 w-auto object-contain"
+                            className="h-11 md:h-12 w-auto object-contain"
                         />
                     </Link>
 
-                    {/* Desktop Links */}
-                    <div className="hidden md:flex items-center gap-8">
-                        {navLinks.map((link) => {
-                            if (link.hasDropdown && categories.length > 0) {
-                                return (
-                                    <div
-                                        key={link.name}
-                                        className="relative"
-                                        onMouseEnter={openProducts}
-                                        onMouseLeave={scheduleCloseProducts}
-                                    >
-                                        <Link
-                                            href={link.href}
-                                            className="text-sm font-medium text-slate-600 hover:text-primary transition-colors flex items-center gap-1"
-                                        >
-                                            {link.name}
-                                            <ChevronDown
-                                                className={cn(
-                                                    "w-3.5 h-3.5 transition-transform",
-                                                    isProductsOpen && "rotate-180"
-                                                )}
-                                            />
-                                        </Link>
+                    {/* Buscador (desktop) */}
+                    <form action="/buscar" className="hidden md:flex flex-1 max-w-[560px] border-2 border-grafito rounded-md overflow-hidden">
+                        <input
+                            type="text"
+                            name="q"
+                            placeholder="Buscar: remeras, camperas, chalecos…"
+                            aria-label="Buscar productos"
+                            className="flex-1 min-w-0 px-4 py-2.5 text-sm outline-none"
+                        />
+                        <button type="submit" className="bg-primary text-white font-bold text-sm px-5 hover:bg-primary/90 transition-colors">
+                            Buscar
+                        </button>
+                    </form>
 
-                                        {isProductsOpen && (
-                                            <div
-                                                className="absolute left-1/2 -translate-x-1/2 top-full pt-3"
-                                                onMouseEnter={openProducts}
-                                                onMouseLeave={scheduleCloseProducts}
-                                            >
-                                                <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-3 min-w-[260px] max-h-[70vh] overflow-y-auto">
-                                                    <div className="flex flex-col">
-                                                        {categories.map((cat) => (
-                                                            <Link
-                                                                key={cat.href}
-                                                                href={cat.href}
-                                                                onClick={() => setIsProductsOpen(false)}
-                                                                className="px-4 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-primary/5 hover:text-primary transition-colors"
-                                                            >
-                                                                {cat.name}
-                                                            </Link>
-                                                        ))}
-                                                    </div>
-                                                    <div className="mt-2 pt-2 border-t border-slate-100">
-                                                        <Link
-                                                            href="/categorias"
-                                                            onClick={() => setIsProductsOpen(false)}
-                                                            className="block px-4 py-2.5 rounded-lg text-sm font-bold text-primary hover:bg-primary/5 transition-colors"
-                                                        >
-                                                            Ver todas las categorías →
-                                                        </Link>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            }
-                            return (
-                                <Link
-                                    key={link.name}
-                                    href={link.href}
-                                    className="text-sm font-medium text-slate-600 hover:text-primary transition-colors"
-                                >
-                                    {link.name}
-                                </Link>
-                            );
-                        })}
-
-                        {/* Desktop Search */}
-                        <div className="border-l border-slate-200 pl-6 flex items-center">
-                            <ProductSearch />
-                        </div>
-
-                        <Link
-                            href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`}
+                    <div className="ml-auto flex items-center gap-3">
+                        {/* Lupa (mobile) */}
+                        <Link href="/buscar" aria-label="Buscar" className="md:hidden p-2 text-grafito">
+                            <Search className="w-5 h-5" />
+                        </Link>
+                        <a
+                            href={waHref}
                             target="_blank"
-                            className="bg-primary text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-primary/90 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                            rel="noopener noreferrer"
+                            className="bg-primary text-white px-4 sm:px-5 py-2.5 rounded-md text-xs sm:text-sm font-bold uppercase tracking-wide hover:bg-primary/90 transition-colors flex items-center gap-2"
                         >
                             <MessageCircle className="w-4 h-4" />
-                            Presupuesto
-                        </Link>
-                    </div>
-
-                    {/* Mobile Search Icon & Menu Toggle */}
-                    <div className="md:hidden flex items-center gap-4">
-                        <ProductSearch />
-                        <button
-                            className="text-slate-900"
-                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        >
-                            {isMobileMenuOpen ? <X /> : <Menu />}
-                        </button>
+                            <span className="hidden sm:inline">Pedir presupuesto</span>
+                            <span className="sm:hidden">Presupuesto</span>
+                        </a>
                     </div>
                 </div>
             </div>
 
-            {/* Mobile Menu */}
-            {isMobileMenuOpen && (
-                <div className="md:hidden bg-white absolute top-full left-0 right-0 shadow-xl border-t border-slate-100 p-4 space-y-4 animate-in slide-in-from-top duration-300">
-                    {navLinks.map((link) => {
-                        if (link.hasDropdown && categories.length > 0) {
-                            return (
-                                <div key={link.name}>
-                                    <div className="flex items-center justify-between">
-                                        <Link
-                                            href={link.href}
-                                            className="block text-base font-medium text-slate-900"
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                        >
-                                            {link.name}
-                                        </Link>
-                                        <button
-                                            type="button"
-                                            aria-label="Mostrar categorías"
-                                            onClick={() => setIsMobileProductsOpen((v) => !v)}
-                                            className="p-2 -mr-2 text-slate-500"
-                                        >
-                                            <ChevronDown
-                                                className={cn(
-                                                    "w-4 h-4 transition-transform",
-                                                    isMobileProductsOpen && "rotate-180"
-                                                )}
-                                            />
-                                        </button>
-                                    </div>
-                                    {isMobileProductsOpen && (
-                                        <div className="mt-2 ml-3 pl-3 border-l-2 border-slate-100 flex flex-col gap-2">
-                                            {categories.map((cat) => (
-                                                <Link
-                                                    key={cat.href}
-                                                    href={cat.href}
-                                                    onClick={() => {
-                                                        setIsMobileMenuOpen(false);
-                                                        setIsMobileProductsOpen(false);
-                                                    }}
-                                                    className="text-sm text-slate-600 py-1"
-                                                >
-                                                    {cat.name}
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        }
-                        return (
-                            <Link
-                                key={link.name}
-                                href={link.href}
-                                className="block text-base font-medium text-slate-900"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                            >
-                                {link.name}
-                            </Link>
-                        );
-                    })}
+            {/* Tira de categorías */}
+            <nav aria-label="Categorías" className="bg-grafito2">
+                <div className="max-w-[1240px] mx-auto px-4 sm:px-6 flex items-stretch overflow-x-auto no-scrollbar">
                     <Link
-                        href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`}
-                        target="_blank"
-                        className="w-full bg-primary text-white px-5 py-3 rounded-xl text-center font-bold flex items-center justify-center gap-2"
+                        href="/categorias"
+                        className="bg-primary text-white text-[13px] font-bold px-4 py-3 whitespace-nowrap"
                     >
-                        <MessageCircle className="w-5 h-5" />
-                        WhatsApp
+                        ☰&nbsp; Todas las categorías
+                    </Link>
+                    {categories.map((cat) => (
+                        <Link
+                            key={cat.href}
+                            href={cat.href}
+                            className="text-slate-200 text-[13px] font-semibold px-4 py-3 whitespace-nowrap hover:bg-grafito hover:text-celeste transition-colors"
+                        >
+                            {cat.name}
+                        </Link>
+                    ))}
+                    <Link href="/trabajos" className="text-slate-200 text-[13px] font-semibold px-4 py-3 whitespace-nowrap hover:bg-grafito hover:text-celeste transition-colors">
+                        Trabajos
+                    </Link>
+                    <Link href="/nosotros" className="text-slate-200 text-[13px] font-semibold px-4 py-3 whitespace-nowrap hover:bg-grafito hover:text-celeste transition-colors">
+                        Nosotros
+                    </Link>
+                    <Link href="/contacto" className="text-slate-200 text-[13px] font-semibold px-4 py-3 whitespace-nowrap hover:bg-grafito hover:text-celeste transition-colors">
+                        Contacto
                     </Link>
                 </div>
-            )}
-        </nav>
+            </nav>
+        </header>
     );
 };
 

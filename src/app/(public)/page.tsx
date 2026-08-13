@@ -1,18 +1,14 @@
 import Hero from "@/components/landing/Hero";
-import Industries from "@/components/landing/Industries";
-import BrandSlider from "@/components/landing/BrandSlider";
-import { getBrands } from "@/actions/homeActions";
-import { getFaqItems } from "@/actions/faqActions";
-import { getTestimonials } from "@/actions/testimonialActions";
-import Solutions from "@/components/landing/Solutions";
+import ServicesStrip from "@/components/landing/ServicesStrip";
 import Categories from "@/components/landing/Categories";
 import WorksPreview from "@/components/landing/WorksPreview";
-import WhyUs from "@/components/landing/WhyUs";
-import Process from "@/components/landing/Process";
-import FAQ from "@/components/landing/FAQ";
-import CTASection from "@/components/landing/CTASection";
+import CategoryBanner from "@/components/landing/CategoryBanner";
+import BrandSlider from "@/components/landing/BrandSlider";
 import Testimonials from "@/components/landing/Testimonials";
+import CTASection from "@/components/landing/CTASection";
 import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
+import { getBrands } from "@/actions/homeActions";
+import { getTestimonials } from "@/actions/testimonialActions";
 import { buildMetadata } from "@/lib/buildMetadata";
 import type { Metadata } from "next";
 
@@ -20,25 +16,23 @@ export async function generateMetadata(): Promise<Metadata> {
     return buildMetadata("/");
 }
 
+// Home nueva (rediseño 08/2026): 8 bloques en vez de 12 secciones.
+// Orden: hero → datos de servicio → categorías → trabajos → banner → logos → testimonios → CTA.
 export default async function HomePage() {
-    const [brands, faqItems, testimonials] = await Promise.all([
+    const [brands, testimonials] = await Promise.all([
         getBrands(),
-        getFaqItems(),
         getTestimonials(),
     ]);
 
     return (
         <>
             <Hero />
-            <Industries />
-            <Solutions />
+            <ServicesStrip />
             <Categories />
             <WorksPreview />
+            <CategoryBanner />
             <BrandSlider brands={brands} />
-            <WhyUs />
-            <Process />
             <Testimonials items={testimonials} />
-            <FAQ items={faqItems} />
             <CTASection />
             <AdminEditButtonGate href="/admin/home" label="Editar Inicio" />
         </>

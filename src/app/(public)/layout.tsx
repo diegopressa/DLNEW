@@ -3,6 +3,7 @@ import Footer from "@/components/layout/Footer";
 import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
 import { getGlobalSettings } from "@/actions/settingsActions";
 import { getCategories } from "@/actions/categoryActions";
+import { leagueGothic, spaceGrotesk } from "@/lib/fonts";
 
 export default async function PublicLayout({
     children,
@@ -84,7 +85,7 @@ export default async function PublicLayout({
     };
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className={`${leagueGothic.variable} ${spaceGrotesk.variable} font-sans flex flex-col min-h-screen`}>
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

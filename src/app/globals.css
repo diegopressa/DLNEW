@@ -12,12 +12,12 @@
   --popover: 0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
 
-  /* Azul del logo: #5383B8 -> HSL(211, 42%, 53%) */
-  --primary: 211 42% 53%;
+  /* Azul oficial del manual de marca: #0081D1 -> HSL(203, 100%, 41%) */
+  --primary: 203 100% 41%;
   --primary-foreground: 210 40% 98%;
 
-  /* Amarillo para acentos (sutil) */
-  --accent-yellow: 47 95% 52%;
+  /* Amarillo oficial del manual de marca: #FBE200 */
+  --accent-yellow: 54 100% 49%;
 
   --secondary: 210 40% 96.1%;
   --secondary-foreground: 222.2 47.4% 11.2%;
