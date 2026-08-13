@@ -14,7 +14,7 @@ export default async function ServicesStrip() {
 
     return (
         <div className="bg-white border-b border-slate-100">
-            <div className="max-w-[1240px] mx-auto px-4 sm:px-6 py-10 sm:py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="max-w-[1240px] mx-auto px-4 sm:px-6 pt-10 sm:pt-12 pb-5 sm:pb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {solutions.map((item) => {
                     const IconComponent = (LucideIcons as any)[item.iconName || "Shirt"] || LucideIcons.Shirt;
                     return (

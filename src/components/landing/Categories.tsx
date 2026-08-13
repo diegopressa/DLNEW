@@ -12,9 +12,9 @@ export default async function Categories() {
     if (!data || data.length === 0) return null;
 
     return (
-        <section className="bg-white py-14 sm:py-20">
+        <section className="bg-white pt-7 sm:pt-10 pb-14 sm:pb-20">
             <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
-                <div className="flex flex-wrap justify-between items-baseline gap-4 mb-8 sm:mb-10">
+                <div className="flex flex-wrap justify-between items-baseline gap-4 mb-6 sm:mb-8">
                     <h2 className="font-display uppercase text-4xl sm:text-5xl text-grafito">
                         {sectionData?.title || "Elegí por categoría"}
                     </h2>
