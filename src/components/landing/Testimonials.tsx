@@ -1,3 +1,5 @@
+import { Star } from "lucide-react";
+
 interface Testimonial {
     id: number;
     name: string;
@@ -7,31 +9,66 @@ interface Testimonial {
     imageUrl?: string;
 }
 
-// Dos citas grandes con borde amarillo; sin carrusel ni estrellitas.
+function Estrellas() {
+    return (
+        <div className="flex gap-0.5" aria-label="5 de 5 estrellas">
+            {[...Array(5)].map((_, i) => (
+                <Star key={i} size={18} className="fill-[#FBBC04] text-[#FBBC04]" />
+            ))}
+        </div>
+    );
+}
+
+// Testimonios con 5 estrellas estilo Google: prueba social que llama la atención.
 export default function Testimonials({ items }: { items: Testimonial[] }) {
     if (!items || items.length === 0) return null;
-    const destacados = items.slice(0, 2);
+    const destacados = items.slice(0, 3);
 
     return (
-        <section className="bg-[#F7F7F7] py-14 sm:py-20">
+        <section className="bg-white py-14 sm:py-20">
             <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
-                <h2 className="font-display uppercase text-4xl sm:text-5xl text-grafito mb-8 sm:mb-10">
-                    Lo que dicen los clientes
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="mb-8 sm:mb-10">
+                    <h2 className="font-display uppercase text-4xl sm:text-5xl text-grafito">
+                        Lo que dicen nuestros clientes
+                    </h2>
+                    <div className="mt-3 flex items-center gap-2.5">
+                        <Estrellas />
+                        <span className="text-sm font-semibold text-slate-500">Opiniones reales de empresas que ya pidieron</span>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                     {destacados.map((t) => (
-                        <blockquote
+                        <div
                             key={t.id}
-                            className="bg-white border border-slate-200 border-l-4 border-l-primary rounded-md p-6"
+                            className="bg-white border border-slate-200 rounded-md p-6 shadow-sm hover:shadow-lg hover:border-primary/40 transition-all flex flex-col"
                         >
-                            <p className="text-lg font-semibold text-grafito leading-snug mb-3">
+                            <Estrellas />
+                            <p className="mt-4 mb-5 text-[15px] font-medium text-grafito leading-relaxed flex-1">
                                 “{t.content}”
                             </p>
-                            <footer className="text-sm text-slate-500">
-                                {t.name}
-                                {t.company ? ` — ${t.company}` : ""}
-                            </footer>
-                        </blockquote>
+                            <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
+                                {t.imageUrl ? (
+                                    <img
+                                        src={t.imageUrl}
+                                        alt={t.name}
+                                        className="w-10 h-10 rounded-full object-cover border border-slate-200 shrink-0"
+                                    />
+                                ) : (
+                                    <div className="w-10 h-10 rounded-full bg-primary/10 text-primary font-bold text-sm grid place-items-center shrink-0">
+                                        {t.name.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
+                                <div>
+                                    <p className="font-bold text-sm text-grafito">{t.name}</p>
+                                    {(t.company || t.role) && (
+                                        <p className="text-xs text-slate-500">
+                                            {t.role && t.company ? `${t.role} · ${t.company}` : t.role || t.company}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </div>
