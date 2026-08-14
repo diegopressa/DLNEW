@@ -185,10 +185,10 @@ export default async function ProductDetailPage({ params }: { params: { category
                                     {product.materials && (
                                         <p className="text-sm font-semibold text-grafito"><b className="text-primary text-xs uppercase mr-1.5">Unisex</b>{product.materials}</p>
                                     )}
-                                    {product.damaCompo && product.damaCompo !== product.materials && (
+                                    {product.damaCompo && (
                                         <p className="text-sm font-semibold text-grafito mt-1"><b className="text-primary text-xs uppercase mr-1.5">Dama</b>{product.damaCompo}</p>
                                     )}
-                                    {product.ninoCompo && product.ninoCompo !== product.materials && (
+                                    {product.ninoCompo && (
                                         <p className="text-sm font-semibold text-grafito mt-1"><b className="text-primary text-xs uppercase mr-1.5">Niño</b>{product.ninoCompo}</p>
                                     )}
                                 </div>
