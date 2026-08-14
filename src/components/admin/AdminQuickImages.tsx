@@ -14,6 +14,8 @@ export type FichaProducto = {
     talles?: string | null;
     damaTalles?: string | null;
     ninoTalles?: string | null;
+    versionDama?: boolean;
+    versionNino?: boolean;
 };
 
 // Barra de "modo admin" bajo la galería del producto: cambiar la imagen principal,
@@ -109,6 +111,8 @@ export default function AdminQuickImages({
             talles: ficha.talles || "",
             damaTalles: ficha.damaTalles || "",
             ninoTalles: ficha.ninoTalles || "",
+            versionDama: !!ficha.versionDama,
+            versionNino: !!ficha.versionNino,
         });
         setEditando(true);
     };
@@ -168,7 +172,7 @@ export default function AdminQuickImages({
     const btn = "w-full flex items-center gap-1.5 bg-white border border-amber-300 text-slate-800 text-xs font-bold px-3 py-2 rounded-md hover:bg-amber-100 transition-colors disabled:opacity-50";
 
     return (
-        <div className={`fixed left-2 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2 rounded-lg p-2.5 border shadow-xl max-h-[85vh] overflow-y-auto ${editando ? "w-80" : "w-56"} ${pausado ? "bg-orange-50 border-orange-300" : "bg-amber-50 border-amber-200"}`}>
+        <div className={`fixed left-2 top-28 z-50 flex flex-col gap-2 rounded-lg p-2.5 border shadow-xl max-h-[calc(100vh-14rem)] overflow-y-auto ${editando ? "w-80" : "w-56"} ${pausado ? "bg-orange-50 border-orange-300" : "bg-amber-50 border-amber-200"}`}>
             <span className={`text-[10px] font-bold uppercase tracking-[0.1em] px-1 ${pausado ? "text-orange-700" : "text-amber-700"}`}>
                 {pausado ? `Pausado${pausadoNota ? `: ${pausadoNota}` : ""}` : "Modo admin"}
             </span>
@@ -215,6 +219,29 @@ export default function AdminQuickImages({
                     {campo("Talles unisex", "talles", "ej. S M L XL XXL")}
                     {campo("Talles dama", "damaTalles")}
                     {campo("Talles niño", "ninoTalles")}
+                    <div className="pt-0.5">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-amber-700">Disponible en versión</span>
+                        <div className="mt-1 flex items-center gap-4">
+                            <label className="flex items-center gap-1.5 text-sm font-bold text-slate-800 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={!!form.versionDama}
+                                    onChange={(e) => setForm((f) => (f ? { ...f, versionDama: e.target.checked } : f))}
+                                    className="w-4 h-4 accent-[#0081D1]"
+                                />
+                                Dama
+                            </label>
+                            <label className="flex items-center gap-1.5 text-sm font-bold text-slate-800 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={!!form.versionNino}
+                                    onChange={(e) => setForm((f) => (f ? { ...f, versionNino: e.target.checked } : f))}
+                                    className="w-4 h-4 accent-[#0081D1]"
+                                />
+                                Niño
+                            </label>
+                        </div>
+                    </div>
                     <div className="flex items-center gap-2 pt-1">
                         <button
                             onClick={guardarFicha}

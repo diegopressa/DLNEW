@@ -147,6 +147,8 @@ export default async function ProductDetailPage({ params }: { params: { category
                                 talles: product.talles,
                                 damaTalles: product.damaTalles,
                                 ninoTalles: product.ninoTalles,
+                                versionDama: product.versionDama,
+                                versionNino: product.versionNino,
                             }}
                         />
                     </div>

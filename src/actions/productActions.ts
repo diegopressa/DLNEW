@@ -281,6 +281,8 @@ export async function updateProductFicha(id: number, data: {
     talles?: string | null;
     damaTalles?: string | null;
     ninoTalles?: string | null;
+    versionDama?: boolean;
+    versionNino?: boolean;
 }) {
     try {
         if (!(await getSession())) return { success: false, error: "Sin sesión" };
@@ -301,6 +303,8 @@ export async function updateProductFicha(id: number, data: {
                 talles: opcional(data.talles),
                 damaTalles: opcional(data.damaTalles),
                 ninoTalles: opcional(data.ninoTalles),
+                versionDama: !!data.versionDama,
+                versionNino: !!data.versionNino,
             },
         });
         revalidatePath("/", "layout");
