@@ -5,7 +5,7 @@ import { getAboutUs, updateAboutUs } from "@/actions/aboutActions";
 // uploadImage server action intentionally removed:
 // Server Actions serialize args with their own protocol and drop File binaries
 // when called programmatically. We use /api/upload (fetch + FormData) instead.
-import { Save, Loader2, Image as ImageIcon, Type, FileText, Upload, X, Link } from "lucide-react";
+import { Save, Loader2, Image as ImageIcon, Upload, X, Link } from "lucide-react";
 
 export default function AboutAdmin() {
     const [about, setAbout] = useState<any>(null);
@@ -154,7 +154,7 @@ export default function AboutAdmin() {
 
     if (!about) return (
         <div className="flex items-center justify-center min-h-[400px]">
-            <Loader2 className="animate-spin text-blue-600" size={40} />
+            <Loader2 className="animate-spin text-[#0081D1]" size={40} />
         </div>
     );
 
@@ -165,209 +165,230 @@ export default function AboutAdmin() {
         ? `Pendiente: ${pendingFile.name}`
         : about.imageUrl || "";
 
+    // Shared field styles
+    const inputClass = "bg-slate-50 border border-slate-200 rounded-xl p-3 w-full outline-none focus:border-[#0081D1] text-sm";
+
     return (
-        <div className="max-w-5xl mx-auto p-6 space-y-8">
-            <div className="flex justify-between items-center mb-4">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Editar Nosotros</h1>
-                    <p className="text-slate-500">Configurá el contenido de la página &quot;Nosotros&quot;</p>
-                </div>
+        <div className="max-w-3xl mx-auto p-6 space-y-6">
+            {/* Header */}
+            <div>
+                <h1 className="text-3xl font-black text-slate-900">Nosotros</h1>
+                <p className="text-sm text-slate-500 mt-1">
+                    Acá editás lo que se muestra en la página &quot;Nosotros&quot; de tu web: la historia, la foto y los números.
+                </p>
             </div>
 
-            <form onSubmit={handleSave} className="space-y-8 bg-white p-10 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100">
-                <div className="space-y-6">
-                    {/* Título */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                            <Type size={14} className="text-blue-600" /> Título de la página
-                        </label>
+            <form onSubmit={handleSave} className="space-y-6">
+                {/* ─── Tarjeta 1: Historia ─────────────────────────────────── */}
+                <section className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+                    <div>
+                        <h2 className="text-lg font-bold text-slate-900">Historia</h2>
+                        <p className="text-sm text-slate-500">El título y el texto que cuentan la historia de tu empresa.</p>
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <label className="text-sm font-bold text-slate-700 block">Título</label>
                         <input
                             value={about.title}
                             onChange={e => setAbout({ ...about, title: e.target.value })}
-                            className="w-full bg-slate-50 border border-slate-100 p-4 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold text-lg text-slate-800"
+                            className={inputClass}
                             placeholder="Ej: Nuestra Historia"
                         />
                     </div>
 
-                    {/* Contenido */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                            <FileText size={14} className="text-blue-600" /> Contenido / Texto (Izquierda)
-                        </label>
+                    <div className="space-y-1.5">
+                        <label className="text-sm font-bold text-slate-700 block">Texto principal</label>
                         <textarea
                             value={about.content}
                             onChange={e => setAbout({ ...about, content: e.target.value })}
-                            className="w-full bg-slate-50 border border-slate-100 p-4 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all min-h-[250px] text-slate-700 leading-relaxed"
-                            placeholder="Escribí aquí la historia de tu empresa..."
+                            className={`${inputClass} min-h-[220px] leading-relaxed`}
+                            placeholder="Escribí acá la historia de tu empresa..."
                         />
+                        <p className="text-xs text-slate-400">Este texto aparece a la izquierda de la foto.</p>
+                    </div>
+                </section>
+
+                {/* ─── Tarjeta 2: Foto ─────────────────────────────────────── */}
+                <section className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+                    <div className="flex items-start justify-between gap-4">
+                        <div>
+                            <h2 className="text-lg font-bold text-slate-900">Foto</h2>
+                            <p className="text-sm text-slate-500">La imagen que acompaña al texto (se ve a la derecha).</p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setUrlMode(!urlMode)}
+                            className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-[#0081D1] transition-colors border border-slate-200 px-3 py-1.5 rounded-lg hover:border-[#0081D1] shrink-0"
+                        >
+                            <Link size={12} />
+                            {urlMode ? "Cambiar a subir archivo" : "Usar URL externa"}
+                        </button>
                     </div>
 
-                    {/* Estadísticas */}
-                    <div className="space-y-4">
-                        <label className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                            <Type size={14} className="text-blue-600" /> Estadísticas (debajo del texto)
-                        </label>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <p className="text-xs font-bold text-slate-500">Estadística 1 — Número</p>
-                                <input
-                                    value={about.stat1Value || "+10"}
-                                    onChange={e => setAbout({ ...about, stat1Value: e.target.value })}
-                                    className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-800"
-                                    placeholder="+10"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <p className="text-xs font-bold text-slate-500">Estadística 1 — Etiqueta</p>
-                                <input
-                                    value={about.stat1Label || "Años de experiencia"}
-                                    onChange={e => setAbout({ ...about, stat1Label: e.target.value })}
-                                    className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-800"
-                                    placeholder="Años de experiencia"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <p className="text-xs font-bold text-slate-500">Estadística 2 — Número</p>
-                                <input
-                                    value={about.stat2Value || "+500"}
-                                    onChange={e => setAbout({ ...about, stat2Value: e.target.value })}
-                                    className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-800"
-                                    placeholder="+500"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <p className="text-xs font-bold text-slate-500">Estadística 2 — Etiqueta</p>
-                                <input
-                                    value={about.stat2Label || "Empresas confían"}
-                                    onChange={e => setAbout({ ...about, stat2Label: e.target.value })}
-                                    className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-800"
-                                    placeholder="Empresas confían"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Imagen */}
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <label className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                <ImageIcon size={14} className="text-blue-600" /> Imagen (Derecha)
-                            </label>
-                            <button
-                                type="button"
-                                onClick={() => setUrlMode(!urlMode)}
-                                className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors border border-slate-200 px-3 py-1.5 rounded-lg hover:border-blue-300"
-                            >
-                                <Link size={12} />
-                                {urlMode ? "Cambiar a subir archivo" : "Usar URL externa"}
-                            </button>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                            <div className="space-y-3">
-                                {urlMode ? (
-                                    /* URL mode */
-                                    <div className="space-y-2">
-                                        <input
-                                            value={about.imageUrl || ""}
-                                            onChange={e => {
-                                                setMessage({ type: "", text: "" });
-                                                setAbout({ ...about, imageUrl: e.target.value });
-                                            }}
-                                            className="w-full bg-slate-50 border border-slate-100 p-4 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm font-mono"
-                                            placeholder="https://ejemplo.com/imagen.jpg"
-                                        />
-                                        <p className="text-[10px] text-slate-500 font-medium">Recomendado: Imágenes de 1200x800px o similar.</p>
-                                    </div>
-                                ) : (
-                                    /* Upload mode */
-                                    <div className="space-y-3">
-                                        <div
-                                            onDrop={handleDrop}
-                                            onDragOver={e => e.preventDefault()}
-                                            onClick={() => fileInputRef.current?.click()}
-                                            className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-2xl cursor-pointer transition-all bg-slate-50 border-slate-200 hover:bg-blue-50 hover:border-blue-400"
-                                        >
-                                            <Upload className="w-8 h-8 mb-2 text-slate-400" />
-                                            <p className="text-sm text-slate-600 font-bold">
-                                                <span className="text-blue-600">Click para cargar</span> o arrastrar y soltar
-                                            </p>
-                                            <p className="text-xs text-slate-400 mt-1">PNG, JPG o WEBP (Máx. 10MB)</p>
-                                        </div>
-
-                                        <input
-                                            ref={fileInputRef}
-                                            type="file"
-                                            className="hidden"
-                                            accept="image/*"
-                                            onChange={handleFileInputChange}
-                                        />
-
-                                        {/* Current image path (read-only) */}
-                                        {displayImageLabel && (
-                                            <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2">
-                                                <p className={`text-xs font-mono truncate flex-1 ${pendingFile ? "text-blue-600 font-bold" : "text-slate-500"}`}>
-                                                    {displayImageLabel}
-                                                </p>
-                                                <button
-                                                    type="button"
-                                                    onClick={handleClearImage}
-                                                    className="text-slate-400 hover:text-red-500 transition-colors shrink-0"
-                                                    title="Quitar imagen"
-                                                >
-                                                    <X size={14} />
-                                                </button>
-                                            </div>
-                                        )}
-
-                                        {/* Pending file badge */}
-                                        {pendingFile && (
-                                            <p className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">
-                                                ⬆ Se subirá al servidor al guardar
-                                            </p>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Preview */}
-                            {displayImageUrl ? (
-                                <div className="relative group rounded-3xl overflow-hidden border-4 border-slate-50 shadow-lg h-48">
-                                    <img
-                                        src={displayImageUrl}
-                                        alt="Preview"
-                                        className="w-full h-full object-cover"
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                        <div className="space-y-3">
+                            {urlMode ? (
+                                /* URL mode */
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-bold text-slate-700 block">Dirección (URL) de la imagen</label>
+                                    <input
+                                        value={about.imageUrl || ""}
+                                        onChange={e => {
+                                            setMessage({ type: "", text: "" });
+                                            setAbout({ ...about, imageUrl: e.target.value });
+                                        }}
+                                        className={`${inputClass} font-mono`}
+                                        placeholder="https://ejemplo.com/imagen.jpg"
                                     />
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
-                                        <span className="opacity-0 group-hover:opacity-100 text-white text-xs font-bold bg-black/50 px-3 py-1 rounded-full transition-all">
-                                            Vista previa
-                                        </span>
-                                    </div>
+                                    <p className="text-xs text-slate-400">Recomendado: imágenes de 1200x800px o similar.</p>
                                 </div>
                             ) : (
-                                <div className="rounded-3xl border-4 border-dashed border-slate-100 h-48 flex items-center justify-center">
-                                    <div className="text-center text-slate-300">
-                                        <ImageIcon size={32} className="mx-auto mb-2" />
-                                        <p className="text-xs font-bold uppercase tracking-wider">Sin imagen</p>
+                                /* Upload mode */
+                                <div className="space-y-3">
+                                    <div
+                                        onDrop={handleDrop}
+                                        onDragOver={e => e.preventDefault()}
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all bg-slate-50 border-slate-200 hover:bg-blue-50 hover:border-[#0081D1]"
+                                    >
+                                        <Upload className="w-8 h-8 mb-2 text-slate-400" />
+                                        <p className="text-sm text-slate-600 font-bold">
+                                            <span className="text-[#0081D1]">Click para cargar</span> o arrastrar y soltar
+                                        </p>
+                                        <p className="text-xs text-slate-400 mt-1">PNG, JPG o WEBP (Máx. 10MB)</p>
                                     </div>
+
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={handleFileInputChange}
+                                    />
+
+                                    {/* Current image path (read-only) */}
+                                    {displayImageLabel && (
+                                        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                                            <p className={`text-xs font-mono truncate flex-1 ${pendingFile ? "text-[#0081D1] font-bold" : "text-slate-500"}`}>
+                                                {displayImageLabel}
+                                            </p>
+                                            <button
+                                                type="button"
+                                                onClick={handleClearImage}
+                                                className="text-slate-400 hover:text-red-500 transition-colors shrink-0"
+                                                title="Quitar imagen"
+                                            >
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {/* Pending file badge */}
+                                    {pendingFile && (
+                                        <p className="text-xs text-[#0081D1] font-bold">
+                                            La foto se sube al servidor cuando tocás &quot;Guardar cambios&quot;.
+                                        </p>
+                                    )}
                                 </div>
                             )}
                         </div>
-                    </div>
-                </div>
 
-                <div className="pt-8 border-t border-slate-50 flex items-center gap-4">
+                        {/* Preview */}
+                        {displayImageUrl ? (
+                            <div className="relative group rounded-xl overflow-hidden border border-slate-200 h-48">
+                                <img
+                                    src={displayImageUrl}
+                                    alt="Preview"
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
+                                    <span className="opacity-0 group-hover:opacity-100 text-white text-xs font-bold bg-black/50 px-3 py-1 rounded-full transition-all">
+                                        Vista previa
+                                    </span>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="rounded-xl border-2 border-dashed border-slate-200 h-48 flex items-center justify-center">
+                                <div className="text-center text-slate-300">
+                                    <ImageIcon size={32} className="mx-auto mb-2" />
+                                    <p className="text-xs font-bold">Sin imagen</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </section>
+
+                {/* ─── Tarjeta 3: Números que se muestran ──────────────────── */}
+                <section className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+                    <div>
+                        <h2 className="text-lg font-bold text-slate-900">Números que se muestran</h2>
+                        <p className="text-sm text-slate-500">Aparecen en grande debajo del texto. Ej: +10 / Años de experiencia.</p>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div className="space-y-1.5">
+                            <p className="text-sm font-bold text-slate-700">Número 1</p>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <label className="text-xs text-slate-400 block">Valor (ej: +10)</label>
+                                    <input
+                                        value={about.stat1Value || "+10"}
+                                        onChange={e => setAbout({ ...about, stat1Value: e.target.value })}
+                                        className={inputClass}
+                                        placeholder="+10"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs text-slate-400 block">Etiqueta (ej: Años de experiencia)</label>
+                                    <input
+                                        value={about.stat1Label || "Años de experiencia"}
+                                        onChange={e => setAbout({ ...about, stat1Label: e.target.value })}
+                                        className={inputClass}
+                                        placeholder="Años de experiencia"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <p className="text-sm font-bold text-slate-700">Número 2</p>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <label className="text-xs text-slate-400 block">Valor (ej: +500)</label>
+                                    <input
+                                        value={about.stat2Value || "+500"}
+                                        onChange={e => setAbout({ ...about, stat2Value: e.target.value })}
+                                        className={inputClass}
+                                        placeholder="+500"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs text-slate-400 block">Etiqueta (ej: Empresas confían)</label>
+                                    <input
+                                        value={about.stat2Label || "Empresas confían"}
+                                        onChange={e => setAbout({ ...about, stat2Label: e.target.value })}
+                                        className={inputClass}
+                                        placeholder="Empresas confían"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* ─── Guardar ─────────────────────────────────────────────── */}
+                <div className="flex items-center gap-4">
                     <button
                         type="submit"
                         disabled={saving}
-                        className="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black flex items-center gap-3 hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-50 active:scale-95"
+                        className="bg-[#0081D1] hover:bg-[#006BAE] text-white font-bold rounded-xl px-6 py-3 flex items-center gap-2 transition-colors disabled:opacity-50"
                     >
-                        {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
-                        {saving ? "GUARDANDO..." : "GUARDAR CAMBIOS"}
+                        {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+                        {saving ? "Guardando..." : "Guardar cambios"}
                     </button>
                     {message.text && (
-                        <span className={`font-black text-sm uppercase animate-in fade-in slide-in-from-left duration-300 ${message.type === "success" ? "text-green-600" :
-                            message.type === "error" ? "text-red-600" : "text-blue-600"
+                        <span className={`text-sm font-bold ${message.type === "success" ? "text-green-600" :
+                            message.type === "error" ? "text-red-600" : "text-[#0081D1]"
                             }`}>
                             {message.text}
                         </span>

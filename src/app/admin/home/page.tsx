@@ -730,54 +730,17 @@ export default function HomeEditor() {
     }
 
     return (
-        <div className="space-y-10 pb-20">
-            <header className="sticky top-0 bg-slate-50/80 backdrop-blur-md py-4 z-50 border-b border-slate-200 -mx-4 px-4 space-y-4">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h1 className="text-3xl font-bold text-slate-900">Editor de Inicio</h1>
-                        <p className="text-slate-500">Modificá los textos y elementos visuales de la página principal.</p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        {message.text && (
-                            <span className={`text-sm font-bold animate-in fade-in slide-in-from-top-2 ${message.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
-                                {message.text}
-                            </span>
-                        )}
-                    </div>
-                </div>
-
-                <nav className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-                    {[
-                        { id: 'hero', label: 'Hero', icon: Sparkles, color: 'text-blue-600', bg: 'bg-blue-50' },
-                        { id: 'industries', label: 'Industrias', icon: Factory, color: 'text-orange-600', bg: 'bg-orange-50' },
-                        { id: 'solutions', label: 'Soluciones', icon: Target, color: 'text-purple-600', bg: 'bg-purple-50' },
-                        { id: 'categories', label: 'Categorías', icon: ImageIcon, color: 'text-blue-600', bg: 'bg-blue-50' },
-                        { id: 'projects', label: 'Trabajos', icon: ImageIcon, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-                        { id: 'brands', label: 'Marcas', icon: ImageIcon, color: 'text-cyan-600', bg: 'bg-cyan-50' },
-                        { id: 'whyus', label: 'Beneficios', icon: Sparkles, color: 'text-green-600', bg: 'bg-green-50' },
-                        { id: 'process', label: 'Proceso', icon: Save, color: 'text-blue-600', bg: 'bg-blue-50' },
-                        { id: 'cta', label: 'CTA', icon: Target, color: 'text-purple-600', bg: 'bg-purple-50' },
-                    ].map((sec) => (
-                        <button
-                            key={sec.id}
-                            onClick={() => {
-                                const el = document.getElementById(sec.id);
-                                if (el) {
-                                    const yOffset = -140; // Ajuste para el header sticky
-                                    const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                                    window.scrollTo({ top: y, behavior: 'smooth' });
-                                }
-                            }}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:border-slate-900 hover:text-slate-900 transition-all text-sm font-bold whitespace-nowrap shadow-sm hover:shadow active:scale-95 group"
-                        >
-                            <span className={`${sec.bg} ${sec.color} p-1 rounded-md group-hover:scale-110 transition-transform`}>
-                                <sec.icon size={14} />
-                            </span>
-                            {sec.label}
-                        </button>
-                    ))}
-                </nav>
+        <div className="space-y-6 pb-20">
+            <header>
+                <h1 className="text-3xl font-bold text-slate-900">Página de inicio</h1>
+                <p className="text-slate-500 mt-1">Acá editás lo que se muestra en la portada de tu web. Las secciones están en el mismo orden en que las ve el visitante.</p>
             </header>
+
+            {message.text && (
+                <div className={`fixed top-4 right-4 z-[110] px-4 py-3 rounded-xl shadow-lg border text-sm font-bold ${message.type === 'success' ? 'bg-green-50 text-green-700 border-green-200' : message.type === 'error' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-white text-slate-700 border-slate-200'}`}>
+                    {message.text}
+                </div>
+            )}
 
             <section id="hero" className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-8 scroll-mt-40">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-50">
@@ -991,194 +954,12 @@ export default function HomeEditor() {
                 </div>
             </section>
 
-            {/* Industries Section Editor */}
-            <section id="industries" className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-8 scroll-mt-40">
-                <div className="flex items-center justify-between pb-4 border-b border-slate-50">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-orange-50 text-orange-600 p-2 rounded-lg"><Factory size={20} /></div>
-                        <h2 className="text-xl font-bold text-slate-900">Sección: Para quien es DL (Industrias)</h2>
-                    </div>
-                </div>
-
-                <div className="bg-slate-50 p-6 rounded-2xl space-y-6">
-                    <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Encabezado de Sección</h3>
-                        <button 
-                            onClick={handleSaveIndustriesSection}
-                            disabled={saving}
-                            className="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-black transition-all active:scale-95 disabled:opacity-50"
-                        >
-                            <Save size={16} />
-                            Guardar Encabezado
-                        </button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Título de Sección</label>
-                            <input
-                                type="text"
-                                value={industriesSection.title}
-                                onChange={(e) => setIndustriesSection({ ...industriesSection, title: e.target.value })}
-                                className="w-full bg-white border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-orange-600/10 focus:border-orange-600 transition-all text-sm font-medium"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Subtítulo de Sección</label>
-                            <textarea
-                                rows={2}
-                                value={industriesSection.subtitle}
-                                onChange={(e) => setIndustriesSection({ ...industriesSection, subtitle: e.target.value })}
-                                className="w-full bg-white border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-orange-600/10 focus:border-orange-600 transition-all text-sm"
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {industries.map((ind, index) => (
-                        <div key={ind.id} className="p-6 border border-slate-100 rounded-2xl space-y-4 hover:border-slate-200 transition-all group">
-                            <div className="flex items-center gap-3 border-b border-slate-50 pb-3">
-                                <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600">
-                                    {(() => {
-                                        const IconComp = (LucideIcons as any)[ind.iconName] || Factory;
-                                        return <IconComp size={20} />;
-                                    })()}
-                                </div>
-                                <input 
-                                    className="font-bold text-slate-900 bg-transparent border-none p-0 focus:ring-0 w-full"
-                                    value={ind.name}
-                                    onChange={(e) => {
-                                        const newInds = [...industries];
-                                        newInds[index].name = e.target.value;
-                                        setIndustries(newInds);
-                                    }}
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase">Imagen de Fondo (Opcional)</label>
-                                <div className="flex gap-2">
-                                    <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
-                                                {ind.previewUrl || ind.imageUrl ? (
-                                                    <img src={ind.previewUrl || ind.imageUrl} className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-slate-300">
-                                                        <ImageIcon size={20} />
-                                                    </div>
-                                                )}
-                                        {uploadingImage && <div className="absolute inset-0 bg-white/60 flex items-center justify-center"><Loader2 className="animate-spin text-blue-600" size={16} /></div>}
-                                    </div>
-                                    <div className="flex-1 space-y-2">
-                                        <input 
-                                            type="text" 
-                                            placeholder="URL de imagen..." 
-                                            className="w-full text-xs bg-slate-50 border border-slate-100 rounded-lg p-2 focus:ring-1 focus:ring-blue-600/10 outline-none"
-                                            value={ind.imageUrl || ""}
-                                            onChange={(e) => {
-                                                const newInds = [...industries];
-                                                newInds[index].imageUrl = e.target.value;
-                                                setIndustries(newInds);
-                                            }}
-                                        />
-                                        <div className="flex gap-2">
-                                            <label className="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 hover:border-blue-400 hover:text-blue-600 cursor-pointer transition-all">
-                                                <Plus size={12} />
-                                                Subir Imagen
-                                                <input 
-                                                    type="file" 
-                                                    className="hidden" 
-                                                    accept="image/*"
-                                                    onChange={(e) => {
-                                                        const file = e.target.files?.[0];
-                                                        if (file) handleIndustryImageUpload(index, file);
-                                                        if (e.target) e.target.value = "";
-                                                    }}
-                                                />
-                                            </label>
-                                            {ind.imageUrl && (
-                                                <button 
-                                                    onClick={() => {
-                                                        const newInds = [...industries];
-                                                        newInds[index].imageUrl = "";
-                                                        newInds[index].previewUrl = null;
-                                                        newInds[index].pendingFile = null;
-                                                        setIndustries(newInds);
-                                                        setMessage({ type: "info", text: "Imagen quitada (clic en Guardar para publicar)." });
-                                                        setTimeout(() => setMessage({ type: "", text: "" }), 3000);
-                                                    }}
-                                                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-100 rounded-lg text-[10px] font-bold text-red-600 hover:bg-red-600 hover:text-white transition-all"
-                                                >
-                                                    <Trash2 size={12} />
-                                                    Eliminar
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase">Descripción</label>
-                                <textarea 
-                                    className="w-full text-sm text-slate-500 bg-slate-50 border-none rounded-lg p-3 focus:ring-1 focus:ring-blue-600/10"
-                                    value={ind.description || ""}
-                                    rows={2}
-                                    onChange={(e) => {
-                                        const newInds = [...industries];
-                                        newInds[index].description = e.target.value;
-                                        setIndustries(newInds);
-                                    }}
-                                />
-                            </div>
-
-                            <div className="space-y-3">
-                                <label className="text-xs font-bold text-slate-500 uppercase flex justify-between items-baseline">
-                                    <span>Icono</span>
-                                    <span className="text-[9px] text-blue-500 lowercase font-normal italic">{ind.iconName}</span>
-                                </label>
-                                <div className="flex flex-wrap gap-2">
-                                    {["Utensils", "HardHat", "Truck", "Shield", "Wrench", "Warehouse", "PartyPopper", "Briefcase", "Factory", "Shirt", "Stethoscope", "ShoppingBag"].map((icon) => {
-                                        const IconOption = (LucideIcons as any)[icon] || Factory;
-                                        return (
-                                            <button
-                                                key={icon}
-                                                type="button"
-                                                onClick={() => {
-                                                    const newInds = [...industries];
-                                                    newInds[index].iconName = icon;
-                                                    setIndustries(newInds);
-                                                }}
-                                                className={`p-2 rounded-lg border transition-all ${
-                                                    ind.iconName === icon 
-                                                        ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-200" 
-                                                        : "bg-white border-slate-200 text-slate-400 hover:border-blue-300 hover:text-blue-500"
-                                                }`}
-                                            >
-                                                <IconOption size={18} />
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            <button 
-                                onClick={() => handleSaveIndustry(ind.id, index)}
-                                className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition-all active:scale-95 shadow-lg shadow-slate-200 mt-4"
-                            >
-                                <Save size={18} />
-                                Guardar Cambios
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
             {/* Solutions Section Editor */}
             <section id="solutions" className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-8 scroll-mt-40">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-50">
                     <div className="flex items-center gap-3">
                         <div className="bg-purple-50 text-purple-600 p-2 rounded-lg"><Target size={20} /></div>
-                        <h2 className="text-xl font-bold text-slate-900">Sección: Que resuelve DL (Soluciones)</h2>
+                        <h2 className="text-xl font-bold text-slate-900">Pilares de servicio (las 4 tarjetas bajo el hero)</h2>
                     </div>
                 </div>
 
@@ -1578,6 +1359,296 @@ export default function HomeEditor() {
                 </div>
             </section>
 
+            {/* CTA Section Editor */}
+            <section id="cta" className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-8 scroll-mt-40">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-50">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-purple-50 text-purple-600 p-2 rounded-lg"><Target size={20} /></div>
+                        <h2 className="text-xl font-bold text-slate-900">Sección: Llamado a la Acción</h2>
+                    </div>
+                    <button 
+                        onClick={handleSaveCtaSection}
+                        disabled={saving}
+                        className="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-black transition-all active:scale-95 disabled:opacity-50"
+                    >
+                        <Save size={16} />
+                        Guardar Sección
+                    </button>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-slate-500 uppercase">Título Principal</label>
+                            <input
+                                type="text"
+                                value={ctaSection.title}
+                                onChange={(e) => setCtaSection({ ...ctaSection, title: e.target.value })}
+                                className="w-full bg-slate-50 border-none p-3 rounded-xl outline-none focus:ring-2 focus:ring-purple-600/10 text-sm font-medium"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-slate-500 uppercase">Subtítulo Descripción</label>
+                            <textarea
+                                rows={3}
+                                value={ctaSection.subtitle}
+                                onChange={(e) => setCtaSection({ ...ctaSection, subtitle: e.target.value })}
+                                className="w-full bg-slate-50 border-none p-3 rounded-xl outline-none focus:ring-2 focus:ring-purple-600/10 text-sm"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-slate-500 uppercase">Texto Pequeño (Bajo el botón)</label>
+                            <input
+                                type="text"
+                                value={ctaSection.smallText}
+                                onChange={(e) => setCtaSection({ ...ctaSection, smallText: e.target.value })}
+                                className="w-full bg-slate-50 border-none p-3 rounded-xl outline-none focus:ring-2 focus:ring-purple-600/10 text-sm"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                        <div className="bg-slate-50 p-6 rounded-2xl space-y-4">
+                            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200 pb-2">Configuración del Botón & Estilo</h3>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase">Texto del Botón</label>
+                                <input
+                                    type="text"
+                                    value={ctaSection.buttonText}
+                                    onChange={(e) => setCtaSection({ ...ctaSection, buttonText: e.target.value })}
+                                    className="w-full bg-white border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-purple-600/10 text-sm font-medium"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase">URL o Enlace (ej. #whatsapp)</label>
+                                <input
+                                    type="text"
+                                    value={ctaSection.buttonLink}
+                                    onChange={(e) => setCtaSection({ ...ctaSection, buttonLink: e.target.value })}
+                                    className="w-full bg-white border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-purple-600/10 text-sm font-medium"
+                                />
+                            </div>
+                            <div className="space-y-2 pt-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase">Color de Fondo</label>
+                                <div className="flex gap-3 items-center">
+                                    <input
+                                        type="color"
+                                        value={ctaSection.backgroundColor}
+                                        onChange={(e) => setCtaSection({ ...ctaSection, backgroundColor: e.target.value })}
+                                        className="h-12 w-12 rounded-xl cursor-pointer border-0 p-1 bg-white"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={ctaSection.backgroundColor}
+                                        onChange={(e) => setCtaSection({ ...ctaSection, backgroundColor: e.target.value })}
+                                        className="flex-1 bg-white border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-purple-600/10 text-sm uppercase"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Vista previa en miniatura */}
+                        <div className="mt-4 p-4 rounded-2xl text-center" style={{ backgroundColor: ctaSection.backgroundColor }}>
+                            <p className="text-white font-bold text-sm mb-2">{ctaSection.title}</p>
+                            <button className="bg-white text-slate-900 px-4 py-2 rounded-xl text-xs font-bold shadow-sm pointer-events-none">
+                                {ctaSection.buttonText}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <details className="group border-2 border-dashed border-slate-300 rounded-[2rem] bg-slate-50/50">
+                <summary className="cursor-pointer list-none p-6 flex items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+                    <div>
+                        <h2 className="text-lg font-bold text-slate-600">Secciones antiguas (ya no se muestran en la web)</h2>
+                        <p className="text-sm text-slate-400 mt-0.5">Industrias, “Por qué elegirnos” y Proceso quedaron fuera del rediseño. Sus datos se conservan por si se reutilizan.</p>
+                    </div>
+                    <span className="text-slate-400 group-open:rotate-180 transition-transform shrink-0">▼</span>
+                </summary>
+                <div className="px-4 pb-4 space-y-8">
+            {/* Industries Section Editor */}
+            <section id="industries" className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-8 scroll-mt-40">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-50">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-orange-50 text-orange-600 p-2 rounded-lg"><Factory size={20} /></div>
+                        <h2 className="text-xl font-bold text-slate-900">Sección: Para quien es DL (Industrias)</h2>
+                    </div>
+                </div>
+
+                <div className="bg-slate-50 p-6 rounded-2xl space-y-6">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Encabezado de Sección</h3>
+                        <button 
+                            onClick={handleSaveIndustriesSection}
+                            disabled={saving}
+                            className="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-black transition-all active:scale-95 disabled:opacity-50"
+                        >
+                            <Save size={16} />
+                            Guardar Encabezado
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-slate-500 uppercase">Título de Sección</label>
+                            <input
+                                type="text"
+                                value={industriesSection.title}
+                                onChange={(e) => setIndustriesSection({ ...industriesSection, title: e.target.value })}
+                                className="w-full bg-white border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-orange-600/10 focus:border-orange-600 transition-all text-sm font-medium"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-slate-500 uppercase">Subtítulo de Sección</label>
+                            <textarea
+                                rows={2}
+                                value={industriesSection.subtitle}
+                                onChange={(e) => setIndustriesSection({ ...industriesSection, subtitle: e.target.value })}
+                                className="w-full bg-white border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-orange-600/10 focus:border-orange-600 transition-all text-sm"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {industries.map((ind, index) => (
+                        <div key={ind.id} className="p-6 border border-slate-100 rounded-2xl space-y-4 hover:border-slate-200 transition-all group">
+                            <div className="flex items-center gap-3 border-b border-slate-50 pb-3">
+                                <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600">
+                                    {(() => {
+                                        const IconComp = (LucideIcons as any)[ind.iconName] || Factory;
+                                        return <IconComp size={20} />;
+                                    })()}
+                                </div>
+                                <input 
+                                    className="font-bold text-slate-900 bg-transparent border-none p-0 focus:ring-0 w-full"
+                                    value={ind.name}
+                                    onChange={(e) => {
+                                        const newInds = [...industries];
+                                        newInds[index].name = e.target.value;
+                                        setIndustries(newInds);
+                                    }}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase">Imagen de Fondo (Opcional)</label>
+                                <div className="flex gap-2">
+                                    <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
+                                                {ind.previewUrl || ind.imageUrl ? (
+                                                    <img src={ind.previewUrl || ind.imageUrl} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                                        <ImageIcon size={20} />
+                                                    </div>
+                                                )}
+                                        {uploadingImage && <div className="absolute inset-0 bg-white/60 flex items-center justify-center"><Loader2 className="animate-spin text-blue-600" size={16} /></div>}
+                                    </div>
+                                    <div className="flex-1 space-y-2">
+                                        <input 
+                                            type="text" 
+                                            placeholder="URL de imagen..." 
+                                            className="w-full text-xs bg-slate-50 border border-slate-100 rounded-lg p-2 focus:ring-1 focus:ring-blue-600/10 outline-none"
+                                            value={ind.imageUrl || ""}
+                                            onChange={(e) => {
+                                                const newInds = [...industries];
+                                                newInds[index].imageUrl = e.target.value;
+                                                setIndustries(newInds);
+                                            }}
+                                        />
+                                        <div className="flex gap-2">
+                                            <label className="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 hover:border-blue-400 hover:text-blue-600 cursor-pointer transition-all">
+                                                <Plus size={12} />
+                                                Subir Imagen
+                                                <input 
+                                                    type="file" 
+                                                    className="hidden" 
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) handleIndustryImageUpload(index, file);
+                                                        if (e.target) e.target.value = "";
+                                                    }}
+                                                />
+                                            </label>
+                                            {ind.imageUrl && (
+                                                <button 
+                                                    onClick={() => {
+                                                        const newInds = [...industries];
+                                                        newInds[index].imageUrl = "";
+                                                        newInds[index].previewUrl = null;
+                                                        newInds[index].pendingFile = null;
+                                                        setIndustries(newInds);
+                                                        setMessage({ type: "info", text: "Imagen quitada (clic en Guardar para publicar)." });
+                                                        setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+                                                    }}
+                                                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-100 rounded-lg text-[10px] font-bold text-red-600 hover:bg-red-600 hover:text-white transition-all"
+                                                >
+                                                    <Trash2 size={12} />
+                                                    Eliminar
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase">Descripción</label>
+                                <textarea 
+                                    className="w-full text-sm text-slate-500 bg-slate-50 border-none rounded-lg p-3 focus:ring-1 focus:ring-blue-600/10"
+                                    value={ind.description || ""}
+                                    rows={2}
+                                    onChange={(e) => {
+                                        const newInds = [...industries];
+                                        newInds[index].description = e.target.value;
+                                        setIndustries(newInds);
+                                    }}
+                                />
+                            </div>
+
+                            <div className="space-y-3">
+                                <label className="text-xs font-bold text-slate-500 uppercase flex justify-between items-baseline">
+                                    <span>Icono</span>
+                                    <span className="text-[9px] text-blue-500 lowercase font-normal italic">{ind.iconName}</span>
+                                </label>
+                                <div className="flex flex-wrap gap-2">
+                                    {["Utensils", "HardHat", "Truck", "Shield", "Wrench", "Warehouse", "PartyPopper", "Briefcase", "Factory", "Shirt", "Stethoscope", "ShoppingBag"].map((icon) => {
+                                        const IconOption = (LucideIcons as any)[icon] || Factory;
+                                        return (
+                                            <button
+                                                key={icon}
+                                                type="button"
+                                                onClick={() => {
+                                                    const newInds = [...industries];
+                                                    newInds[index].iconName = icon;
+                                                    setIndustries(newInds);
+                                                }}
+                                                className={`p-2 rounded-lg border transition-all ${
+                                                    ind.iconName === icon 
+                                                        ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-200" 
+                                                        : "bg-white border-slate-200 text-slate-400 hover:border-blue-300 hover:text-blue-500"
+                                                }`}
+                                            >
+                                                <IconOption size={18} />
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            <button 
+                                onClick={() => handleSaveIndustry(ind.id, index)}
+                                className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition-all active:scale-95 shadow-lg shadow-slate-200 mt-4"
+                            >
+                                <Save size={18} />
+                                Guardar Cambios
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
             {/* Why Us Section Editor */}
             <section id="whyus" className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-8 scroll-mt-40">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-50">
@@ -1801,104 +1872,8 @@ export default function HomeEditor() {
                 </div>
             </section>
 
-            {/* CTA Section Editor */}
-            <section id="cta" className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-8 scroll-mt-40">
-                <div className="flex items-center justify-between pb-4 border-b border-slate-50">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-purple-50 text-purple-600 p-2 rounded-lg"><Target size={20} /></div>
-                        <h2 className="text-xl font-bold text-slate-900">Sección: Llamado a la Acción</h2>
-                    </div>
-                    <button 
-                        onClick={handleSaveCtaSection}
-                        disabled={saving}
-                        className="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-black transition-all active:scale-95 disabled:opacity-50"
-                    >
-                        <Save size={16} />
-                        Guardar Sección
-                    </button>
                 </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Título Principal</label>
-                            <input
-                                type="text"
-                                value={ctaSection.title}
-                                onChange={(e) => setCtaSection({ ...ctaSection, title: e.target.value })}
-                                className="w-full bg-slate-50 border-none p-3 rounded-xl outline-none focus:ring-2 focus:ring-purple-600/10 text-sm font-medium"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Subtítulo Descripción</label>
-                            <textarea
-                                rows={3}
-                                value={ctaSection.subtitle}
-                                onChange={(e) => setCtaSection({ ...ctaSection, subtitle: e.target.value })}
-                                className="w-full bg-slate-50 border-none p-3 rounded-xl outline-none focus:ring-2 focus:ring-purple-600/10 text-sm"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Texto Pequeño (Bajo el botón)</label>
-                            <input
-                                type="text"
-                                value={ctaSection.smallText}
-                                onChange={(e) => setCtaSection({ ...ctaSection, smallText: e.target.value })}
-                                className="w-full bg-slate-50 border-none p-3 rounded-xl outline-none focus:ring-2 focus:ring-purple-600/10 text-sm"
-                            />
-                        </div>
-                    </div>
-                    
-                    <div className="space-y-4">
-                        <div className="bg-slate-50 p-6 rounded-2xl space-y-4">
-                            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200 pb-2">Configuración del Botón & Estilo</h3>
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase">Texto del Botón</label>
-                                <input
-                                    type="text"
-                                    value={ctaSection.buttonText}
-                                    onChange={(e) => setCtaSection({ ...ctaSection, buttonText: e.target.value })}
-                                    className="w-full bg-white border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-purple-600/10 text-sm font-medium"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase">URL o Enlace (ej. #whatsapp)</label>
-                                <input
-                                    type="text"
-                                    value={ctaSection.buttonLink}
-                                    onChange={(e) => setCtaSection({ ...ctaSection, buttonLink: e.target.value })}
-                                    className="w-full bg-white border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-purple-600/10 text-sm font-medium"
-                                />
-                            </div>
-                            <div className="space-y-2 pt-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase">Color de Fondo</label>
-                                <div className="flex gap-3 items-center">
-                                    <input
-                                        type="color"
-                                        value={ctaSection.backgroundColor}
-                                        onChange={(e) => setCtaSection({ ...ctaSection, backgroundColor: e.target.value })}
-                                        className="h-12 w-12 rounded-xl cursor-pointer border-0 p-1 bg-white"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={ctaSection.backgroundColor}
-                                        onChange={(e) => setCtaSection({ ...ctaSection, backgroundColor: e.target.value })}
-                                        className="flex-1 bg-white border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-purple-600/10 text-sm uppercase"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        
-                        {/* Vista previa en miniatura */}
-                        <div className="mt-4 p-4 rounded-2xl text-center" style={{ backgroundColor: ctaSection.backgroundColor }}>
-                            <p className="text-white font-bold text-sm mb-2">{ctaSection.title}</p>
-                            <button className="bg-white text-slate-900 px-4 py-2 rounded-xl text-xs font-bold shadow-sm pointer-events-none">
-                                {ctaSection.buttonText}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            </details>
 
             {/* Modal de Proyectos */}
             {isProjectsModalOpen && (
