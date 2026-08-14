@@ -158,6 +158,18 @@ const emptyForm = {
     hasScreenPrint: false,
     isActive: true,
     order: 0,
+    // Ficha maestra (rediseño 08/2026)
+    masterCode: "",
+    talles: "",
+    rubros: "",
+    versionDama: false,
+    damaTalles: "",
+    damaCompo: "",
+    damaImageUrl: "",
+    versionNino: false,
+    ninoTalles: "",
+    ninoCompo: "",
+    ninoImageUrl: "",
 };
 
 // ─── Inline Order Input ───────────────────────────────────────────────────
@@ -276,6 +288,26 @@ export default function ProductsEditor() {
         }
     };
 
+    // Sube la foto de una versión (dama o niño) y la guarda en el campo indicado
+    const handleVersionFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, campo: "damaImageUrl" | "ninoImageUrl") => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploading(true);
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("folder", "articulos");
+        try {
+            const res = await fetch("/api/upload", { method: "POST", body: formData });
+            const data = await res.json();
+            if (data.success) setNewProd(prev => ({ ...prev, [campo]: data.url }));
+        } catch (error) {
+            console.error("Upload error:", error);
+            alert("Error al subir la imagen");
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const handleBulkFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
         if (!files.length) return;
@@ -344,11 +376,25 @@ export default function ProductsEditor() {
         e.preventDefault();
         setLoading(true);
 
+        // Los campos de texto vacíos van como null (masterCode es único: "" repetido rompería)
+        const payload = {
+            ...newProd,
+            masterCode: newProd.masterCode.trim() || null,
+            talles: newProd.talles.trim() || null,
+            rubros: newProd.rubros.trim() || null,
+            damaTalles: newProd.versionDama ? newProd.damaTalles.trim() || null : null,
+            damaCompo: newProd.versionDama ? newProd.damaCompo.trim() || null : null,
+            damaImageUrl: newProd.versionDama ? newProd.damaImageUrl.trim() || null : null,
+            ninoTalles: newProd.versionNino ? newProd.ninoTalles.trim() || null : null,
+            ninoCompo: newProd.versionNino ? newProd.ninoCompo.trim() || null : null,
+            ninoImageUrl: newProd.versionNino ? newProd.ninoImageUrl.trim() || null : null,
+        };
+
         let res;
         if (isEditing && editId) {
-            res = await updateProduct(editId, newProd);
+            res = await updateProduct(editId, payload);
         } else {
-            res = await addProduct(newProd);
+            res = await addProduct(payload);
         }
 
         if (res.success) {
@@ -379,6 +425,17 @@ export default function ProductsEditor() {
             hasScreenPrint: prod.hasScreenPrint ?? false,
             isActive: prod.isActive ?? true,
             order: prod.order ?? 0,
+            masterCode: prod.masterCode || "",
+            talles: prod.talles || "",
+            rubros: prod.rubros || "",
+            versionDama: prod.versionDama ?? false,
+            damaTalles: prod.damaTalles || "",
+            damaCompo: prod.damaCompo || "",
+            damaImageUrl: prod.damaImageUrl || "",
+            versionNino: prod.versionNino ?? false,
+            ninoTalles: prod.ninoTalles || "",
+            ninoCompo: prod.ninoCompo || "",
+            ninoImageUrl: prod.ninoImageUrl || "",
         });
         setEditId(prod.id);
         setIsEditing(true);
@@ -680,6 +737,130 @@ export default function ProductsEditor() {
                                 </span>
                                 🧵 Bordado
                             </button>
+                        </div>
+                    </div>
+
+                    {/* ── Ficha técnica (código, talles, rubros) ── */}
+                    <div className="space-y-3 pt-4 border-t border-slate-100">
+                        <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">Ficha técnica</label>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700">Código maestro</label>
+                                <input
+                                    placeholder="Ej: RD-001"
+                                    className="bg-slate-50 p-3 rounded-xl w-full border border-slate-100 font-mono uppercase"
+                                    value={newProd.masterCode}
+                                    onChange={e => setNewProd({ ...newProd, masterCode: e.target.value.toUpperCase() })}
+                                />
+                                <p className="text-[11px] text-slate-400">El mismo código que en los catálogos PDF. Único por prenda.</p>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700">Talles (unisex)</label>
+                                <input
+                                    placeholder="Ej: S M L XL XXL XXXL"
+                                    className="bg-slate-50 p-3 rounded-xl w-full border border-slate-100"
+                                    value={newProd.talles}
+                                    onChange={e => setNewProd({ ...newProd, talles: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700">Rubros</label>
+                                <input
+                                    placeholder="Ej: Gastronomía y Cocina | Hotelería y Turismo"
+                                    className="bg-slate-50 p-3 rounded-xl w-full border border-slate-100"
+                                    value={newProd.rubros}
+                                    onChange={e => setNewProd({ ...newProd, rubros: e.target.value })}
+                                />
+                                <p className="text-[11px] text-slate-400">Separados con " | ". Se usarán para las páginas por rubro.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ── Versiones dama / niño ── */}
+                    <div className="space-y-4 pt-4 border-t border-slate-100">
+                        <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">Versiones dama / niño</label>
+                        <p className="text-xs text-slate-400">Si esta prenda también viene en versión de dama o de niño, activala y completá sus talles. Aparecen en la ficha del producto y en el filtro de categorías.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* DAMA */}
+                            <div className={`rounded-2xl border-2 p-4 space-y-3 transition-all ${newProd.versionDama ? "border-blue-400 bg-blue-50/40" : "border-slate-200 bg-slate-50"}`}>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={newProd.versionDama}
+                                        onChange={e => setNewProd({ ...newProd, versionDama: e.target.checked })}
+                                        className="w-5 h-5 accent-blue-600"
+                                    />
+                                    <span className="text-sm font-bold text-slate-700">Disponible en versión DAMA</span>
+                                </label>
+                                {newProd.versionDama && (
+                                    <div className="space-y-3">
+                                        <input
+                                            placeholder="Talles dama (Ej: T01 T02 T03 T04 T05)"
+                                            className="bg-white p-3 rounded-xl w-full border border-slate-200 text-sm"
+                                            value={newProd.damaTalles}
+                                            onChange={e => setNewProd({ ...newProd, damaTalles: e.target.value })}
+                                        />
+                                        <input
+                                            placeholder="Composición si difiere (opcional)"
+                                            className="bg-white p-3 rounded-xl w-full border border-slate-200 text-sm"
+                                            value={newProd.damaCompo}
+                                            onChange={e => setNewProd({ ...newProd, damaCompo: e.target.value })}
+                                        />
+                                        <div className="flex items-center gap-3">
+                                            {newProd.damaImageUrl && (
+                                                <img src={newProd.damaImageUrl} className="w-14 h-14 rounded-xl object-cover border border-slate-200" alt="Versión dama" />
+                                            )}
+                                            <label className="flex-1 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-xl p-2.5 hover:border-blue-400 hover:bg-white cursor-pointer transition-all">
+                                                <Upload className="text-slate-400 mr-2" size={14} />
+                                                <span className="text-[11px] font-bold text-slate-500">
+                                                    {uploading ? "Subiendo..." : newProd.damaImageUrl ? "Cambiar foto dama" : "Subir foto dama"}
+                                                </span>
+                                                <input type="file" className="hidden" accept="image/*" onChange={(e) => handleVersionFileUpload(e, "damaImageUrl")} />
+                                            </label>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            {/* NIÑO */}
+                            <div className={`rounded-2xl border-2 p-4 space-y-3 transition-all ${newProd.versionNino ? "border-blue-400 bg-blue-50/40" : "border-slate-200 bg-slate-50"}`}>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={newProd.versionNino}
+                                        onChange={e => setNewProd({ ...newProd, versionNino: e.target.checked })}
+                                        className="w-5 h-5 accent-blue-600"
+                                    />
+                                    <span className="text-sm font-bold text-slate-700">Disponible en versión NIÑO</span>
+                                </label>
+                                {newProd.versionNino && (
+                                    <div className="space-y-3">
+                                        <input
+                                            placeholder="Talles niño (Ej: T4 T6 T8 T10 T12 T14 T16)"
+                                            className="bg-white p-3 rounded-xl w-full border border-slate-200 text-sm"
+                                            value={newProd.ninoTalles}
+                                            onChange={e => setNewProd({ ...newProd, ninoTalles: e.target.value })}
+                                        />
+                                        <input
+                                            placeholder="Composición si difiere (opcional)"
+                                            className="bg-white p-3 rounded-xl w-full border border-slate-200 text-sm"
+                                            value={newProd.ninoCompo}
+                                            onChange={e => setNewProd({ ...newProd, ninoCompo: e.target.value })}
+                                        />
+                                        <div className="flex items-center gap-3">
+                                            {newProd.ninoImageUrl && (
+                                                <img src={newProd.ninoImageUrl} className="w-14 h-14 rounded-xl object-cover border border-slate-200" alt="Versión niño" />
+                                            )}
+                                            <label className="flex-1 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-xl p-2.5 hover:border-blue-400 hover:bg-white cursor-pointer transition-all">
+                                                <Upload className="text-slate-400 mr-2" size={14} />
+                                                <span className="text-[11px] font-bold text-slate-500">
+                                                    {uploading ? "Subiendo..." : newProd.ninoImageUrl ? "Cambiar foto niño" : "Subir foto niño"}
+                                                </span>
+                                                <input type="file" className="hidden" accept="image/*" onChange={(e) => handleVersionFileUpload(e, "ninoImageUrl")} />
+                                            </label>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
 
