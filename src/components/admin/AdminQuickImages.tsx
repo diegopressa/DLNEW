@@ -2,14 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ImagePlus, RefreshCw, Loader2 } from "lucide-react";
-import { changeMainProductImage, addProductImages } from "@/actions/productActions";
+import { ImagePlus, RefreshCw, Loader2, PauseCircle, PlayCircle } from "lucide-react";
+import { changeMainProductImage, addProductImages, togglePausadoManual } from "@/actions/productActions";
 
-// Barra de "modo admin" bajo la galería del producto: cambiar la imagen principal
-// o agregar imágenes abriendo directo el explorador de archivos, sin pasar por el admin.
-export default function AdminQuickImages({ productId }: { productId: number }) {
+// Barra de "modo admin" bajo la galería del producto: cambiar la imagen principal,
+// agregar imágenes (explorador directo) y pausar/reanudar el artículo.
+export default function AdminQuickImages({
+    productId,
+    pausado = false,
+    pausadoNota,
+}: {
+    productId: number;
+    pausado?: boolean;
+    pausadoNota?: string | null;
+}) {
     const [isAdmin, setIsAdmin] = useState(false);
-    const [subiendo, setSubiendo] = useState<"principal" | "agregar" | null>(null);
+    const [subiendo, setSubiendo] = useState<"principal" | "agregar" | "pausa" | null>(null);
     const inputPrincipal = useRef<HTMLInputElement>(null);
     const inputAgregar = useRef<HTMLInputElement>(null);
     const router = useRouter();
@@ -75,10 +83,27 @@ export default function AdminQuickImages({ productId }: { productId: number }) {
         }
     };
 
+    const alternarPausa = async () => {
+        let nota: string | undefined;
+        if (!pausado) {
+            const respuesta = window.prompt("¿Motivo de la pausa? (opcional — Aceptar para pausar, Cancelar para abortar)", pausadoNota || "");
+            if (respuesta === null) return; // canceló
+            nota = respuesta;
+        }
+        setSubiendo("pausa");
+        try {
+            const r = await togglePausadoManual(productId, !pausado, nota);
+            if (r.success) router.refresh();
+            else alert("No se pudo cambiar el estado");
+        } finally {
+            setSubiendo(null);
+        }
+    };
+
     return (
-        <div className="mt-3 flex flex-wrap items-center gap-2 bg-amber-50 border border-amber-200 rounded-md p-2.5">
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-amber-700 px-1.5">
-                Modo admin
+        <div className={`mt-3 flex flex-wrap items-center gap-2 rounded-md p-2.5 border ${pausado ? "bg-orange-50 border-orange-300" : "bg-amber-50 border-amber-200"}`}>
+            <span className={`text-[10px] font-bold uppercase tracking-[0.1em] px-1.5 ${pausado ? "text-orange-700" : "text-amber-700"}`}>
+                {pausado ? `Pausado${pausadoNota ? `: ${pausadoNota}` : ""}` : "Modo admin"}
             </span>
             <button
                 onClick={() => inputPrincipal.current?.click()}
@@ -95,6 +120,18 @@ export default function AdminQuickImages({ productId }: { productId: number }) {
             >
                 {subiendo === "agregar" ? <Loader2 size={14} className="animate-spin" /> : <ImagePlus size={14} />}
                 Agregar imágenes
+            </button>
+            <button
+                onClick={alternarPausa}
+                disabled={!!subiendo}
+                className={`flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-md transition-colors disabled:opacity-50 ${
+                    pausado
+                        ? "bg-orange-600 text-white hover:bg-orange-700"
+                        : "bg-white border border-amber-300 text-slate-800 hover:bg-amber-100"
+                }`}
+            >
+                {subiendo === "pausa" ? <Loader2 size={14} className="animate-spin" /> : pausado ? <PlayCircle size={14} /> : <PauseCircle size={14} />}
+                {pausado ? "Reanudar" : "Pausar"}
             </button>
             <input ref={inputPrincipal} type="file" accept="image/*" className="hidden" onChange={cambiarPrincipal} />
             <input ref={inputAgregar} type="file" accept="image/*" multiple className="hidden" onChange={agregarImagenes} />

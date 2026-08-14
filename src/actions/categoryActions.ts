@@ -27,7 +27,8 @@ export async function getCategoryBySlug(slug: string) {
     const categories = await prisma.productCategory.findMany({
         include: {
             products: {
-                where: esProduccion ? { isActive: true } : {},
+                // En producción: ni borradores ni pausados. En preview se ven ambos (con sello).
+                where: esProduccion ? { isActive: true, pausadoManual: false } : {},
                 include: {
                     images: true,
                     colors: {

@@ -227,9 +227,18 @@ export default async function CategoryListingPage({
                                                 {product.highlight}
                                             </span>
                                         )}
-                                        {!product.isActive && (
-                                            <span className="absolute top-3 right-3 bg-red-600 text-white px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em]">
-                                                Borrador
+                                        {(!product.isActive || product.pausadoManual) && (
+                                            <span className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
+                                                {!product.isActive && (
+                                                    <span className="bg-red-600 text-white px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em]">
+                                                        Borrador
+                                                    </span>
+                                                )}
+                                                {product.pausadoManual && (
+                                                    <span className="bg-orange-500 text-white px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em]">
+                                                        Pausado
+                                                    </span>
+                                                )}
                                             </span>
                                         )}
                                         {(product.hasScreenPrint || product.hasEmbroidery) && (

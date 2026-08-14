@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrder, toggleProductActive, reorderProducts } from "@/actions/productActions";
+import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrder, toggleProductActive, reorderProducts, togglePausadoManual } from "@/actions/productActions";
 import { getCategories } from "@/actions/categoryActions";
 import { getColors } from "@/actions/colorActions";
-import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff, ArrowUp, ArrowDown, AlertTriangle, GripVertical, ListOrdered } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff, ArrowUp, ArrowDown, AlertTriangle, GripVertical, ListOrdered, PauseCircle, PlayCircle } from "lucide-react";
 
 // ─── Color Multi-Select Picker ───────────────────────────────────────────────
 function ColorPicker({
@@ -461,6 +461,18 @@ export default function ProductsEditor() {
         loadData();
     };
 
+    // Pausa manual (decisión de negocio), distinta del borrador
+    const handleTogglePausado = async (prod: any) => {
+        let nota: string | undefined;
+        if (!prod.pausadoManual) {
+            const respuesta = window.prompt("¿Motivo de la pausa? (opcional — Aceptar para pausar, Cancelar para abortar)", prod.pausadoNota || "");
+            if (respuesta === null) return;
+            nota = respuesta;
+        }
+        await togglePausadoManual(prod.id, !prod.pausadoManual, nota);
+        loadData();
+    };
+
     const filteredProducts = products.filter(p => {
         // Búsqueda por nombre, slug o código maestro (cruza todas las pestañas)
         if (busqueda.trim()) {
@@ -473,21 +485,23 @@ export default function ProductsEditor() {
             return true; // con búsqueda activa se ignoran las pestañas
         }
         if (activeTab === "pausados") return !p.isActive;
-        if (activeTab === "faltan-fotos") return p.isActive && (p.images?.length ?? 0) <= 1;
-        if (activeTab === "todos") return p.isActive;
-        return p.isActive && p.categoryId.toString() === activeTab;
+        if (activeTab === "pausados-mios") return p.pausadoManual;
+        if (activeTab === "faltan-fotos") return p.isActive && !p.pausadoManual && (p.images?.length ?? 0) <= 1;
+        if (activeTab === "todos") return p.isActive && !p.pausadoManual;
+        return p.isActive && !p.pausadoManual && p.categoryId.toString() === activeTab;
     });
 
-    const productsMissingImages = products.filter(p => p.isActive && (p.images?.length ?? 0) <= 1).length;
+    const productsMissingImages = products.filter(p => p.isActive && !p.pausadoManual && (p.images?.length ?? 0) <= 1).length;
 
     // ── Modo Ordenar: entrar tomando lo que muestra la pestaña actual ──
     const entrarModoOrden = () => {
         setBusqueda("");
         const base = products.filter(p => {
             if (activeTab === "pausados") return !p.isActive;
-            if (activeTab === "faltan-fotos") return p.isActive && (p.images?.length ?? 0) <= 1;
-            if (activeTab === "todos") return p.isActive;
-            return p.isActive && p.categoryId.toString() === activeTab;
+            if (activeTab === "pausados-mios") return p.pausadoManual;
+            if (activeTab === "faltan-fotos") return p.isActive && !p.pausadoManual && (p.images?.length ?? 0) <= 1;
+            if (activeTab === "todos") return p.isActive && !p.pausadoManual;
+            return p.isActive && !p.pausadoManual && p.categoryId.toString() === activeTab;
         });
         setOrdenLista(base);
         setModoOrden(true);
@@ -1012,6 +1026,16 @@ export default function ProductsEditor() {
                     <AlertTriangle size={14} /> Faltan fotos ({productsMissingImages})
                 </button>
                 <button
+                    onClick={() => setActiveTab("pausados-mios")}
+                    className={`px-4 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-1.5 ${
+                        activeTab === "pausados-mios"
+                            ? "bg-orange-500 text-white"
+                            : "bg-white border border-slate-200 text-slate-500 hover:text-orange-600 hover:border-orange-300"
+                    }`}
+                >
+                    <PauseCircle size={14} /> Pausados por mí ({products.filter(p => p.pausadoManual).length})
+                </button>
+                <button
                     onClick={() => setActiveTab("pausados")}
                     className={`px-4 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-1.5 ${
                         activeTab === "pausados"
@@ -1019,7 +1043,7 @@ export default function ProductsEditor() {
                             : "bg-white border border-slate-200 text-slate-500 hover:text-amber-600 hover:border-amber-300"
                     }`}
                 >
-                    <Pause size={14} /> Pausados ({products.filter(p => !p.isActive).length})
+                    <Pause size={14} /> Borradores ({products.filter(p => !p.isActive).length})
                 </button>
             </div>
 
@@ -1035,8 +1059,15 @@ export default function ProductsEditor() {
                                     <ImageIcon size={48} />
                                 </div>
                             )}
-                            <div className="absolute top-3 left-3 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase">
-                                {prod.category?.name}
+                            <div className="absolute top-3 left-3 flex flex-col items-start gap-1">
+                                <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase">
+                                    {prod.category?.name}
+                                </span>
+                                {prod.pausadoManual && (
+                                    <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase" title={prod.pausadoNota || undefined}>
+                                        Pausado{prod.pausadoNota ? ` · ${prod.pausadoNota.slice(0, 24)}` : ""}
+                                    </span>
+                                )}
                             </div>
                             {(prod.images?.length ?? 0) <= 1 && (
                                 <div
@@ -1080,6 +1111,13 @@ export default function ProductsEditor() {
                                         >
                                             <Eye size={18} />
                                         </a>
+                                        <button
+                                            onClick={() => handleTogglePausado(prod)}
+                                            className={`p-2 rounded-lg transition-all ${prod.pausadoManual ? 'text-orange-600 bg-orange-50 hover:bg-orange-100' : 'text-slate-400 hover:text-orange-600 hover:bg-orange-50'}`}
+                                            title={prod.pausadoManual ? `Reanudar${prod.pausadoNota ? ` (pausado: ${prod.pausadoNota})` : ""}` : "Pausar (decisión de negocio: se oculta de la web)"}
+                                        >
+                                            {prod.pausadoManual ? <PlayCircle size={18} /> : <PauseCircle size={18} />}
+                                        </button>
                                         <button
                                             onClick={() => handleToggleActive(prod.id, !prod.isActive)}
                                             className={`p-2 rounded-lg transition-all ${prod.isActive ? 'text-slate-400 hover:text-amber-600 hover:bg-amber-50' : 'text-amber-600 bg-amber-50 hover:bg-amber-100'}`}

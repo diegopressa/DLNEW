@@ -29,7 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                 select: { name: true },
             }),
             (prisma as any).product.findMany({
-                where: { isActive: true },
+                where: { isActive: true, pausadoManual: false },
                 select: { slug: true, createdAt: true, category: { select: { name: true, isVisible: true } } },
             }),
         ]);

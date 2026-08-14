@@ -102,7 +102,7 @@ const esProduccionProd = process.env.VERCEL_ENV === "production";
 export async function getProductBySlug(slug: string) {
     try {
         const decodedSlug = decodeURIComponent(slug);
-        const filtroActivo = esProduccionProd ? { isActive: true } : {};
+        const filtroActivo = esProduccionProd ? { isActive: true, pausadoManual: false } : {};
         const product = await (prisma as any).product.findUnique({
             where: { slug: decodedSlug, ...filtroActivo },
             include: {
@@ -148,7 +148,7 @@ export async function getReflectiveProducts(excludeCategoryId: number) {
                     { name: { contains: "hi vis", mode: "insensitive" } },
                     { name: { contains: "fluo", mode: "insensitive" } },
                 ],
-                ...(esProduccionProd ? { isActive: true } : {}),
+                ...(esProduccionProd ? { isActive: true, pausadoManual: false } : {}),
             },
             include: {
                 images: { orderBy: { order: "asc" } },
@@ -174,7 +174,8 @@ export async function searchProducts(query: string) {
                     { name: { contains: query, mode: "insensitive" } },
                     { description: { contains: query, mode: "insensitive" } }
                 ],
-                isActive: true
+                isActive: true,
+                pausadoManual: false
             },
             include: {
                 category: true,
@@ -245,6 +246,26 @@ export async function addProductImages(productId: number, urls: string[]) {
         return { success: true };
     } catch (error) {
         console.error("Error addProductImages:", error);
+        return { success: false };
+    }
+}
+
+// Pausa manual de Diego: distinta del borrador. Se usa desde el admin
+// y desde la ficha pública en modo admin. Exige sesión.
+export async function togglePausadoManual(id: number, pausado: boolean, nota?: string) {
+    try {
+        if (!(await getSession())) return { success: false, error: "Sin sesión" };
+        await (prisma as any).product.update({
+            where: { id },
+            data: {
+                pausadoManual: pausado,
+                pausadoNota: pausado ? (nota?.trim() || null) : null,
+            },
+        });
+        revalidatePath("/", "layout");
+        return { success: true };
+    } catch (error) {
+        console.error("Error togglePausadoManual:", error);
         return { success: false };
     }
 }

@@ -134,7 +134,11 @@ export default async function ProductDetailPage({ params }: { params: { category
                             hasEmbroidery={product.hasEmbroidery}
                             productName={product.name}
                         />
-                        <AdminQuickImages productId={product.id} />
+                        <AdminQuickImages
+                            productId={product.id}
+                            pausado={product.pausadoManual ?? false}
+                            pausadoNota={product.pausadoNota}
+                        />
                     </div>
 
                     <div>
