@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrder, toggleProductActive } from "@/actions/productActions";
+import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrder, toggleProductActive, reorderProducts } from "@/actions/productActions";
 import { getCategories } from "@/actions/categoryActions";
 import { getColors } from "@/actions/colorActions";
-import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff, ArrowUp, ArrowDown, AlertTriangle } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff, ArrowUp, ArrowDown, AlertTriangle, GripVertical, ListOrdered } from "lucide-react";
 
 // ─── Color Multi-Select Picker ───────────────────────────────────────────────
 function ColorPicker({
@@ -230,6 +230,11 @@ export default function ProductsEditor() {
     const [bulkProgress, setBulkProgress] = useState<{ done: number; total: number } | null>(null);
     const [activeTab, setActiveTab] = useState<string>("todos");
     const [busqueda, setBusqueda] = useState("");
+    // Modo "Ordenar": lista compacta que se arrastra para reordenar
+    const [modoOrden, setModoOrden] = useState(false);
+    const [ordenLista, setOrdenLista] = useState<any[]>([]);
+    const [guardandoOrden, setGuardandoOrden] = useState(false);
+    const dragIndexRef = useRef<number | null>(null);
 
     const [newProd, setNewProd] = useState(emptyForm);
 
@@ -475,6 +480,39 @@ export default function ProductsEditor() {
 
     const productsMissingImages = products.filter(p => p.isActive && (p.images?.length ?? 0) <= 1).length;
 
+    // ── Modo Ordenar: entrar tomando lo que muestra la pestaña actual ──
+    const entrarModoOrden = () => {
+        setBusqueda("");
+        const base = products.filter(p => {
+            if (activeTab === "pausados") return !p.isActive;
+            if (activeTab === "faltan-fotos") return p.isActive && (p.images?.length ?? 0) <= 1;
+            if (activeTab === "todos") return p.isActive;
+            return p.isActive && p.categoryId.toString() === activeTab;
+        });
+        setOrdenLista(base);
+        setModoOrden(true);
+    };
+
+    const moverEnLista = (desde: number, hasta: number) => {
+        if (hasta < 0 || hasta >= ordenLista.length) return;
+        const copia = [...ordenLista];
+        const [item] = copia.splice(desde, 1);
+        copia.splice(hasta, 0, item);
+        setOrdenLista(copia);
+    };
+
+    const guardarOrden = async () => {
+        setGuardandoOrden(true);
+        const res = await reorderProducts(ordenLista.map(p => p.id));
+        setGuardandoOrden(false);
+        if (res.success) {
+            setModoOrden(false);
+            loadData();
+        } else {
+            alert("Error al guardar el orden");
+        }
+    };
+
     if (loading && products.length === 0) return <div className="flex justify-center p-20"><Loader2 className="animate-spin" /></div>;
 
     return (
@@ -484,15 +522,26 @@ export default function ProductsEditor() {
                     <h1 className="text-3xl font-bold text-slate-900">Artículos / Productos</h1>
                     <p className="text-slate-500">Gestioná el catálogo de prendas de la empresa.</p>
                 </div>
-                <button
-                    onClick={() => {
-                        setShowAdd(!showAdd);
-                        if (showAdd) { setIsEditing(false); setEditId(null); }
-                    }}
-                    className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 transition-all"
-                >
-                    <Plus size={20} /> {showAdd ? "Cancelar" : "Nuevo Artículo"}
-                </button>
+                <div className="flex gap-3">
+                    {!showAdd && !modoOrden && (
+                        <button
+                            onClick={entrarModoOrden}
+                            className="border border-slate-200 text-slate-700 px-5 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-50 transition-all"
+                            title="Ordenar arrastrando en una lista"
+                        >
+                            <ListOrdered size={18} /> Ordenar la lista
+                        </button>
+                    )}
+                    <button
+                        onClick={() => {
+                            setShowAdd(!showAdd);
+                            if (showAdd) { setIsEditing(false); setEditId(null); }
+                        }}
+                        className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 transition-all"
+                    >
+                        <Plus size={20} /> {showAdd ? "Cancelar" : "Nuevo Artículo"}
+                    </button>
+                </div>
             </header>
 
             {/* ── Product form ─────────────────────────────────────────── */}
@@ -897,6 +946,7 @@ export default function ProductsEditor() {
                 </form>
             )}
 
+            {!modoOrden && (<>
             {/* ── Buscador ── */}
             <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-3 max-w-md">
                 <Search size={16} className="text-slate-400 shrink-0" />
@@ -1011,12 +1061,6 @@ export default function ProductsEditor() {
                             <p className="text-sm text-slate-500 line-clamp-2 mb-4">{prod.description}</p>
 
                             <div className="mt-auto space-y-4">
-                                <OrderInput 
-                                    initialOrder={prod.order} 
-                                    productId={prod.id} 
-                                    onUpdate={loadData} 
-                                />
-
                                 <div className="flex justify-between items-center bg-slate-50 -mx-5 -mb-5 p-4 border-t border-slate-100">
                                     <span className="text-[10px] font-mono text-slate-400 bg-white px-2 py-1 rounded border border-slate-100">/{prod.slug}</span>
                                     <div className="flex gap-2">
@@ -1052,6 +1096,65 @@ export default function ProductsEditor() {
                     </div>
                 )}
             </div>
+            </>)}
+
+            {/* ── Modo Ordenar: lista arrastrable ── */}
+            {modoOrden && (
+                <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+                    <div className="p-5 border-b border-slate-100 flex items-center justify-between gap-4 flex-wrap">
+                        <div>
+                            <h2 className="font-bold text-slate-900">Ordenar artículos</h2>
+                            <p className="text-xs text-slate-500">Arrastrá las filas (o usá las flechas) y tocá Guardar. El primero de la lista es el primero que se ve en la web.</p>
+                        </div>
+                        <div className="flex gap-2">
+                            <button onClick={() => setModoOrden(false)} className="px-4 py-2.5 rounded-xl text-sm font-bold border border-slate-200 text-slate-600 hover:bg-slate-50">
+                                Cancelar
+                            </button>
+                            <button onClick={guardarOrden} disabled={guardandoOrden} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-[#0081D1] hover:bg-[#006BAE] text-white flex items-center gap-2 disabled:opacity-50">
+                                {guardandoOrden ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
+                                Guardar orden
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        {ordenLista.map((p, idx) => (
+                            <div
+                                key={p.id}
+                                draggable
+                                onDragStart={() => { dragIndexRef.current = idx; }}
+                                onDragOver={(e) => e.preventDefault()}
+                                onDrop={() => {
+                                    if (dragIndexRef.current !== null && dragIndexRef.current !== idx) {
+                                        moverEnLista(dragIndexRef.current, idx);
+                                    }
+                                    dragIndexRef.current = null;
+                                }}
+                                className="flex items-center gap-3 px-4 py-2.5 border-b border-slate-50 last:border-b-0 bg-white hover:bg-slate-50 cursor-grab active:cursor-grabbing"
+                            >
+                                <GripVertical size={16} className="text-slate-300 shrink-0" />
+                                <span className="w-7 text-center text-xs font-bold text-slate-400 shrink-0">{idx + 1}</span>
+                                {p.images?.[0]?.url ? (
+                                    <img src={p.images[0].url} className="w-10 h-10 rounded-lg object-cover border border-slate-100 shrink-0" alt="" />
+                                ) : (
+                                    <span className="w-10 h-10 rounded-lg bg-slate-100 grid place-items-center text-slate-300 shrink-0"><ImageIcon size={16} /></span>
+                                )}
+                                <span className="flex-1 min-w-0">
+                                    <span className="block text-sm font-bold text-slate-900 truncate">{p.name}</span>
+                                    <span className="block text-[11px] text-slate-400">{p.category?.name}{!p.isActive ? " · pausado" : ""}</span>
+                                </span>
+                                <span className="flex gap-1 shrink-0">
+                                    <button onClick={() => moverEnLista(idx, idx - 1)} disabled={idx === 0} className="p-1.5 rounded-lg text-slate-400 hover:text-[#0081D1] hover:bg-blue-50 disabled:opacity-30" title="Subir">
+                                        <ArrowUp size={15} />
+                                    </button>
+                                    <button onClick={() => moverEnLista(idx, idx + 1)} disabled={idx === ordenLista.length - 1} className="p-1.5 rounded-lg text-slate-400 hover:text-[#0081D1] hover:bg-blue-50 disabled:opacity-30" title="Bajar">
+                                        <ArrowDown size={15} />
+                                    </button>
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

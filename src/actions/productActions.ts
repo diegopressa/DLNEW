@@ -204,6 +204,26 @@ export async function updateProductOrder(id: number, order: number) {
     }
 }
 
+// Guarda el orden de una lista completa de productos (modo "Ordenar" del admin):
+// recibe los ids en el orden final y les asigna 1, 2, 3…
+export async function reorderProducts(ids: number[]) {
+    try {
+        await prisma.$transaction(
+            ids.map((id, i) =>
+                (prisma as any).product.update({
+                    where: { id },
+                    data: { order: i + 1 },
+                })
+            )
+        );
+        revalidatePath("/", "layout");
+        return { success: true };
+    } catch (error) {
+        console.error("Error reorderProducts:", error);
+        return { success: false };
+    }
+}
+
 export async function toggleProductActive(id: number, isActive: boolean) {
     try {
         await (prisma as any).product.update({
