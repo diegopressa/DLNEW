@@ -278,6 +278,7 @@ export async function updateProductFicha(id: number, data: {
     description?: string | null;
     materials?: string | null;
     damaCompo?: string | null;
+    ninoCompo?: string | null;
     talles?: string | null;
     damaTalles?: string | null;
     ninoTalles?: string | null;
@@ -300,6 +301,7 @@ export async function updateProductFicha(id: number, data: {
                 description: opcional(data.description),
                 materials: opcional(data.materials),
                 damaCompo: opcional(data.damaCompo),
+                ninoCompo: opcional(data.ninoCompo),
                 talles: opcional(data.talles),
                 damaTalles: opcional(data.damaTalles),
                 ninoTalles: opcional(data.ninoTalles),

@@ -144,6 +144,7 @@ export default async function ProductDetailPage({ params }: { params: { category
                                 description: product.description,
                                 materials: product.materials,
                                 damaCompo: product.damaCompo,
+                                ninoCompo: product.ninoCompo,
                                 talles: product.talles,
                                 damaTalles: product.damaTalles,
                                 ninoTalles: product.ninoTalles,
@@ -178,12 +179,17 @@ export default async function ProductDetailPage({ params }: { params: { category
 
                         {/* Ficha técnica (estilo catálogo por rubro) */}
                         <div className="mt-7 border-t border-slate-200">
-                            {product.materials && (
+                            {(product.materials || product.damaCompo || product.ninoCompo) && (
                                 <div className="py-5 border-b border-slate-200">
                                     <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-1.5">Composición</p>
-                                    <p className="text-sm font-semibold text-grafito">{product.materials}</p>
+                                    {product.materials && (
+                                        <p className="text-sm font-semibold text-grafito"><b className="text-primary text-xs uppercase mr-1.5">Unisex</b>{product.materials}</p>
+                                    )}
                                     {product.damaCompo && product.damaCompo !== product.materials && (
-                                        <p className="text-sm text-slate-600 mt-1"><b className="text-primary text-xs uppercase mr-1.5">Dama</b>{product.damaCompo}</p>
+                                        <p className="text-sm font-semibold text-grafito mt-1"><b className="text-primary text-xs uppercase mr-1.5">Dama</b>{product.damaCompo}</p>
+                                    )}
+                                    {product.ninoCompo && product.ninoCompo !== product.materials && (
+                                        <p className="text-sm font-semibold text-grafito mt-1"><b className="text-primary text-xs uppercase mr-1.5">Niño</b>{product.ninoCompo}</p>
                                     )}
                                 </div>
                             )}

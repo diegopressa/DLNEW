@@ -11,6 +11,7 @@ export type FichaProducto = {
     description?: string | null;
     materials?: string | null;
     damaCompo?: string | null;
+    ninoCompo?: string | null;
     talles?: string | null;
     damaTalles?: string | null;
     ninoTalles?: string | null;
@@ -108,6 +109,7 @@ export default function AdminQuickImages({
             description: ficha.description || "",
             materials: ficha.materials || "",
             damaCompo: ficha.damaCompo || "",
+            ninoCompo: ficha.ninoCompo || "",
             talles: ficha.talles || "",
             damaTalles: ficha.damaTalles || "",
             ninoTalles: ficha.ninoTalles || "",
@@ -214,8 +216,9 @@ export default function AdminQuickImages({
                             className="mt-0.5 w-full border border-amber-300 rounded-md px-2.5 py-1.5 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
                         />
                     </label>
-                    {campo("Composición", "materials", "ej. 100% algodón")}
+                    {campo("Composición unisex", "materials", "ej. 100% algodón")}
                     {campo("Composición dama", "damaCompo")}
+                    {campo("Composición niño", "ninoCompo")}
                     {campo("Talles unisex", "talles", "ej. S M L XL XXL")}
                     {campo("Talles dama", "damaTalles")}
                     {campo("Talles niño", "ninoTalles")}
