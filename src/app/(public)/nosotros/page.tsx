@@ -1,6 +1,8 @@
 import React from "react";
 import Image from "next/image";
+import { MessageCircle } from "lucide-react";
 import { getAboutUs } from "@/actions/aboutActions";
+import { getGlobalSettings } from "@/actions/settingsActions";
 import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 import { buildMetadata } from "@/lib/buildMetadata";
 import type { Metadata } from "next";
@@ -10,9 +12,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function NosotrosPage() {
-    const about = await getAboutUs();
+    const [about, settings] = await Promise.all([
+        getAboutUs(),
+        getGlobalSettings(),
+    ]);
 
     if (!about) return null;
+
+    const whatsapp = (settings as any)?.whatsapp || "59897534866";
+    const waUrl = `https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`;
 
     return (
         <div className="bg-white min-h-screen">
@@ -50,6 +58,30 @@ export default async function NosotrosPage() {
                     </div>
                 </div>
             </div>
+
+            {/* ── CTA de cierre ── */}
+            <section className="bg-primary text-white">
+                <div className="max-w-[1240px] mx-auto px-4 sm:px-6 py-12 sm:py-16 flex flex-wrap items-center justify-between gap-7">
+                    <div>
+                        <h2 className="font-display uppercase text-4xl sm:text-5xl text-white">
+                            Ahora que sabés quiénes somos…
+                        </h2>
+                        <p className="mt-2 text-white/90 font-medium max-w-[46ch]">
+                            Escribinos, estamos para ayudarte a uniformar a tu equipo.
+                        </p>
+                    </div>
+                    <a
+                        href={waUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-grafito text-white px-7 py-4 rounded-md font-bold uppercase tracking-wide text-sm hover:bg-black transition-colors flex items-center gap-2.5"
+                    >
+                        <MessageCircle className="w-5 h-5" />
+                        Contactar por WhatsApp
+                    </a>
+                </div>
+            </section>
+
             <AdminEditButtonGate href="/admin/nosotros" label="Editar Nosotros" />
         </div>
     );
