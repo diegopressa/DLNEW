@@ -163,95 +163,77 @@ export default function AdminQuickImages({
         }
     };
 
+    // Panel flotante pegado al borde izquierdo, a la altura de la imagen,
+    // para que Diego no tenga que scrollear hasta debajo de la galería.
+    const btn = "w-full flex items-center gap-1.5 bg-white border border-amber-300 text-slate-800 text-xs font-bold px-3 py-2 rounded-md hover:bg-amber-100 transition-colors disabled:opacity-50";
+
     return (
-        <>
-        <div className={`mt-3 flex flex-wrap items-center gap-2 rounded-md p-2.5 border ${pausado ? "bg-orange-50 border-orange-300" : "bg-amber-50 border-amber-200"}`}>
-            <span className={`text-[10px] font-bold uppercase tracking-[0.1em] px-1.5 ${pausado ? "text-orange-700" : "text-amber-700"}`}>
+        <div className={`fixed left-2 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2 rounded-lg p-2.5 border shadow-xl max-h-[85vh] overflow-y-auto ${editando ? "w-80" : "w-56"} ${pausado ? "bg-orange-50 border-orange-300" : "bg-amber-50 border-amber-200"}`}>
+            <span className={`text-[10px] font-bold uppercase tracking-[0.1em] px-1 ${pausado ? "text-orange-700" : "text-amber-700"}`}>
                 {pausado ? `Pausado${pausadoNota ? `: ${pausadoNota}` : ""}` : "Modo admin"}
             </span>
-            <button
-                onClick={() => inputPrincipal.current?.click()}
-                disabled={!!subiendo}
-                className="flex items-center gap-1.5 bg-white border border-amber-300 text-slate-800 text-xs font-bold px-3 py-2 rounded-md hover:bg-amber-100 transition-colors disabled:opacity-50"
-            >
+            <button onClick={() => inputPrincipal.current?.click()} disabled={!!subiendo} className={btn}>
                 {subiendo === "principal" ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
                 Cambiar imagen principal
             </button>
-            <button
-                onClick={() => inputAgregar.current?.click()}
-                disabled={!!subiendo}
-                className="flex items-center gap-1.5 bg-white border border-amber-300 text-slate-800 text-xs font-bold px-3 py-2 rounded-md hover:bg-amber-100 transition-colors disabled:opacity-50"
-            >
+            <button onClick={() => inputAgregar.current?.click()} disabled={!!subiendo} className={btn}>
                 {subiendo === "agregar" ? <Loader2 size={14} className="animate-spin" /> : <ImagePlus size={14} />}
                 Agregar imágenes
             </button>
             <button
                 onClick={alternarPausa}
                 disabled={!!subiendo}
-                className={`flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-md transition-colors disabled:opacity-50 ${
-                    pausado
-                        ? "bg-orange-600 text-white hover:bg-orange-700"
-                        : "bg-white border border-amber-300 text-slate-800 hover:bg-amber-100"
-                }`}
+                className={pausado ? "w-full flex items-center gap-1.5 bg-orange-600 text-white text-xs font-bold px-3 py-2 rounded-md hover:bg-orange-700 transition-colors disabled:opacity-50" : btn}
             >
                 {subiendo === "pausa" ? <Loader2 size={14} className="animate-spin" /> : pausado ? <PlayCircle size={14} /> : <PauseCircle size={14} />}
                 {pausado ? "Reanudar" : "Pausar"}
             </button>
             {ficha && (
-                <button
-                    onClick={() => (editando ? setEditando(false) : abrirEditor())}
-                    disabled={!!subiendo}
-                    className="flex items-center gap-1.5 bg-white border border-amber-300 text-slate-800 text-xs font-bold px-3 py-2 rounded-md hover:bg-amber-100 transition-colors disabled:opacity-50"
-                >
+                <button onClick={() => (editando ? setEditando(false) : abrirEditor())} disabled={!!subiendo} className={btn}>
                     {editando ? <X size={14} /> : <Pencil size={14} />}
                     {editando ? "Cerrar editor" : "Editar ficha"}
                 </button>
             )}
             <input ref={inputPrincipal} type="file" accept="image/*" className="hidden" onChange={cambiarPrincipal} />
             <input ref={inputAgregar} type="file" accept="image/*" multiple className="hidden" onChange={agregarImagenes} />
-        </div>
 
-        {editando && form && (
-            <div className="mt-2 rounded-md border border-amber-200 bg-amber-50 p-3.5 space-y-3">
-                {campo("Título", "name")}
-                <div className="grid grid-cols-2 gap-3">
+            {editando && form && (
+                <div className="border-t border-amber-300 pt-2.5 space-y-2.5">
+                    {campo("Título", "name")}
                     {campo("Ref (código)", "masterCode", "ej. RA-001")}
-                    {campo("Talles unisex", "talles", "ej. S M L XL XXL")}
-                </div>
-                <label className="block">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-amber-700">Descripción</span>
-                    <textarea
-                        value={form.description || ""}
-                        onChange={(e) => setForm((f) => (f ? { ...f, description: e.target.value } : f))}
-                        rows={3}
-                        className="mt-0.5 w-full border border-amber-300 rounded-md px-2.5 py-1.5 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
-                    />
-                </label>
-                {campo("Composición", "materials", "ej. 100% algodón")}
-                <div className="grid grid-cols-2 gap-3">
+                    <label className="block">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-amber-700">Descripción</span>
+                        <textarea
+                            value={form.description || ""}
+                            onChange={(e) => setForm((f) => (f ? { ...f, description: e.target.value } : f))}
+                            rows={3}
+                            className="mt-0.5 w-full border border-amber-300 rounded-md px-2.5 py-1.5 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+                        />
+                    </label>
+                    {campo("Composición", "materials", "ej. 100% algodón")}
                     {campo("Composición dama", "damaCompo")}
+                    {campo("Talles unisex", "talles", "ej. S M L XL XXL")}
                     {campo("Talles dama", "damaTalles")}
+                    {campo("Talles niño", "ninoTalles")}
+                    <div className="flex items-center gap-2 pt-1">
+                        <button
+                            onClick={guardarFicha}
+                            disabled={!!subiendo}
+                            className="flex items-center gap-1.5 bg-primary text-white text-xs font-bold px-4 py-2 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
+                        >
+                            {subiendo === "ficha" ? <Loader2 size={14} className="animate-spin" /> : <Pencil size={14} />}
+                            Guardar cambios
+                        </button>
+                        <button
+                            onClick={() => setEditando(false)}
+                            disabled={!!subiendo}
+                            className="text-xs font-bold text-slate-600 px-3 py-2 rounded-md hover:bg-amber-100 transition-colors disabled:opacity-50"
+                        >
+                            Cancelar
+                        </button>
+                    </div>
                 </div>
-                {campo("Talles niño", "ninoTalles")}
-                <div className="flex items-center gap-2 pt-1">
-                    <button
-                        onClick={guardarFicha}
-                        disabled={!!subiendo}
-                        className="flex items-center gap-1.5 bg-primary text-white text-xs font-bold px-4 py-2 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
-                    >
-                        {subiendo === "ficha" ? <Loader2 size={14} className="animate-spin" /> : <Pencil size={14} />}
-                        Guardar cambios
-                    </button>
-                    <button
-                        onClick={() => setEditando(false)}
-                        disabled={!!subiendo}
-                        className="text-xs font-bold text-slate-600 px-3 py-2 rounded-md hover:bg-amber-100 transition-colors disabled:opacity-50"
-                    >
-                        Cancelar
-                    </button>
-                </div>
-            </div>
-        )}
-        </>
+            )}
+        </div>
     );
 }
