@@ -24,6 +24,10 @@ export type FichaProducto = {
 // El form maneja las características como lista de casilleros con desplegable
 type FormFicha = FichaProducto & { featuresSel?: string[] };
 
+// Diego pidió apagar las características por ahora (14/08/2026). Poner en true para reactivarlas
+// acá y en la página del producto (MOSTRAR_CARACTERISTICAS en [productSlug]/page.tsx).
+const MOSTRAR_CARACTERISTICAS = false;
+
 // Barra de "modo admin" bajo la galería del producto: cambiar la imagen principal,
 // agregar imágenes (explorador directo), pausar/reanudar y editar la ficha.
 export default function AdminQuickImages({
@@ -165,7 +169,10 @@ export default function AdminQuickImages({
             const { featuresSel, ...datos } = form;
             const r = await updateProductFicha(productId, {
                 ...datos,
-                features: (featuresSel || []).map((t) => t.trim()).filter(Boolean),
+                // Con las características apagadas no se mandan: la acción no toca lo guardado
+                ...(MOSTRAR_CARACTERISTICAS
+                    ? { features: (featuresSel || []).map((t) => t.trim()).filter(Boolean) }
+                    : {}),
             });
             if (r.success) {
                 setEditando(false);
@@ -261,6 +268,7 @@ export default function AdminQuickImages({
                     {campo("Talles unisex", "talles", "ej. S M L XL XXL")}
                     {campo("Talles dama", "damaTalles")}
                     {campo("Talles niño", "ninoTalles")}
+                    {MOSTRAR_CARACTERISTICAS && (
                     <div>
                         <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-amber-700">Características</span>
                         <div className="mt-1 space-y-1.5">
@@ -296,6 +304,7 @@ export default function AdminQuickImages({
                             </button>
                         </div>
                     </div>
+                    )}
                     <div className="pt-0.5">
                         <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-amber-700">Disponible en versión</span>
                         <div className="mt-1 flex items-center gap-4">

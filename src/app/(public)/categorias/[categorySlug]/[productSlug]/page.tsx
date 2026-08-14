@@ -44,6 +44,9 @@ export async function generateMetadata({ params }: { params: { categorySlug: str
     };
 }
 
+// Diego pidió apagar la sección Características por ahora (14/08/2026). Poner en true para reactivarla.
+const MOSTRAR_CARACTERISTICAS = false;
+
 const PASOS = [
     { n: 1, titulo: "Nos escribís", texto: "Por WhatsApp, con tu logo y la cantidad aproximada." },
     { n: 2, titulo: "Cotizamos", texto: "Presupuesto en menos de 2 horas, en horario laboral." },
@@ -241,7 +244,9 @@ export default async function ProductDetailPage({ params }: { params: { category
                                 </div>
                             )}
 
-                            {product.features.length > 0 && (
+                            {/* Características DESACTIVADAS por pedido de Diego (14/08/2026)
+                                hasta depurar el catálogo. Para reactivar: MOSTRAR_CARACTERISTICAS = true. */}
+                            {MOSTRAR_CARACTERISTICAS && product.features.length > 0 && (
                                 <div className="py-5 border-b border-slate-200">
                                     <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-3">Características</p>
                                     <ul className="space-y-2">
