@@ -127,8 +127,8 @@ export default async function ProductDetailPage({ params }: { params: { category
                         <ProductGallery
                             images={[
                                 ...product.images.map((img: any) => img.url),
-                                ...(product.damaImageUrl ? [product.damaImageUrl] : []),
-                                ...(product.ninoImageUrl ? [product.ninoImageUrl] : []),
+                                ...(product.versionDama && product.damaImageUrl ? [product.damaImageUrl] : []),
+                                ...(product.versionNino && product.ninoImageUrl ? [product.ninoImageUrl] : []),
                             ]}
                             hasScreenPrint={product.hasScreenPrint}
                             hasEmbroidery={product.hasEmbroidery}
@@ -179,31 +179,32 @@ export default async function ProductDetailPage({ params }: { params: { category
 
                         {/* Ficha técnica (estilo catálogo por rubro) */}
                         <div className="mt-7 border-t border-slate-200">
-                            {(product.materials || product.damaCompo || product.ninoCompo) && (
+                            {/* Los datos de dama/niño solo se muestran si la versión está habilitada (versionDama/versionNino) */}
+                            {(product.materials || (product.versionDama && product.damaCompo) || (product.versionNino && product.ninoCompo)) && (
                                 <div className="py-5 border-b border-slate-200">
                                     <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-1.5">Composición</p>
                                     {product.materials && (
                                         <p className="text-sm font-semibold text-grafito"><b className="text-primary text-xs uppercase mr-1.5">Unisex</b>{product.materials}</p>
                                     )}
-                                    {product.damaCompo && (
+                                    {product.versionDama && product.damaCompo && (
                                         <p className="text-sm font-semibold text-grafito mt-1"><b className="text-primary text-xs uppercase mr-1.5">Dama</b>{product.damaCompo}</p>
                                     )}
-                                    {product.ninoCompo && (
+                                    {product.versionNino && product.ninoCompo && (
                                         <p className="text-sm font-semibold text-grafito mt-1"><b className="text-primary text-xs uppercase mr-1.5">Niño</b>{product.ninoCompo}</p>
                                     )}
                                 </div>
                             )}
 
-                            {(product.talles || product.damaTalles || product.ninoTalles) && (
+                            {(product.talles || (product.versionDama && product.damaTalles) || (product.versionNino && product.ninoTalles)) && (
                                 <div className="py-5 border-b border-slate-200">
                                     <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-1.5">Talles</p>
                                     {product.talles && (
                                         <p className="text-sm font-semibold text-grafito"><b className="text-primary text-xs uppercase mr-1.5">Unisex</b>{product.talles}</p>
                                     )}
-                                    {product.damaTalles && (
+                                    {product.versionDama && product.damaTalles && (
                                         <p className="text-sm font-semibold text-grafito mt-1"><b className="text-primary text-xs uppercase mr-1.5">Dama</b>{product.damaTalles}</p>
                                     )}
-                                    {product.ninoTalles && (
+                                    {product.versionNino && product.ninoTalles && (
                                         <p className="text-sm font-semibold text-grafito mt-1"><b className="text-primary text-xs uppercase mr-1.5">Niño</b>{product.ninoTalles}</p>
                                     )}
                                 </div>
