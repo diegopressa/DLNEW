@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrder, toggleProductActive, reorderProducts, togglePausadoManual } from "@/actions/productActions";
+import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrder, toggleProductActive, reorderProducts, togglePausadoManual, duplicateProduct } from "@/actions/productActions";
 import { getCategories } from "@/actions/categoryActions";
 import { getColors } from "@/actions/colorActions";
-import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff, ArrowUp, ArrowDown, AlertTriangle, GripVertical, ListOrdered, PauseCircle, PlayCircle } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff, ArrowUp, ArrowDown, AlertTriangle, GripVertical, ListOrdered, PauseCircle, PlayCircle, Copy } from "lucide-react";
 
 // ─── Color Multi-Select Picker ───────────────────────────────────────────────
 function ColorPicker({
@@ -471,6 +471,18 @@ export default function ProductsEditor() {
         }
         await togglePausadoManual(prod.id, !prod.pausadoManual, nota);
         loadData();
+    };
+
+    // Duplicar: la copia se crea como borrador para editarla tranquilo antes de publicarla
+    const handleDuplicate = async (prod: any) => {
+        if (!confirm(`¿Duplicar "${prod.name}"?\n\nLa copia se crea como BORRADOR (no visible en la web) con todas las fotos, colores y datos, para que la edites tranquilo.`)) return;
+        const res = await duplicateProduct(prod.id);
+        if (res.success) {
+            await loadData();
+            alert(`Listo: se creó "${res.product.name}" en la pestaña Borradores.`);
+        } else {
+            alert(res.error || "No se pudo duplicar el artículo");
+        }
     };
 
     const filteredProducts = products.filter(p => {
@@ -1124,6 +1136,13 @@ export default function ProductsEditor() {
                                             title={prod.isActive ? "Pausar" : "Reactivar"}
                                         >
                                             {prod.isActive ? <Pause size={18} /> : <Play size={18} />}
+                                        </button>
+                                        <button
+                                            onClick={() => handleDuplicate(prod)}
+                                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                                            title="Duplicar (crea una copia como borrador)"
+                                        >
+                                            <Copy size={18} />
                                         </button>
                                         <button onClick={() => handleEdit(prod)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Editar">
                                             <Pencil size={18} />

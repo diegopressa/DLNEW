@@ -333,6 +333,53 @@ export async function updateProductFicha(id: number, data: {
     }
 }
 
+// Duplica un artículo completo (fotos, colores, características y ficha).
+// La copia arranca como BORRADOR, sin Ref (masterCode es unique) y con slug propio.
+export async function duplicateProduct(id: number) {
+    try {
+        if (!(await getSession())) return { success: false, error: "Sin sesión" };
+        const original = await (prisma as any).product.findUnique({
+            where: { id },
+            include: {
+                images: { orderBy: { order: "asc" } },
+                features: true,
+                colors: true,
+            },
+        });
+        if (!original) return { success: false, error: "No se encontró el artículo" };
+
+        let slug = `${original.slug}-copia`;
+        for (let n = 2; await (prisma as any).product.findUnique({ where: { slug } }); n++) {
+            slug = `${original.slug}-copia-${n}`;
+        }
+
+        const last = await (prisma as any).product.findFirst({ orderBy: { order: "desc" } });
+        const { id: _id, slug: _slug, name, masterCode: _ref, createdAt: _creado, images, features, colors, ...resto } = original;
+
+        const copia = await (prisma as any).product.create({
+            data: {
+                ...resto,
+                name: `${name} (copia)`,
+                slug,
+                masterCode: null,
+                isActive: false,
+                pausadoManual: false,
+                pausadoNota: null,
+                order: (last?.order || 0) + 1,
+                images: { create: images.map((img: any, i: number) => ({ url: img.url, order: i })) },
+                features: { create: features.map((f: any) => ({ text: f.text })) },
+                colors: { create: colors.map((c: any) => ({ colorId: c.colorId })) },
+            },
+        });
+
+        revalidatePath("/", "layout");
+        return { success: true, product: copia };
+    } catch (error) {
+        console.error("Error duplicateProduct:", error);
+        return { success: false };
+    }
+}
+
 // Agrega o quita un color del artículo desde la página pública (modo admin).
 export async function toggleProductColor(productId: number, colorId: number, agregar: boolean) {
     try {
