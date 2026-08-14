@@ -284,6 +284,7 @@ export async function updateProductFicha(id: number, data: {
     ninoTalles?: string | null;
     versionDama?: boolean;
     versionNino?: boolean;
+    features?: string[];
 }) {
     try {
         if (!(await getSession())) return { success: false, error: "Sin sesión" };
@@ -293,22 +294,34 @@ export async function updateProductFicha(id: number, data: {
             const t = (v ?? "").trim();
             return t === "" ? null : t;
         };
-        await (prisma as any).product.update({
-            where: { id },
-            data: {
-                name,
-                masterCode: opcional(data.masterCode),
-                description: opcional(data.description),
-                materials: opcional(data.materials),
-                damaCompo: opcional(data.damaCompo),
-                ninoCompo: opcional(data.ninoCompo),
-                talles: opcional(data.talles),
-                damaTalles: opcional(data.damaTalles),
-                ninoTalles: opcional(data.ninoTalles),
-                versionDama: !!data.versionDama,
-                versionNino: !!data.versionNino,
-            },
-        });
+        // features solo se reemplazan si vienen en el payload (array); undefined = no tocar
+        const featureTexts = Array.isArray(data.features)
+            ? data.features.map((t) => (t || "").trim()).filter(Boolean)
+            : null;
+        await prisma.$transaction([
+            ...(featureTexts !== null
+                ? [(prisma as any).productFeature.deleteMany({ where: { productId: id } })]
+                : []),
+            (prisma as any).product.update({
+                where: { id },
+                data: {
+                    name,
+                    masterCode: opcional(data.masterCode),
+                    description: opcional(data.description),
+                    materials: opcional(data.materials),
+                    damaCompo: opcional(data.damaCompo),
+                    ninoCompo: opcional(data.ninoCompo),
+                    talles: opcional(data.talles),
+                    damaTalles: opcional(data.damaTalles),
+                    ninoTalles: opcional(data.ninoTalles),
+                    versionDama: !!data.versionDama,
+                    versionNino: !!data.versionNino,
+                },
+            }),
+            ...(featureTexts !== null && featureTexts.length
+                ? [(prisma as any).productFeature.createMany({ data: featureTexts.map((text) => ({ productId: id, text })) })]
+                : []),
+        ]);
         revalidatePath("/", "layout");
         return { success: true };
     } catch (error: any) {

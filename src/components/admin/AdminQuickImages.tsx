@@ -17,7 +17,11 @@ export type FichaProducto = {
     ninoTalles?: string | null;
     versionDama?: boolean;
     versionNino?: boolean;
+    features?: string[];
 };
+
+// El form suma un campo de texto para editar las características (una por renglón)
+type FormFicha = FichaProducto & { featuresTexto?: string };
 
 // Barra de "modo admin" bajo la galería del producto: cambiar la imagen principal,
 // agregar imágenes (explorador directo), pausar/reanudar y editar la ficha.
@@ -35,7 +39,7 @@ export default function AdminQuickImages({
     const [isAdmin, setIsAdmin] = useState(false);
     const [subiendo, setSubiendo] = useState<"principal" | "agregar" | "pausa" | "ficha" | null>(null);
     const [editando, setEditando] = useState(false);
-    const [form, setForm] = useState<FichaProducto | null>(null);
+    const [form, setForm] = useState<FormFicha | null>(null);
     const inputPrincipal = useRef<HTMLInputElement>(null);
     const inputAgregar = useRef<HTMLInputElement>(null);
     const router = useRouter();
@@ -115,6 +119,7 @@ export default function AdminQuickImages({
             ninoTalles: ficha.ninoTalles || "",
             versionDama: !!ficha.versionDama,
             versionNino: !!ficha.versionNino,
+            featuresTexto: (ficha.features || []).join("\n"),
         });
         setEditando(true);
     };
@@ -127,7 +132,11 @@ export default function AdminQuickImages({
         }
         setSubiendo("ficha");
         try {
-            const r = await updateProductFicha(productId, form);
+            const { featuresTexto, ...datos } = form;
+            const r = await updateProductFicha(productId, {
+                ...datos,
+                features: (featuresTexto || "").split("\n").map((t) => t.trim()).filter(Boolean),
+            });
             if (r.success) {
                 setEditando(false);
                 router.refresh();
@@ -222,6 +231,16 @@ export default function AdminQuickImages({
                     {campo("Talles unisex", "talles", "ej. S M L XL XXL")}
                     {campo("Talles dama", "damaTalles")}
                     {campo("Talles niño", "ninoTalles")}
+                    <label className="block">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-amber-700">Características (una por renglón)</span>
+                        <textarea
+                            value={form.featuresTexto || ""}
+                            onChange={(e) => setForm((f) => (f ? { ...f, featuresTexto: e.target.value } : f))}
+                            rows={5}
+                            placeholder={"Logo estampado: frente, espalda o mangas\nTodos los talles disponibles"}
+                            className="mt-0.5 w-full border border-amber-300 rounded-md px-2.5 py-1.5 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+                        />
+                    </label>
                     <div className="pt-0.5">
                         <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-amber-700">Disponible en versión</span>
                         <div className="mt-1 flex items-center gap-4">

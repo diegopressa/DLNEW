@@ -150,6 +150,7 @@ export default async function ProductDetailPage({ params }: { params: { category
                                 ninoTalles: product.ninoTalles,
                                 versionDama: product.versionDama,
                                 versionNino: product.versionNino,
+                                features: (product.features || []).map((f: any) => f.text),
                             }}
                         />
                     </div>
