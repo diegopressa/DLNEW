@@ -969,47 +969,54 @@ export default function ProductsEditor() {
                 </p>
             )}
 
-            {/* ── Tabs ── */}
-            <div className="flex flex-wrap gap-2 border-b border-slate-100 pb-1">
+            {/* ── Filtros: una sola fila prolija ── */}
+            <div className="flex flex-wrap items-center gap-2">
                 <button
                     onClick={() => setActiveTab("todos")}
-                    className={`px-4 py-2 rounded-t-xl text-sm font-bold transition-all border-b-2 ${
-                        activeTab === "todos" 
-                        ? "text-blue-600 border-blue-600 bg-blue-50/50" 
-                        : "text-slate-400 border-transparent hover:text-slate-600"
+                    className={`px-4 py-2.5 rounded-full text-sm font-bold transition-all ${
+                        activeTab === "todos"
+                            ? "bg-[#0081D1] text-white"
+                            : "bg-white border border-slate-200 text-slate-500 hover:text-slate-700 hover:border-slate-300"
                     }`}
                 >
-                    Todos Activos ({products.filter(p => p.isActive).length})
+                    Todos los activos ({products.filter(p => p.isActive).length})
                 </button>
-                {categories.map(cat => (
-                    <button
-                        key={cat.id}
-                        onClick={() => setActiveTab(cat.id.toString())}
-                        className={`px-4 py-2 rounded-t-xl text-sm font-bold transition-all border-b-2 ${
-                            activeTab === cat.id.toString() 
-                            ? "text-blue-600 border-blue-600 bg-blue-50/50" 
-                            : "text-slate-400 border-transparent hover:text-slate-600"
-                        }`}
-                    >
-                        {cat.name} ({products.filter(p => p.isActive && p.categoryId === cat.id).length})
-                    </button>
-                ))}
+
+                <select
+                    value={categories.some(c => c.id.toString() === activeTab) ? activeTab : ""}
+                    onChange={e => setActiveTab(e.target.value || "todos")}
+                    className={`px-4 py-2.5 rounded-full text-sm font-bold outline-none cursor-pointer transition-all appearance-none ${
+                        categories.some(c => c.id.toString() === activeTab)
+                            ? "bg-[#0081D1] text-white border border-[#0081D1]"
+                            : "bg-white border border-slate-200 text-slate-500 hover:border-slate-300"
+                    }`}
+                >
+                    <option value="">Por categoría…</option>
+                    {categories.map(cat => (
+                        <option key={cat.id} value={cat.id.toString()}>
+                            {cat.name} ({products.filter(p => p.isActive && p.categoryId === cat.id).length})
+                        </option>
+                    ))}
+                </select>
+
+                <span className="flex-1" />
+
                 <button
                     onClick={() => setActiveTab("faltan-fotos")}
-                    className={`ml-auto px-4 py-2 rounded-t-xl text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
+                    className={`px-4 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-1.5 ${
                         activeTab === "faltan-fotos"
-                        ? "text-amber-600 border-amber-600 bg-amber-50"
-                        : "text-slate-400 border-transparent hover:text-amber-500"
+                            ? "bg-amber-500 text-white"
+                            : "bg-white border border-slate-200 text-slate-500 hover:text-amber-600 hover:border-amber-300"
                     }`}
                 >
                     <AlertTriangle size={14} /> Faltan fotos ({productsMissingImages})
                 </button>
                 <button
                     onClick={() => setActiveTab("pausados")}
-                    className={`px-4 py-2 rounded-t-xl text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
+                    className={`px-4 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-1.5 ${
                         activeTab === "pausados"
-                        ? "text-amber-600 border-amber-600 bg-amber-50"
-                        : "text-slate-400 border-transparent hover:text-amber-500"
+                            ? "bg-amber-500 text-white"
+                            : "bg-white border border-slate-200 text-slate-500 hover:text-amber-600 hover:border-amber-300"
                     }`}
                 >
                     <Pause size={14} /> Pausados ({products.filter(p => !p.isActive).length})
