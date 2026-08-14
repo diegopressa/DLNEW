@@ -195,6 +195,14 @@ model ProductFeature {
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
+// Catálogo maestro de características reutilizables: se administra en
+// /admin/caracteristicas y se eligen por desplegable en el editor de ficha.
+model FeatureOption {
+  id    Int    @id @default(autoincrement())
+  text  String @unique
+  order Int    @default(0)
+}
+
 model Color {
   id         Int            @id @default(autoincrement())
   name       String

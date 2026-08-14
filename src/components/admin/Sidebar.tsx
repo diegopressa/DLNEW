@@ -18,6 +18,7 @@ import {
     Mail,
     ExternalLink,
     ShieldCheck,
+    ListChecks,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logoutAction } from "@/app/login/actions";
@@ -38,6 +39,7 @@ const grupos = [
             { name: "Artículos", href: "/admin/articulos", icon: Package },
             { name: "Categorías", href: "/admin/categorias", icon: Briefcase },
             { name: "Colores", href: "/admin/colores", icon: Palette },
+            { name: "Características", href: "/admin/caracteristicas", icon: ListChecks },
         ],
     },
     {
