@@ -229,6 +229,7 @@ export default function ProductsEditor() {
     const [uploading, setUploading] = useState(false);
     const [bulkProgress, setBulkProgress] = useState<{ done: number; total: number } | null>(null);
     const [activeTab, setActiveTab] = useState<string>("todos");
+    const [busqueda, setBusqueda] = useState("");
 
     const [newProd, setNewProd] = useState(emptyForm);
 
@@ -456,6 +457,16 @@ export default function ProductsEditor() {
     };
 
     const filteredProducts = products.filter(p => {
+        // Búsqueda por nombre, slug o código maestro (cruza todas las pestañas)
+        if (busqueda.trim()) {
+            const q = busqueda.trim().toLowerCase();
+            const coincide =
+                p.name?.toLowerCase().includes(q) ||
+                p.slug?.toLowerCase().includes(q) ||
+                p.masterCode?.toLowerCase().includes(q);
+            if (!coincide) return false;
+            return true; // con búsqueda activa se ignoran las pestañas
+        }
         if (activeTab === "pausados") return !p.isActive;
         if (activeTab === "faltan-fotos") return p.isActive && (p.images?.length ?? 0) <= 1;
         if (activeTab === "todos") return p.isActive;
@@ -884,6 +895,28 @@ export default function ProductsEditor() {
                         </label>
                     </div>
                 </form>
+            )}
+
+            {/* ── Buscador ── */}
+            <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-3 max-w-md">
+                <Search size={16} className="text-slate-400 shrink-0" />
+                <input
+                    type="text"
+                    placeholder="Buscar por nombre, código o slug…"
+                    value={busqueda}
+                    onChange={e => setBusqueda(e.target.value)}
+                    className="bg-transparent text-sm outline-none w-full text-slate-700 placeholder:text-slate-400"
+                />
+                {busqueda && (
+                    <button type="button" onClick={() => setBusqueda("")} className="text-slate-400 hover:text-slate-600">
+                        <X size={14} />
+                    </button>
+                )}
+            </div>
+            {busqueda.trim() && (
+                <p className="text-xs text-slate-500 -mt-4">
+                    {filteredProducts.length} resultado{filteredProducts.length !== 1 ? "s" : ""} para “{busqueda.trim()}” (busca en activos y pausados)
+                </p>
             )}
 
             {/* ── Tabs ── */}
