@@ -2,7 +2,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
 import { getGlobalSettings } from "@/actions/settingsActions";
-import { getCategories } from "@/actions/categoryActions";
+import { getVisibleCategories } from "@/actions/categoryActions";
 
 export default async function PublicLayout({
     children,
@@ -12,7 +12,7 @@ export default async function PublicLayout({
     const settings: any = await getGlobalSettings();
     const whatsapp = settings?.whatsapp || "59897534866";
 
-    const dbCategories = await getCategories();
+    const dbCategories = await getVisibleCategories();
     const navCategories = dbCategories.map((c: any) => ({
         name: c.name,
         href: `/categorias/lista-${c.name

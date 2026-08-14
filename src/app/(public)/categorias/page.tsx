@@ -1,6 +1,6 @@
 import { MessageCircle, ArrowRight, Search } from "lucide-react";
 import Link from "next/link";
-import { getCategories, getCategoriasHeader } from "@/actions/categoryActions";
+import { getVisibleCategories, getCategoriasHeader } from "@/actions/categoryActions";
 import { getGlobalSettings } from "@/actions/settingsActions";
 import FeaturedProductSearch from "@/components/product/FeaturedProductSearch";
 import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
@@ -8,7 +8,7 @@ import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 export const dynamic = "force-dynamic";
 
 export default async function ProductosPage() {
-    const dbCategories = await getCategories();
+    const dbCategories = await getVisibleCategories();
     const settings = await getGlobalSettings();
     const headers = await getCategoriasHeader();
     const whatsapp = settings?.whatsapp || "59897534866";

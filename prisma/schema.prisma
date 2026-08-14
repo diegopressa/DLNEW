@@ -135,6 +135,8 @@ model ProductCategory {
   imageUrl    String
   order       Int       @default(0)
   showOnHome  Boolean   @default(false)
+  // Rediseño 08/2026: las categorías nuevas se cargan ocultas hasta el lanzamiento
+  isVisible   Boolean   @default(true)
   products    Product[]
 }
 
@@ -155,6 +157,20 @@ model Product {
   hasScreenPrint Boolean        @default(false)
   isActive       Boolean        @default(true)
   createdAt      DateTime       @default(now())
+
+  // Rediseño 08/2026 — ficha maestra (planilla de productos)
+  masterCode  String? @unique // código estable tipo RD-001, compartido con catálogos
+  talles      String? // talles unisex, ej. "S M L XL XXL XXXL"
+  rubros      String? // rubros separados por " | " (Gastronomía y Cocina | ...)
+  // Versiones dama / niño (medallas del catálogo)
+  versionDama  Boolean @default(false)
+  damaTalles   String?
+  damaCompo    String?
+  damaImageUrl String?
+  versionNino  Boolean @default(false)
+  ninoTalles   String?
+  ninoCompo    String?
+  ninoImageUrl String?
 }
 
 model ProductImage {
