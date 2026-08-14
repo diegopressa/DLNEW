@@ -53,10 +53,10 @@ export async function getCategoryBySlug(slug: string) {
 
 export async function addCategory(data: any) {
     try {
-        const { name, description, imageUrl, showOnHome } = data;
+        const { name, description, imageUrl, showOnHome, showInNav } = data;
         const last = await prisma.productCategory.findFirst({ orderBy: { order: "asc" } });
         const order = (last?.order || 0) + 1;
-        
+
         // Try standard Prisma update first
         const category = await (prisma as any).productCategory.create({
             data: {
@@ -64,6 +64,7 @@ export async function addCategory(data: any) {
                 description,
                 imageUrl,
                 showOnHome: showOnHome || false,
+                showInNav: showInNav !== false,
                 order
             }
         });
@@ -97,8 +98,8 @@ export async function addCategory(data: any) {
 
 export async function updateCategory(id: number, data: any) {
     try {
-        const { name, description, imageUrl, showOnHome } = data;
-        
+        const { name, description, imageUrl, showOnHome, showInNav } = data;
+
         // Use any to avoid type errors during compilation while the schema is updating
         await (prisma as any).productCategory.update({
             where: { id },
@@ -107,6 +108,7 @@ export async function updateCategory(id: number, data: any) {
                 description,
                 imageUrl,
                 showOnHome: showOnHome === true || showOnHome === "true",
+                ...(showInNav !== undefined && { showInNav: showInNav === true || showInNav === "true" }),
             }
         });
 

@@ -137,6 +137,8 @@ model ProductCategory {
   showOnHome  Boolean   @default(false)
   // Rediseño 08/2026: las categorías nuevas se cargan ocultas hasta el lanzamiento
   isVisible   Boolean   @default(true)
+  // Aparece en la tira horizontal del menú (el desplegable siempre muestra todas)
+  showInNav   Boolean   @default(true)
   products    Product[]
 }
 

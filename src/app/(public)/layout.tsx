@@ -24,6 +24,7 @@ export default async function PublicLayout({
             .replace(/[̀-ͯ]/g, "")
             .replace(/\s+/g, "-")}`,
         image: c.imageUrl,
+        showInNav: c.showInNav !== false,
     }));
     const phone = settings?.phone || "59829250584";
     const email = settings?.email || "info@dldiseno.uy";

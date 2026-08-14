@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MessageCircle, Search } from "lucide-react";
 
-type NavCategory = { name: string; href: string; image?: string | null };
+type NavCategory = { name: string; href: string; image?: string | null; showInNav?: boolean };
 
 // Header estilo tienda de workwear: barra superior grafito + logo/buscador/CTA + tira de categorías.
 const Navbar = ({
@@ -105,7 +105,9 @@ const Navbar = ({
                             </div>
                         </div>
                     </div>
-                    {categories.map((cat) => (
+                    {/* En la tira solo las marcadas "Mostrar en el menú superior" (admin);
+                        el desplegable de arriba siempre muestra todas */}
+                    {categories.filter((cat) => cat.showInNav !== false).map((cat) => (
                         <Link
                             key={cat.href}
                             href={cat.href}

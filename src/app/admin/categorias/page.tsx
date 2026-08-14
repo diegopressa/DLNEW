@@ -14,7 +14,7 @@ export default function CategoriesEditor() {
     const [loading, setLoading] = useState(true);
     const [showAdd, setShowAdd] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
-    const [newCat, setNewCat] = useState({ name: "", imageUrl: "", description: "", showOnHome: false });
+    const [newCat, setNewCat] = useState({ name: "", imageUrl: "", description: "", showOnHome: false, showInNav: true });
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState("");
     const [header, setHeader] = useState({ title: "", subtitle: "", volumeTitle: "", volumeSubtitle: "", volumeTier1: "", volumeTier1Label: "", volumeTier2: "", volumeTier2Label: "", volumeTier3: "", volumeTier3Label: "" });
@@ -110,7 +110,7 @@ export default function CategoriesEditor() {
             if (res.success) {
                 setShowAdd(false);
                 setEditingId(null);
-                setNewCat({ name: "", imageUrl: "", description: "", showOnHome: false });
+                setNewCat({ name: "", imageUrl: "", description: "", showOnHome: false, showInNav: true });
                 loadData();
             } else {
                 setError("Ocurrió un error al guardar");
@@ -126,7 +126,8 @@ export default function CategoriesEditor() {
             name: cat.name,
             imageUrl: cat.imageUrl,
             description: cat.description || "",
-            showOnHome: cat.showOnHome || false
+            showOnHome: cat.showOnHome || false,
+            showInNav: cat.showInNav !== false
         });
         setShowAdd(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -142,7 +143,7 @@ export default function CategoriesEditor() {
     const handleCancel = () => {
         setShowAdd(false);
         setEditingId(null);
-        setNewCat({ name: "", imageUrl: "", description: "", showOnHome: false });
+        setNewCat({ name: "", imageUrl: "", description: "", showOnHome: false, showInNav: true });
         setError("");
     };
 
@@ -271,6 +272,23 @@ export default function CategoriesEditor() {
                                         <p className={helpClass}>Mostrarla en el mosaico de la portada</p>
                                     </div>
                                 </label>
+
+                                <label className="flex items-center gap-3 cursor-pointer">
+                                    <div className="relative flex-shrink-0">
+                                        <input
+                                            type="checkbox"
+                                            className="sr-only"
+                                            checked={newCat.showInNav}
+                                            onChange={e => setNewCat({...newCat, showInNav: e.target.checked})}
+                                        />
+                                        <div className={`block w-12 h-7 rounded-full transition-colors ${newCat.showInNav ? 'bg-[#0081D1]' : 'bg-slate-200'}`}></div>
+                                        <div className={`absolute left-1 top-1 bg-white w-5 h-5 rounded-full transition-transform ${newCat.showInNav ? 'translate-x-5' : ''}`}></div>
+                                    </div>
+                                    <div>
+                                        <span className={labelClass}>Mostrar en el menú superior</span>
+                                        <p className={helpClass}>Si la apagás, sale de la tira negra del menú (para que no haya que hacer scroll). Sigue apareciendo en el desplegable de "Todas las categorías" y en el catálogo.</p>
+                                    </div>
+                                </label>
                             </div>
                         </div>
 
@@ -313,6 +331,11 @@ export default function CategoriesEditor() {
                                         {cat.showOnHome && (
                                             <span className="bg-blue-50 text-[#0081D1] text-[10px] font-bold px-2 py-0.5 rounded-full">
                                                 En la portada
+                                            </span>
+                                        )}
+                                        {cat.showInNav === false && (
+                                            <span className="bg-slate-100 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                                Fuera del menú superior
                                             </span>
                                         )}
                                         {cat.isVisible === false && (
