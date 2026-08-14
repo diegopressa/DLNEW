@@ -47,25 +47,25 @@ export default async function ContactoPage() {
                         <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-5">
                             Información de contacto
                         </h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 mb-7">
+                        <div className="flex flex-col divide-y divide-slate-100 mb-7">
                             {datos.map((d) => (
-                                <div key={d.etiqueta} className="flex items-start gap-3">
+                                <div key={d.etiqueta} className="flex items-center gap-4 py-3.5 min-w-0">
                                     <span className="w-10 h-10 rounded-md bg-primary/10 text-primary grid place-items-center shrink-0">
                                         <d.icono size={18} />
                                     </span>
-                                    <span>
-                                        <span className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.1em]">{d.etiqueta}</span>
+                                    <span className="min-w-0">
+                                        <span className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.1em] mb-0.5">{d.etiqueta}</span>
                                         {d.href ? (
                                             <a
                                                 href={d.href}
                                                 target={d.href.startsWith("http") ? "_blank" : undefined}
                                                 rel={d.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                                                className="text-sm font-bold text-grafito hover:text-primary transition-colors"
+                                                className="block text-sm font-bold text-grafito hover:text-primary transition-colors break-words"
                                             >
                                                 {d.valor}
                                             </a>
                                         ) : (
-                                            <span className="text-sm font-bold text-grafito">{d.valor}</span>
+                                            <span className="block text-sm font-bold text-grafito break-words">{d.valor}</span>
                                         )}
                                     </span>
                                 </div>
