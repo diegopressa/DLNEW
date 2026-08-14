@@ -9,6 +9,15 @@ export async function getCategories() {
     });
 }
 
+// Solo categorías visibles al público. Las nuevas del rediseño 08/2026 se cargan
+// con isVisible=false para que no aparezcan en el sitio hasta el lanzamiento.
+export async function getVisibleCategories() {
+    return await prisma.productCategory.findMany({
+        where: { isVisible: true },
+        orderBy: { order: "asc" }
+    });
+}
+
 export async function getCategoryBySlug(slug: string) {
     // Try to find by name converted to slug
     const categories = await prisma.productCategory.findMany({

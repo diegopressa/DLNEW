@@ -2,6 +2,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
 import { getGlobalSettings } from "@/actions/settingsActions";
+// En la rama del rediseño mostramos TODAS las categorías (incluidas las ocultas)
+// para poder revisarlas en el preview. La web vieja (main) usa getVisibleCategories.
 import { getCategories } from "@/actions/categoryActions";
 import { leagueGothic, spaceGrotesk } from "@/lib/fonts";
 
