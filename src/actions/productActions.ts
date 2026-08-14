@@ -134,6 +134,35 @@ export async function getProductBySlug(slug: string) {
     }
 }
 
+// Colección automática de "Alta visibilidad y seguridad": además de sus prendas
+// físicas (EPP), la página suma toda prenda reflectiva/fluo de las otras categorías.
+export async function getReflectiveProducts(excludeCategoryId: number) {
+    try {
+        return await (prisma as any).product.findMany({
+            where: {
+                categoryId: { not: excludeCategoryId },
+                OR: [
+                    { name: { contains: "reflectiv", mode: "insensitive" } },
+                    { name: { contains: "alta visibilidad", mode: "insensitive" } },
+                    { name: { contains: "hi vis", mode: "insensitive" } },
+                    { name: { contains: "fluo", mode: "insensitive" } },
+                ],
+                ...(esProduccionProd ? { isActive: true } : {}),
+            },
+            include: {
+                images: { orderBy: { order: "asc" } },
+                colors: { include: { color: true } },
+                features: true,
+                category: true,
+            },
+            orderBy: { order: "asc" },
+        });
+    } catch (error) {
+        console.error("Error getReflectiveProducts:", error);
+        return [];
+    }
+}
+
 export async function searchProducts(query: string) {
     try {
         if (!query || query.trim() === "") return [];

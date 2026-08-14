@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { Package } from "lucide-react";
 import { getCategoryBySlug, getCategories } from "@/actions/categoryActions";
+import { getReflectiveProducts } from "@/actions/productActions";
 import { getGlobalSettings } from "@/actions/settingsActions";
 import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 import { notFound } from "next/navigation";
@@ -55,9 +56,15 @@ export default async function CategoryListingPage({
         notFound();
     }
 
+    // "Alta visibilidad y seguridad" es una colección: además de sus prendas
+    // físicas (EPP), suma automáticamente toda prenda reflectiva del catálogo.
+    const esAltaVisibilidad = category.name.toLowerCase().includes("alta visibilidad");
+    const extrasReflectivos = esAltaVisibilidad ? await getReflectiveProducts(category.id) : [];
+    const todosLosProductos = [...(category.products as any[]), ...extrasReflectivos];
+
     // Filtro por versión (?version=dama | nino)
     const filtroVersion = searchParams?.version;
-    const productosFiltrados = (category.products as any[]).filter((p: any) => {
+    const productosFiltrados = todosLosProductos.filter((p: any) => {
         if (filtroVersion === "dama") return p.versionDama;
         if (filtroVersion === "nino") return p.versionNino;
         return true;
@@ -99,7 +106,9 @@ export default async function CategoryListingPage({
                         {category.name}
                     </h1>
                     <p className="mt-3 text-slate-200 max-w-[52ch]">
-                        Con tu logo estampado o bordado. Presupuesto en menos de 2 horas y entrega en todo Uruguay.
+                        {esAltaVisibilidad
+                            ? "Todo lo reflectivo y de seguridad del catálogo en un solo lugar: remeras, camperas, pantalones y equipos de protección."
+                            : "Con tu logo estampado o bordado. Presupuesto en menos de 2 horas y entrega en todo Uruguay."}
                     </p>
                 </div>
             </section>
