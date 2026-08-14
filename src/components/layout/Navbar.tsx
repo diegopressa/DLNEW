@@ -76,13 +76,35 @@ const Navbar = ({
 
             {/* Tira de categorías */}
             <nav aria-label="Categorías" className="bg-grafito2">
-                <div className="max-w-[1240px] mx-auto px-4 sm:px-6 flex items-stretch overflow-x-auto no-scrollbar">
-                    <Link
-                        href="/categorias"
-                        className="bg-primary text-white text-[13px] font-bold px-4 py-3 whitespace-nowrap"
-                    >
-                        ☰&nbsp; Todas las categorías
-                    </Link>
+                <div className="max-w-[1240px] mx-auto px-4 sm:px-6 flex items-stretch overflow-x-auto lg:overflow-visible no-scrollbar">
+                    {/* Al posar el mouse se despliega el listado; el clic lleva al catálogo */}
+                    <div className="relative group shrink-0">
+                        <Link
+                            href="/categorias"
+                            className="bg-primary text-white text-[13px] font-bold px-4 py-3 whitespace-nowrap flex items-center h-full"
+                        >
+                            ☰&nbsp; Todas las categorías
+                        </Link>
+                        <div className="hidden lg:group-hover:block absolute left-0 top-full z-50 bg-white border border-slate-200 rounded-b-md shadow-xl min-w-[280px] py-2">
+                            {categories.map((cat) => (
+                                <Link
+                                    key={`menu-${cat.href}`}
+                                    href={cat.href}
+                                    className="block px-5 py-2.5 text-sm font-semibold text-grafito hover:bg-[#F7F7F7] hover:text-primary transition-colors"
+                                >
+                                    {cat.name}
+                                </Link>
+                            ))}
+                            <div className="border-t border-slate-100 mt-2 pt-2">
+                                <Link
+                                    href="/categorias"
+                                    className="block px-5 py-2.5 text-sm font-bold text-primary hover:bg-[#F7F7F7] transition-colors"
+                                >
+                                    Ver catálogo completo →
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
                     {categories.map((cat) => (
                         <Link
                             key={cat.href}
