@@ -1064,9 +1064,18 @@ export default function ProductsEditor() {
                                 <div className="flex justify-between items-center bg-slate-50 -mx-5 -mb-5 p-4 border-t border-slate-100">
                                     <span className="text-[10px] font-mono text-slate-400 bg-white px-2 py-1 rounded border border-slate-100">/{prod.slug}</span>
                                     <div className="flex gap-2">
-                                        <button 
-                                            onClick={() => handleToggleActive(prod.id, !prod.isActive)} 
-                                            className={`p-2 rounded-lg transition-all ${prod.isActive ? 'text-slate-400 hover:text-amber-600 hover:bg-amber-50' : 'text-amber-600 bg-amber-50 hover:bg-amber-100'}`} 
+                                        <a
+                                            href={`/categorias/lista-${(prod.category?.name || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-")}/${prod.slug}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="p-2 text-slate-400 hover:text-[#0081D1] hover:bg-blue-50 rounded-lg transition-all"
+                                            title="Ver en la web"
+                                        >
+                                            <Eye size={18} />
+                                        </a>
+                                        <button
+                                            onClick={() => handleToggleActive(prod.id, !prod.isActive)}
+                                            className={`p-2 rounded-lg transition-all ${prod.isActive ? 'text-slate-400 hover:text-amber-600 hover:bg-amber-50' : 'text-amber-600 bg-amber-50 hover:bg-amber-100'}`}
                                             title={prod.isActive ? "Pausar" : "Reactivar"}
                                         >
                                             {prod.isActive ? <Pause size={18} /> : <Play size={18} />}
