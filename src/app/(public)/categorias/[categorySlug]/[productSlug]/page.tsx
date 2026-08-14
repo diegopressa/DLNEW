@@ -124,7 +124,11 @@ export default async function ProductDetailPage({ params }: { params: { category
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-9 xl:gap-14 items-start py-7 sm:py-9">
                     <div className="lg:sticky lg:top-6">
                         <ProductGallery
-                            images={product.images.map((img: any) => img.url)}
+                            images={[
+                                ...product.images.map((img: any) => img.url),
+                                ...(product.damaImageUrl ? [product.damaImageUrl] : []),
+                                ...(product.ninoImageUrl ? [product.ninoImageUrl] : []),
+                            ]}
                             hasScreenPrint={product.hasScreenPrint}
                             hasEmbroidery={product.hasEmbroidery}
                             productName={product.name}
@@ -132,9 +136,21 @@ export default async function ProductDetailPage({ params }: { params: { category
                     </div>
 
                     <div>
-                        <span className="text-primary text-xs font-bold uppercase tracking-[0.12em]">
-                            {category.name}
-                        </span>
+                        <div className="flex items-center gap-3 flex-wrap">
+                            <span className="text-primary text-xs font-bold uppercase tracking-[0.12em]">
+                                {category.name}
+                            </span>
+                            {product.masterCode && (
+                                <span className="text-slate-400 text-xs font-bold uppercase tracking-[0.08em]">
+                                    Ref. {product.masterCode}
+                                </span>
+                            )}
+                            {!product.isActive && (
+                                <span className="bg-red-600 text-white text-[10px] font-bold uppercase tracking-[0.08em] px-2 py-0.5 rounded-sm">
+                                    Borrador — no visible al público
+                                </span>
+                            )}
+                        </div>
                         <h1 className="font-display uppercase leading-none text-5xl sm:text-6xl text-grafito mt-1.5">
                             {product.name}
                         </h1>
@@ -144,6 +160,55 @@ export default async function ProductDetailPage({ params }: { params: { category
 
                         {/* Ficha técnica (estilo catálogo por rubro) */}
                         <div className="mt-7 border-t border-slate-200">
+                            {product.materials && (
+                                <div className="py-5 border-b border-slate-200">
+                                    <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-1.5">Composición</p>
+                                    <p className="text-sm font-semibold text-grafito">{product.materials}</p>
+                                    {product.damaCompo && product.damaCompo !== product.materials && (
+                                        <p className="text-sm text-slate-600 mt-1"><b className="text-primary text-xs uppercase mr-1.5">Dama</b>{product.damaCompo}</p>
+                                    )}
+                                </div>
+                            )}
+
+                            {(product.talles || product.damaTalles || product.ninoTalles) && (
+                                <div className="py-5 border-b border-slate-200">
+                                    <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-1.5">Talles</p>
+                                    {product.talles && (
+                                        <p className="text-sm font-semibold text-grafito"><b className="text-primary text-xs uppercase mr-1.5">Unisex</b>{product.talles}</p>
+                                    )}
+                                    {product.damaTalles && (
+                                        <p className="text-sm font-semibold text-grafito mt-1"><b className="text-primary text-xs uppercase mr-1.5">Dama</b>{product.damaTalles}</p>
+                                    )}
+                                    {product.ninoTalles && (
+                                        <p className="text-sm font-semibold text-grafito mt-1"><b className="text-primary text-xs uppercase mr-1.5">Niño</b>{product.ninoTalles}</p>
+                                    )}
+                                </div>
+                            )}
+
+                            {(product.versionDama || product.versionNino) && (
+                                <div className="py-5 border-b border-slate-200">
+                                    <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-3">También disponible en</p>
+                                    <div className="flex flex-wrap gap-3">
+                                        {product.versionDama && (
+                                            <span className="flex items-center gap-2.5 border border-slate-200 rounded-md p-2 pr-4">
+                                                {product.damaImageUrl && (
+                                                    <img src={product.damaImageUrl} alt="Versión dama" className="w-11 h-11 rounded object-cover" />
+                                                )}
+                                                <span className="text-sm font-bold text-grafito">DAMA<span className="block text-[11px] font-semibold text-slate-500">versión con corte de dama</span></span>
+                                            </span>
+                                        )}
+                                        {product.versionNino && (
+                                            <span className="flex items-center gap-2.5 border border-slate-200 rounded-md p-2 pr-4">
+                                                {product.ninoImageUrl && (
+                                                    <img src={product.ninoImageUrl} alt="Versión niño" className="w-11 h-11 rounded object-cover" />
+                                                )}
+                                                <span className="text-sm font-bold text-grafito">NIÑO<span className="block text-[11px] font-semibold text-slate-500">talles de niño</span></span>
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
                             {product.colors.length > 0 && (
                                 <div className="py-5 border-b border-slate-200">
                                     <ColorSwatches colors={product.colors} />

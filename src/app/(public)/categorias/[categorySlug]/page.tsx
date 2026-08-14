@@ -37,7 +37,13 @@ export async function generateMetadata({ params }: { params: { categorySlug: str
     };
 }
 
-export default async function CategoryListingPage({ params }: { params: { categorySlug: string } }) {
+export default async function CategoryListingPage({
+    params,
+    searchParams,
+}: {
+    params: { categorySlug: string };
+    searchParams: { version?: string };
+}) {
     const slug = params.categorySlug.startsWith("lista-") ? params.categorySlug.replace("lista-", "") : params.categorySlug;
     const [category, allCategories, settings] = await Promise.all([
         getCategoryBySlug(slug) as any,
@@ -48,6 +54,14 @@ export default async function CategoryListingPage({ params }: { params: { catego
     if (!category) {
         notFound();
     }
+
+    // Filtro por versión (?version=dama | nino)
+    const filtroVersion = searchParams?.version;
+    const productosFiltrados = (category.products as any[]).filter((p: any) => {
+        if (filtroVersion === "dama") return p.versionDama;
+        if (filtroVersion === "nino") return p.versionNino;
+        return true;
+    });
 
     const whatsapp = settings?.whatsapp || "59897534866";
     const waAsesoria = `https://api.whatsapp.com/send/?phone=${whatsapp}&text=${encodeURIComponent(`Hola, necesito ayuda para elegir ${category.name.toLowerCase()} para mi equipo.`)}&type=phone_number&app_absent=0`;
@@ -126,6 +140,32 @@ export default async function CategoryListingPage({ params }: { params: { catego
                             })}
                         </div>
 
+                        <div className="border border-slate-200 rounded-md p-5">
+                            <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-3">
+                                Versiones
+                            </h2>
+                            {[
+                                { valor: undefined, etiqueta: "Todas las prendas" },
+                                { valor: "dama", etiqueta: "Disponible en dama" },
+                                { valor: "nino", etiqueta: "Disponible en niño" },
+                            ].map((f) => {
+                                const activa = filtroVersion === f.valor || (!filtroVersion && !f.valor);
+                                return (
+                                    <Link
+                                        key={f.etiqueta}
+                                        href={f.valor ? `/categorias/${params.categorySlug}?version=${f.valor}` : `/categorias/${params.categorySlug}`}
+                                        className={
+                                            activa
+                                                ? "block py-2 pl-3 border-l-[3px] border-primary font-bold text-grafito text-sm"
+                                                : "block py-2 text-sm font-semibold text-slate-600 hover:text-primary transition-colors"
+                                        }
+                                    >
+                                        {f.etiqueta}
+                                    </Link>
+                                );
+                            })}
+                        </div>
+
                         <div className="bg-[#F7F7F7] rounded-md p-5">
                             <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-2">
                                 ¿No sabés cuál elegir?
@@ -147,12 +187,15 @@ export default async function CategoryListingPage({ params }: { params: { catego
                     <div>
                         <div className="flex items-center justify-between gap-4 mb-5">
                             <span className="text-sm font-semibold text-slate-500">
-                                <b className="text-grafito">{category.products.length}</b> {category.products.length === 1 ? "prenda" : "prendas"}
+                                <b className="text-grafito">{productosFiltrados.length}</b> {productosFiltrados.length === 1 ? "prenda" : "prendas"}
+                                {filtroVersion && (
+                                    <> · filtro: <b className="text-grafito">{filtroVersion === "dama" ? "dama" : "niño"}</b></>
+                                )}
                             </span>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                            {category.products.map((product: any) => (
+                            {productosFiltrados.map((product: any) => (
                                 <Link
                                     key={product.id}
                                     href={`/categorias/${params.categorySlug}/${product.slug}`}
@@ -173,6 +216,25 @@ export default async function CategoryListingPage({ params }: { params: { catego
                                         {product.highlight && (
                                             <span className="absolute top-3 left-3 bg-primary text-white px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.08em]">
                                                 {product.highlight}
+                                            </span>
+                                        )}
+                                        {(product.versionDama || product.versionNino || !product.isActive) && (
+                                            <span className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
+                                                {!product.isActive && (
+                                                    <span className="bg-red-600 text-white px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em]">
+                                                        Borrador
+                                                    </span>
+                                                )}
+                                                {product.versionDama && (
+                                                    <span className="bg-white/95 text-grafito px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em] border border-slate-200">
+                                                        Dama
+                                                    </span>
+                                                )}
+                                                {product.versionNino && (
+                                                    <span className="bg-white/95 text-grafito px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em] border border-slate-200">
+                                                        Niño
+                                                    </span>
+                                                )}
                                             </span>
                                         )}
                                         {(product.hasScreenPrint || product.hasEmbroidery) && (
@@ -230,10 +292,12 @@ export default async function CategoryListingPage({ params }: { params: { catego
                             ))}
                         </div>
 
-                        {category.products.length === 0 && (
+                        {productosFiltrados.length === 0 && (
                             <div className="border border-dashed border-slate-300 rounded-md p-14 text-center">
                                 <Package size={40} className="mx-auto mb-4 text-slate-300" />
-                                <h2 className="font-bold text-lg text-grafito mb-1">Aún no hay prendas cargadas</h2>
+                                <h2 className="font-bold text-lg text-grafito mb-1">
+                                    {filtroVersion ? "Ninguna prenda de esta categoría tiene esa versión" : "Aún no hay prendas cargadas"}
+                                </h2>
                                 <p className="text-slate-500 text-sm">Estamos actualizando el catálogo de esta categoría. Escribinos y te pasamos las opciones por WhatsApp.</p>
                             </div>
                         )}

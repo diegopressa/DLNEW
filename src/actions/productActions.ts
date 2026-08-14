@@ -95,11 +95,15 @@ export async function deleteProduct(id: number) {
     }
 }
 
+// En previews de Vercel (y en dev local) se pueden ver los borradores; en producci\u00f3n no.
+const esProduccionProd = process.env.VERCEL_ENV === "production";
+
 export async function getProductBySlug(slug: string) {
     try {
         const decodedSlug = decodeURIComponent(slug);
+        const filtroActivo = esProduccionProd ? { isActive: true } : {};
         const product = await (prisma as any).product.findUnique({
-            where: { slug: decodedSlug, isActive: true },
+            where: { slug: decodedSlug, ...filtroActivo },
             include: {
                 category: true,
                 images: { orderBy: { order: "asc" } },
@@ -111,6 +115,7 @@ export async function getProductBySlug(slug: string) {
         if (product) return product;
 
         const all = await (prisma as any).product.findMany({
+            where: filtroActivo,
             include: {
                 category: true,
                 images: { orderBy: { order: "asc" } },

@@ -18,12 +18,16 @@ export async function getVisibleCategories() {
     });
 }
 
+// En previews de Vercel (y en dev local) se muestran también los borradores
+// (isActive=false) para poder revisarlos; en producción jamás.
+const esProduccion = process.env.VERCEL_ENV === "production";
+
 export async function getCategoryBySlug(slug: string) {
     // Try to find by name converted to slug
     const categories = await prisma.productCategory.findMany({
         include: {
             products: {
-                where: { isActive: true },
+                where: esProduccion ? { isActive: true } : {},
                 include: {
                     images: true,
                     colors: {
