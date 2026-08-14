@@ -333,6 +333,26 @@ export async function updateProductFicha(id: number, data: {
     }
 }
 
+// Agrega o quita un color del artículo desde la página pública (modo admin).
+export async function toggleProductColor(productId: number, colorId: number, agregar: boolean) {
+    try {
+        if (!(await getSession())) return { success: false, error: "Sin sesión" };
+        if (agregar) {
+            const existe = await (prisma as any).productColor.findFirst({ where: { productId, colorId } });
+            if (!existe) {
+                await (prisma as any).productColor.create({ data: { productId, colorId } });
+            }
+        } else {
+            await (prisma as any).productColor.deleteMany({ where: { productId, colorId } });
+        }
+        revalidatePath("/", "layout");
+        return { success: true };
+    } catch (error) {
+        console.error("Error toggleProductColor:", error);
+        return { success: false };
+    }
+}
+
 // Guarda el orden de una lista completa de productos (modo "Ordenar" del admin):
 // recibe los ids en el orden final y les asigna 1, 2, 3…
 export async function reorderProducts(ids: number[]) {

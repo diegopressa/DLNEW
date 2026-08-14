@@ -8,6 +8,7 @@ import { getProductBySlug } from "@/actions/productActions";
 import { getCategoryBySlug } from "@/actions/categoryActions";
 import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 import AdminQuickImages from "@/components/admin/AdminQuickImages";
+import AdminQuickColors from "@/components/admin/AdminQuickColors";
 import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
@@ -238,10 +239,17 @@ export default async function ProductDetailPage({ params }: { params: { category
                                 </div>
                             )}
 
-                            {product.colors.length > 0 && (
+                            {product.colors.length > 0 ? (
                                 <div className="py-5 border-b border-slate-200">
                                     <ColorSwatches colors={product.colors} />
+                                    <AdminQuickColors
+                                        productId={product.id}
+                                        seleccionados={product.colors.map((pc: any) => pc.colorId ?? pc.color?.id).filter(Boolean)}
+                                    />
                                 </div>
+                            ) : (
+                                // Sin colores el bloque público no existe: el editor admin trae su propio marco
+                                <AdminQuickColors productId={product.id} seleccionados={[]} conMarco />
                             )}
 
                             {/* Características DESACTIVADAS por pedido de Diego (14/08/2026)
