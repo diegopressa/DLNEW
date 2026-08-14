@@ -270,6 +270,50 @@ export async function togglePausadoManual(id: number, pausado: boolean, nota?: s
     }
 }
 
+// Edición rápida de la ficha desde la página pública del artículo (modo admin):
+// título, ref, descripción, composición y talles. El slug NO se toca para no romper URLs.
+export async function updateProductFicha(id: number, data: {
+    name: string;
+    masterCode?: string | null;
+    description?: string | null;
+    materials?: string | null;
+    damaCompo?: string | null;
+    talles?: string | null;
+    damaTalles?: string | null;
+    ninoTalles?: string | null;
+}) {
+    try {
+        if (!(await getSession())) return { success: false, error: "Sin sesión" };
+        const name = (data.name || "").trim();
+        if (!name) return { success: false, error: "El título no puede quedar vacío" };
+        const opcional = (v?: string | null) => {
+            const t = (v ?? "").trim();
+            return t === "" ? null : t;
+        };
+        await (prisma as any).product.update({
+            where: { id },
+            data: {
+                name,
+                masterCode: opcional(data.masterCode),
+                description: opcional(data.description),
+                materials: opcional(data.materials),
+                damaCompo: opcional(data.damaCompo),
+                talles: opcional(data.talles),
+                damaTalles: opcional(data.damaTalles),
+                ninoTalles: opcional(data.ninoTalles),
+            },
+        });
+        revalidatePath("/", "layout");
+        return { success: true };
+    } catch (error: any) {
+        console.error("Error updateProductFicha:", error);
+        if (String(error?.code) === "P2002") {
+            return { success: false, error: "Ya existe otro artículo con esa Ref." };
+        }
+        return { success: false };
+    }
+}
+
 // Guarda el orden de una lista completa de productos (modo "Ordenar" del admin):
 // recibe los ids en el orden final y les asigna 1, 2, 3…
 export async function reorderProducts(ids: number[]) {

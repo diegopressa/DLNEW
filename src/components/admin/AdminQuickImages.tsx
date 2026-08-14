@@ -2,22 +2,37 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ImagePlus, RefreshCw, Loader2, PauseCircle, PlayCircle } from "lucide-react";
-import { changeMainProductImage, addProductImages, togglePausadoManual } from "@/actions/productActions";
+import { ImagePlus, RefreshCw, Loader2, PauseCircle, PlayCircle, Pencil, X } from "lucide-react";
+import { changeMainProductImage, addProductImages, togglePausadoManual, updateProductFicha } from "@/actions/productActions";
+
+export type FichaProducto = {
+    name: string;
+    masterCode?: string | null;
+    description?: string | null;
+    materials?: string | null;
+    damaCompo?: string | null;
+    talles?: string | null;
+    damaTalles?: string | null;
+    ninoTalles?: string | null;
+};
 
 // Barra de "modo admin" bajo la galería del producto: cambiar la imagen principal,
-// agregar imágenes (explorador directo) y pausar/reanudar el artículo.
+// agregar imágenes (explorador directo), pausar/reanudar y editar la ficha.
 export default function AdminQuickImages({
     productId,
     pausado = false,
     pausadoNota,
+    ficha,
 }: {
     productId: number;
     pausado?: boolean;
     pausadoNota?: string | null;
+    ficha?: FichaProducto;
 }) {
     const [isAdmin, setIsAdmin] = useState(false);
-    const [subiendo, setSubiendo] = useState<"principal" | "agregar" | "pausa" | null>(null);
+    const [subiendo, setSubiendo] = useState<"principal" | "agregar" | "pausa" | "ficha" | null>(null);
+    const [editando, setEditando] = useState(false);
+    const [form, setForm] = useState<FichaProducto | null>(null);
     const inputPrincipal = useRef<HTMLInputElement>(null);
     const inputAgregar = useRef<HTMLInputElement>(null);
     const router = useRouter();
@@ -83,6 +98,54 @@ export default function AdminQuickImages({
         }
     };
 
+    const abrirEditor = () => {
+        if (!ficha) return;
+        setForm({
+            name: ficha.name || "",
+            masterCode: ficha.masterCode || "",
+            description: ficha.description || "",
+            materials: ficha.materials || "",
+            damaCompo: ficha.damaCompo || "",
+            talles: ficha.talles || "",
+            damaTalles: ficha.damaTalles || "",
+            ninoTalles: ficha.ninoTalles || "",
+        });
+        setEditando(true);
+    };
+
+    const guardarFicha = async () => {
+        if (!form) return;
+        if (!form.name.trim()) {
+            alert("El título no puede quedar vacío");
+            return;
+        }
+        setSubiendo("ficha");
+        try {
+            const r = await updateProductFicha(productId, form);
+            if (r.success) {
+                setEditando(false);
+                router.refresh();
+            } else {
+                alert(r.error || "No se pudo guardar la ficha");
+            }
+        } finally {
+            setSubiendo(null);
+        }
+    };
+
+    const campo = (etiqueta: string, clave: keyof FichaProducto, placeholder = "") => (
+        <label className="block">
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-amber-700">{etiqueta}</span>
+            <input
+                type="text"
+                value={(form?.[clave] as string) || ""}
+                onChange={(e) => setForm((f) => (f ? { ...f, [clave]: e.target.value } : f))}
+                placeholder={placeholder}
+                className="mt-0.5 w-full border border-amber-300 rounded-md px-2.5 py-1.5 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+            />
+        </label>
+    );
+
     const alternarPausa = async () => {
         let nota: string | undefined;
         if (!pausado) {
@@ -101,6 +164,7 @@ export default function AdminQuickImages({
     };
 
     return (
+        <>
         <div className={`mt-3 flex flex-wrap items-center gap-2 rounded-md p-2.5 border ${pausado ? "bg-orange-50 border-orange-300" : "bg-amber-50 border-amber-200"}`}>
             <span className={`text-[10px] font-bold uppercase tracking-[0.1em] px-1.5 ${pausado ? "text-orange-700" : "text-amber-700"}`}>
                 {pausado ? `Pausado${pausadoNota ? `: ${pausadoNota}` : ""}` : "Modo admin"}
@@ -133,8 +197,61 @@ export default function AdminQuickImages({
                 {subiendo === "pausa" ? <Loader2 size={14} className="animate-spin" /> : pausado ? <PlayCircle size={14} /> : <PauseCircle size={14} />}
                 {pausado ? "Reanudar" : "Pausar"}
             </button>
+            {ficha && (
+                <button
+                    onClick={() => (editando ? setEditando(false) : abrirEditor())}
+                    disabled={!!subiendo}
+                    className="flex items-center gap-1.5 bg-white border border-amber-300 text-slate-800 text-xs font-bold px-3 py-2 rounded-md hover:bg-amber-100 transition-colors disabled:opacity-50"
+                >
+                    {editando ? <X size={14} /> : <Pencil size={14} />}
+                    {editando ? "Cerrar editor" : "Editar ficha"}
+                </button>
+            )}
             <input ref={inputPrincipal} type="file" accept="image/*" className="hidden" onChange={cambiarPrincipal} />
             <input ref={inputAgregar} type="file" accept="image/*" multiple className="hidden" onChange={agregarImagenes} />
         </div>
+
+        {editando && form && (
+            <div className="mt-2 rounded-md border border-amber-200 bg-amber-50 p-3.5 space-y-3">
+                {campo("Título", "name")}
+                <div className="grid grid-cols-2 gap-3">
+                    {campo("Ref (código)", "masterCode", "ej. RA-001")}
+                    {campo("Talles unisex", "talles", "ej. S M L XL XXL")}
+                </div>
+                <label className="block">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-amber-700">Descripción</span>
+                    <textarea
+                        value={form.description || ""}
+                        onChange={(e) => setForm((f) => (f ? { ...f, description: e.target.value } : f))}
+                        rows={3}
+                        className="mt-0.5 w-full border border-amber-300 rounded-md px-2.5 py-1.5 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    />
+                </label>
+                {campo("Composición", "materials", "ej. 100% algodón")}
+                <div className="grid grid-cols-2 gap-3">
+                    {campo("Composición dama", "damaCompo")}
+                    {campo("Talles dama", "damaTalles")}
+                </div>
+                {campo("Talles niño", "ninoTalles")}
+                <div className="flex items-center gap-2 pt-1">
+                    <button
+                        onClick={guardarFicha}
+                        disabled={!!subiendo}
+                        className="flex items-center gap-1.5 bg-primary text-white text-xs font-bold px-4 py-2 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
+                    >
+                        {subiendo === "ficha" ? <Loader2 size={14} className="animate-spin" /> : <Pencil size={14} />}
+                        Guardar cambios
+                    </button>
+                    <button
+                        onClick={() => setEditando(false)}
+                        disabled={!!subiendo}
+                        className="text-xs font-bold text-slate-600 px-3 py-2 rounded-md hover:bg-amber-100 transition-colors disabled:opacity-50"
+                    >
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        )}
+        </>
     );
 }

@@ -138,6 +138,16 @@ export default async function ProductDetailPage({ params }: { params: { category
                             productId={product.id}
                             pausado={product.pausadoManual ?? false}
                             pausadoNota={product.pausadoNota}
+                            ficha={{
+                                name: product.name,
+                                masterCode: product.masterCode,
+                                description: product.description,
+                                materials: product.materials,
+                                damaCompo: product.damaCompo,
+                                talles: product.talles,
+                                damaTalles: product.damaTalles,
+                                ninoTalles: product.ninoTalles,
+                            }}
                         />
                     </div>
 
