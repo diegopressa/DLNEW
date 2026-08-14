@@ -99,7 +99,7 @@ export async function getProductBySlug(slug: string) {
     try {
         const decodedSlug = decodeURIComponent(slug);
         const product = await (prisma as any).product.findUnique({
-            where: { slug: decodedSlug, isActive: true },
+            where: { slug: decodedSlug, isActive: true, pausadoManual: false },
             include: {
                 category: true,
                 images: { orderBy: { order: "asc" } },
@@ -111,6 +111,7 @@ export async function getProductBySlug(slug: string) {
         if (product) return product;
 
         const all = await (prisma as any).product.findMany({
+            where: { isActive: true, pausadoManual: false },
             include: {
                 category: true,
                 images: { orderBy: { order: "asc" } },
@@ -139,7 +140,8 @@ export async function searchProducts(query: string) {
                     { name: { contains: query, mode: "insensitive" } },
                     { description: { contains: query, mode: "insensitive" } }
                 ],
-                isActive: true
+                isActive: true,
+                pausadoManual: false
             },
             include: {
                 category: true,

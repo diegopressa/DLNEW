@@ -23,7 +23,8 @@ export async function getCategoryBySlug(slug: string) {
     const categories = await prisma.productCategory.findMany({
         include: {
             products: {
-                where: { isActive: true },
+                // pausadoManual: pausa de negocio de Diego (14/08/2026) — oculta el artículo
+                where: { isActive: true, pausadoManual: false },
                 include: {
                     images: true,
                     colors: {

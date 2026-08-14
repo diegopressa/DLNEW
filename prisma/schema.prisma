@@ -137,6 +137,8 @@ model ProductCategory {
   showOnHome  Boolean   @default(false)
   // Rediseño 08/2026: las categorías nuevas se cargan ocultas hasta el lanzamiento
   isVisible   Boolean   @default(true)
+  // Aparece en la tira horizontal del menú (el desplegable siempre muestra todas)
+  showInNav   Boolean   @default(true)
   products    Product[]
 }
 
@@ -157,6 +159,11 @@ model Product {
   hasScreenPrint Boolean        @default(false)
   isActive       Boolean        @default(true)
   createdAt      DateTime       @default(now())
+
+  // Pausa manual de Diego (14/08/2026): distinta del borrador (isActive).
+  // Un artículo pausado desaparece de la web pública hasta que se reanude.
+  pausadoManual Boolean @default(false)
+  pausadoNota   String? // motivo opcional, ej. "sin stock del proveedor"
 
   // Rediseño 08/2026 — ficha maestra (planilla de productos)
   masterCode  String? @unique // código estable tipo RD-001, compartido con catálogos
