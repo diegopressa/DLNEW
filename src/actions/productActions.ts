@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/lib/auth";
 
 export async function getProducts() {
     try {
@@ -200,6 +201,50 @@ export async function updateProductOrder(id: number, order: number) {
         return { success: true };
     } catch (error) {
         console.error("Error updating product order:", error);
+        return { success: false };
+    }
+}
+
+// ── Edición rápida de imágenes desde la web pública (modo admin) ──
+// Ambas exigen sesión de admin porque se llaman desde páginas públicas.
+
+export async function changeMainProductImage(productId: number, url: string) {
+    try {
+        if (!(await getSession())) return { success: false, error: "Sin sesión" };
+        const first = await (prisma as any).productImage.findFirst({
+            where: { productId },
+            orderBy: { order: "asc" },
+        });
+        if (first) {
+            await (prisma as any).productImage.update({ where: { id: first.id }, data: { url } });
+        } else {
+            await (prisma as any).productImage.create({ data: { productId, url, order: 0 } });
+        }
+        revalidatePath("/", "layout");
+        return { success: true };
+    } catch (error) {
+        console.error("Error changeMainProductImage:", error);
+        return { success: false };
+    }
+}
+
+export async function addProductImages(productId: number, urls: string[]) {
+    try {
+        if (!(await getSession())) return { success: false, error: "Sin sesión" };
+        const last = await (prisma as any).productImage.findFirst({
+            where: { productId },
+            orderBy: { order: "desc" },
+        });
+        let order = (last?.order ?? -1) + 1;
+        await prisma.$transaction(
+            urls.map((url) =>
+                (prisma as any).productImage.create({ data: { productId, url, order: order++ } })
+            )
+        );
+        revalidatePath("/", "layout");
+        return { success: true };
+    } catch (error) {
+        console.error("Error addProductImages:", error);
         return { success: false };
     }
 }

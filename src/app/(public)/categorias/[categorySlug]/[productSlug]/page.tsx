@@ -7,6 +7,7 @@ import ColorSwatches from "@/components/product/ColorSwatches";
 import { getProductBySlug } from "@/actions/productActions";
 import { getCategoryBySlug } from "@/actions/categoryActions";
 import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
+import AdminQuickImages from "@/components/admin/AdminQuickImages";
 import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
@@ -133,6 +134,7 @@ export default async function ProductDetailPage({ params }: { params: { category
                             hasEmbroidery={product.hasEmbroidery}
                             productName={product.name}
                         />
+                        <AdminQuickImages productId={product.id} />
                     </div>
 
                     <div>
