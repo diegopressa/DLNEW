@@ -148,7 +148,8 @@ export async function getReflectiveProducts(excludeCategoryId: number) {
                     { name: { contains: "hi vis", mode: "insensitive" } },
                     { name: { contains: "fluo", mode: "insensitive" } },
                 ],
-                ...(esProduccionProd ? { isActive: true, pausadoManual: false } : {}),
+                // Igual que en categoría: los pausados no aparecen ni en preview
+                ...(esProduccionProd ? { isActive: true, pausadoManual: false } : { pausadoManual: false }),
             },
             include: {
                 images: { orderBy: { order: "asc" } },

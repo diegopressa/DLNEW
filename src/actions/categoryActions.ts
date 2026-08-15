@@ -27,8 +27,8 @@ export async function getCategoryBySlug(slug: string) {
     const categories = await prisma.productCategory.findMany({
         include: {
             products: {
-                // En producción: ni borradores ni pausados. En preview se ven ambos (con sello).
-                where: esProduccion ? { isActive: true, pausadoManual: false } : {},
+                // Pausados por Diego: NUNCA en el listado (ni en preview). Borradores: solo en preview, con sello.
+                where: esProduccion ? { isActive: true, pausadoManual: false } : { pausadoManual: false },
                 include: {
                     // ordenadas para que images[0] sea SIEMPRE la imagen principal
                     images: { orderBy: { order: "asc" } },
