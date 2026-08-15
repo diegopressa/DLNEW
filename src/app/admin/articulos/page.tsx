@@ -1112,9 +1112,9 @@ export default function ProductsEditor() {
                             <p className="text-sm text-slate-500 line-clamp-2 mb-4">{prod.description}</p>
 
                             <div className="mt-auto space-y-4">
-                                <div className="flex justify-between items-center bg-slate-50 -mx-5 -mb-5 p-4 border-t border-slate-100">
-                                    <span className="text-[10px] font-mono text-slate-400 bg-white px-2 py-1 rounded border border-slate-100">/{prod.slug}</span>
-                                    <div className="flex gap-2">
+                                <div className="flex flex-wrap justify-between items-center gap-2 bg-slate-50 -mx-5 -mb-5 p-4 border-t border-slate-100">
+                                    <span className="text-[10px] font-mono text-slate-400 bg-white px-2 py-1 rounded border border-slate-100 truncate max-w-[130px]" title={`/${prod.slug}`}>/{prod.slug}</span>
+                                    <div className="flex flex-wrap justify-end gap-1.5">
                                         <a
                                             href={`/categorias/lista-${(prod.category?.name || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-")}/${prod.slug}`}
                                             target="_blank"
