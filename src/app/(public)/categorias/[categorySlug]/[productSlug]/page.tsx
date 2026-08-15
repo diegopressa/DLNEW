@@ -142,6 +142,7 @@ export default async function ProductDetailPage({ params }: { params: { category
                             productId={product.id}
                             pausado={product.pausadoManual ?? false}
                             pausadoNota={product.pausadoNota}
+                            activo={product.isActive ?? true}
                             ficha={{
                                 name: product.name,
                                 versionUnisex: product.versionUnisex ?? true,

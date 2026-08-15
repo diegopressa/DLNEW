@@ -425,6 +425,7 @@ export async function reorderProducts(ids: number[]) {
 
 export async function toggleProductActive(id: number, isActive: boolean) {
     try {
+        if (!(await getSession())) return { success: false, error: "Sin sesión" };
         await (prisma as any).product.update({
             where: { id },
             data: { isActive }

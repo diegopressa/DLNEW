@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ImagePlus, RefreshCw, Loader2, PauseCircle, PlayCircle, Pencil, X, Plus } from "lucide-react";
-import { changeMainProductImage, addProductImages, togglePausadoManual, updateProductFicha } from "@/actions/productActions";
+import { ImagePlus, RefreshCw, Loader2, PauseCircle, PlayCircle, Pencil, X, Plus, Rocket } from "lucide-react";
+import { changeMainProductImage, addProductImages, togglePausadoManual, updateProductFicha, toggleProductActive } from "@/actions/productActions";
 import { getFeatureOptions, addFeatureOption } from "@/actions/featureOptionActions";
 
 export type FichaProducto = {
@@ -35,15 +35,17 @@ export default function AdminQuickImages({
     productId,
     pausado = false,
     pausadoNota,
+    activo = true,
     ficha,
 }: {
     productId: number;
     pausado?: boolean;
     pausadoNota?: string | null;
+    activo?: boolean; // isActive: false = borrador → se ofrece el botón Activar
     ficha?: FichaProducto;
 }) {
     const [isAdmin, setIsAdmin] = useState(false);
-    const [subiendo, setSubiendo] = useState<"principal" | "agregar" | "pausa" | "ficha" | null>(null);
+    const [subiendo, setSubiendo] = useState<"principal" | "agregar" | "pausa" | "ficha" | "activar" | null>(null);
     const [editando, setEditando] = useState(false);
     const [form, setForm] = useState<FormFicha | null>(null);
     const [opciones, setOpciones] = useState<string[]>([]);
@@ -200,6 +202,18 @@ export default function AdminQuickImages({
         </label>
     );
 
+    const activarPublicacion = async () => {
+        if (!confirm("¿Activar esta publicación? El artículo pasa a verse en la web.")) return;
+        setSubiendo("activar");
+        try {
+            const r = await toggleProductActive(productId, true);
+            if (r.success) router.refresh();
+            else alert("No se pudo activar la publicación");
+        } finally {
+            setSubiendo(null);
+        }
+    };
+
     const alternarPausa = async () => {
         let nota: string | undefined;
         if (!pausado) {
@@ -222,10 +236,20 @@ export default function AdminQuickImages({
     const btn = "w-full flex items-center gap-1.5 bg-white border border-amber-300 text-slate-800 text-xs font-bold px-3 py-2 rounded-md hover:bg-amber-100 transition-colors disabled:opacity-50";
 
     return (
-        <div className={`fixed left-2 top-28 z-50 flex flex-col gap-2 rounded-lg p-2.5 border shadow-xl max-h-[calc(100vh-14rem)] overflow-y-auto ${editando ? "w-80" : "w-56"} ${pausado ? "bg-orange-50 border-orange-300" : "bg-amber-50 border-amber-200"}`}>
+        <div className={`fixed left-2 top-48 z-50 flex flex-col gap-2 rounded-lg p-2.5 border shadow-xl max-h-[calc(100vh-19rem)] overflow-y-auto ${editando ? "w-80" : "w-56"} ${pausado ? "bg-orange-50 border-orange-300" : "bg-amber-50 border-amber-200"}`}>
             <span className={`text-[10px] font-bold uppercase tracking-[0.1em] px-1 ${pausado ? "text-orange-700" : "text-amber-700"}`}>
                 {pausado ? `Pausado${pausadoNota ? `: ${pausadoNota}` : ""}` : "Modo admin"}
             </span>
+            {!activo && (
+                <button
+                    onClick={activarPublicacion}
+                    disabled={!!subiendo}
+                    className="w-full flex items-center gap-1.5 bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-md hover:bg-emerald-700 transition-colors disabled:opacity-50"
+                >
+                    {subiendo === "activar" ? <Loader2 size={14} className="animate-spin" /> : <Rocket size={14} />}
+                    Activar publicación
+                </button>
+            )}
             <button onClick={() => inputPrincipal.current?.click()} disabled={!!subiendo} className={btn}>
                 {subiendo === "principal" ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
                 Cambiar imagen principal
