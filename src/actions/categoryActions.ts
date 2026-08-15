@@ -26,7 +26,8 @@ export async function getCategoryBySlug(slug: string) {
                 // pausadoManual: pausa de negocio de Diego (14/08/2026) — oculta el artículo
                 where: { isActive: true, pausadoManual: false },
                 include: {
-                    images: true,
+                    // ordenadas para que images[0] sea SIEMPRE la imagen principal
+                    images: { orderBy: { order: "asc" } },
                     colors: {
                         include: {
                             color: true
