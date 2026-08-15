@@ -2,6 +2,7 @@ import { searchProducts } from "@/actions/productActions";
 import Link from "next/link";
 import { Package, Search, MessageCircle } from "lucide-react";
 import { getGlobalSettings } from "@/actions/settingsActions";
+import { fondoColor } from "@/lib/colorUtils";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -107,12 +108,11 @@ export default async function SearchResultsPage({
                                         {product.colors.slice(0, 5).map((pc: any, i: number) => {
                                             const color = pc.color;
                                             if (!color) return null;
-                                            const hex = color.hex?.startsWith("#") ? color.hex : `#${color.hex}`;
                                             return (
                                                 <span
                                                     key={i}
                                                     className="w-[15px] h-[15px] rounded-full border border-grafito/20"
-                                                    style={{ backgroundColor: hex }}
+                                                    style={{ background: fondoColor(color.hex, color.hex2) }}
                                                     title={color.name}
                                                 />
                                             );

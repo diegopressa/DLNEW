@@ -6,6 +6,7 @@ import { getCategoryBySlug, getCategories } from "@/actions/categoryActions";
 import { getReflectiveProducts } from "@/actions/productActions";
 import { getGlobalSettings } from "@/actions/settingsActions";
 import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
+import { fondoColor } from "@/lib/colorUtils";
 import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
@@ -271,12 +272,11 @@ export default async function CategoryListingPage({
                                                 {product.colors.slice(0, 6).map((pc: any, i: number) => {
                                                     const color = pc.color;
                                                     if (!color) return null;
-                                                    const hex = color.hex?.startsWith("#") ? color.hex : `#${color.hex}`;
                                                     return (
                                                         <span
                                                             key={i}
                                                             className="w-[15px] h-[15px] rounded-full border border-grafito/20"
-                                                            style={{ backgroundColor: hex }}
+                                                            style={{ background: fondoColor(color.hex, color.hex2) }}
                                                             title={color.name}
                                                         />
                                                     );

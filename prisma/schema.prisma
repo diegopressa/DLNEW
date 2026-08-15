@@ -210,6 +210,8 @@ model Color {
   name       String
   slug       String         @unique
   hex        String
+  // Segundo tono para colores combinados (ej. Negro y Amarillo): el círculo se muestra partido
+  hex2       String?
   sortOrder  Int            @default(0)
   isActive   Boolean        @default(true)
   createdAt  DateTime       @default(now())

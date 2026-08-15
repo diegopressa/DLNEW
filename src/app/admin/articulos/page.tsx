@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrder, toggleProductActive, reorderProducts, togglePausadoManual, duplicateProduct } from "@/actions/productActions";
 import { getCategories } from "@/actions/categoryActions";
 import { getColors } from "@/actions/colorActions";
+import { fondoColor } from "@/lib/colorUtils";
 import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff, ArrowUp, ArrowDown, AlertTriangle, GripVertical, ListOrdered, PauseCircle, PlayCircle, Copy } from "lucide-react";
 
 // ─── Color Multi-Select Picker ───────────────────────────────────────────────
@@ -53,7 +54,7 @@ function ColorPicker({
                             key={c.id}
                             className="inline-flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700"
                         >
-                            <span className="w-3 h-3 rounded-full border border-slate-200 shadow-sm" style={{ backgroundColor: c.hex }} />
+                            <span className="w-3 h-3 rounded-full border border-slate-200 shadow-sm" style={{ background: fondoColor(c.hex, c.hex2) }} />
                             {c.name}
                             <button
                                 type="button"
@@ -115,10 +116,10 @@ function ColorPicker({
                                         >
                                             <span
                                                 className="w-5 h-5 rounded-md border border-slate-200 shadow-sm shrink-0"
-                                                style={{ backgroundColor: c.hex }}
+                                                style={{ background: fondoColor(c.hex, c.hex2) }}
                                             />
                                             <span className="flex-1 text-left font-medium">{c.name}</span>
-                                            <span className="font-mono text-xs text-slate-400 uppercase">{c.hex}</span>
+                                            <span className="font-mono text-xs text-slate-400 uppercase">{c.hex}{c.hex2 ? `+${c.hex2}` : ""}</span>
                                             {isSelected && (
                                                 <span className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center shrink-0">
                                                     <svg viewBox="0 0 10 10" className="w-2.5 h-2.5 text-white fill-current">
@@ -1097,7 +1098,7 @@ export default function ProductsEditor() {
                                         <span
                                             key={pc.id}
                                             className="w-4 h-4 rounded-full border border-slate-200 shadow-sm"
-                                            style={{ backgroundColor: pc.color?.hex ?? "#ccc" }}
+                                            style={{ background: fondoColor(pc.color?.hex, pc.color?.hex2) }}
                                             title={pc.color?.name}
                                         />
                                     ))}

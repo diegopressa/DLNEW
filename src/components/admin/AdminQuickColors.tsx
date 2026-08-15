@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Check, Loader2 } from "lucide-react";
 import { toggleProductColor } from "@/actions/productActions";
 import { getColors } from "@/actions/colorActions";
+import { fondoColor } from "@/lib/colorUtils";
 
 // Editor de colores del artículo, en el mismo bloque "Colores disponibles" (modo admin):
 // muestra la paleta completa y con un toque se agrega o quita cada color.
@@ -75,7 +76,7 @@ export default function AdminQuickColors({
                                     ? "border-primary ring-2 ring-primary ring-offset-1 shadow-md"
                                     : "border-slate-300 opacity-35 hover:opacity-70"
                             }`}
-                            style={{ backgroundColor: color.hex }}
+                            style={{ background: fondoColor(color.hex, color.hex2) }}
                         >
                             {guardando === color.id ? (
                                 <Loader2 size={15} className="absolute inset-0 m-auto animate-spin text-white drop-shadow" />

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { getColors, addColor, updateColor, deleteColor } from "@/actions/colorActions";
+import { fondoColor } from "@/lib/colorUtils";
 import { Plus, Trash2, Save, Loader2, Palette, Pencil, X, Check, ToggleLeft, ToggleRight } from "lucide-react";
 
 export default function ColoresAdmin() {
@@ -11,8 +12,8 @@ export default function ColoresAdmin() {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [showAdd, setShowAdd] = useState(false);
 
-    const [newColor, setNewColor] = useState({ name: "", hex: "#000000" });
-    const [editColor, setEditColor] = useState({ name: "", hex: "#000000" });
+    const [newColor, setNewColor] = useState({ name: "", hex: "#000000", hex2: "" });
+    const [editColor, setEditColor] = useState({ name: "", hex: "#000000", hex2: "" });
 
     useEffect(() => {
         loadColors();
@@ -30,7 +31,7 @@ export default function ColoresAdmin() {
         setSaving(true);
         const res = await addColor(newColor);
         if (res.success) {
-            setNewColor({ name: "", hex: "#000000" });
+            setNewColor({ name: "", hex: "#000000", hex2: "" });
             setShowAdd(false);
             await loadColors();
         } else {
@@ -41,7 +42,7 @@ export default function ColoresAdmin() {
 
     const handleStartEdit = (color: any) => {
         setEditingId(color.id);
-        setEditColor({ name: color.name, hex: color.hex });
+        setEditColor({ name: color.name, hex: color.hex, hex2: color.hex2 || "" });
     };
 
     const handleSaveEdit = async (id: number) => {
@@ -129,6 +130,41 @@ export default function ColoresAdmin() {
                                 />
                             </div>
                         </div>
+                        <div className="min-w-[220px] space-y-1.5">
+                            <label className="text-sm font-bold text-slate-700 block">2º color (combinado, opcional)</label>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="color"
+                                    value={newColor.hex2 || "#FBE200"}
+                                    onChange={e => setNewColor({ ...newColor, hex2: e.target.value })}
+                                    title="Elegir el segundo tono"
+                                    className="h-11 w-14 shrink-0 rounded-xl cursor-pointer border border-slate-200 bg-white p-1"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="vacío = liso"
+                                    value={newColor.hex2}
+                                    onChange={e => setNewColor({ ...newColor, hex2: e.target.value })}
+                                    className="bg-slate-50 border border-slate-200 rounded-xl p-3 w-full outline-none focus:border-[#0081D1] text-sm font-mono uppercase"
+                                />
+                                {newColor.hex2 && (
+                                    <button
+                                        onClick={() => setNewColor({ ...newColor, hex2: "" })}
+                                        title="Quitar el segundo tono (queda liso)"
+                                        className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-bold text-slate-700 block">Vista previa</label>
+                            <div
+                                className="w-11 h-11 rounded-full border border-slate-200 shadow-sm"
+                                style={{ background: fondoColor(newColor.hex, newColor.hex2) }}
+                            />
+                        </div>
                         <button
                             onClick={handleAdd}
                             disabled={saving || !newColor.name.trim()}
@@ -138,7 +174,7 @@ export default function ColoresAdmin() {
                             Guardar color
                         </button>
                     </div>
-                    <p className="text-xs text-slate-400 mt-3">El cuadradito de la izquierda abre el selector; el código de al lado se completa solo.</p>
+                    <p className="text-xs text-slate-400 mt-3">El cuadradito de la izquierda abre el selector; el código de al lado se completa solo. Para un color combinado (ej. "Negro y Amarillo") cargá también el 2º color: el círculo se muestra partido en dos mitades.</p>
                 </div>
             )}
 
@@ -165,7 +201,7 @@ export default function ColoresAdmin() {
                                     <div className="flex flex-wrap items-center gap-3">
                                         <div
                                             className="w-14 h-14 shrink-0 rounded-xl border border-slate-200 shadow-sm"
-                                            style={{ backgroundColor: editColor.hex }}
+                                            style={{ background: fondoColor(editColor.hex, editColor.hex2) }}
                                         />
                                         <input
                                             type="text"
@@ -187,6 +223,32 @@ export default function ColoresAdmin() {
                                             onChange={e => setEditColor({ ...editColor, hex: e.target.value })}
                                             className="bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-[#0081D1] text-sm font-mono uppercase w-32"
                                         />
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="text-xs font-bold text-slate-400">2º:</span>
+                                            <input
+                                                type="color"
+                                                value={editColor.hex2 || "#FBE200"}
+                                                onChange={e => setEditColor({ ...editColor, hex2: e.target.value })}
+                                                title="Segundo tono (combinado)"
+                                                className="h-11 w-14 shrink-0 rounded-xl cursor-pointer border border-slate-200 bg-white p-1"
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="liso"
+                                                value={editColor.hex2}
+                                                onChange={e => setEditColor({ ...editColor, hex2: e.target.value })}
+                                                className="bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-[#0081D1] text-sm font-mono uppercase w-28"
+                                            />
+                                            {editColor.hex2 && (
+                                                <button
+                                                    onClick={() => setEditColor({ ...editColor, hex2: "" })}
+                                                    title="Quitar el segundo tono (queda liso)"
+                                                    className="p-1.5 text-slate-400 hover:text-red-500 transition-colors"
+                                                >
+                                                    <X size={15} />
+                                                </button>
+                                            )}
+                                        </div>
                                         <div className="flex items-center gap-2 ml-auto">
                                             <button
                                                 onClick={() => handleSaveEdit(color.id)}
@@ -212,11 +274,11 @@ export default function ColoresAdmin() {
                                     <div className="flex flex-wrap items-center gap-4">
                                         <div
                                             className="w-14 h-14 shrink-0 rounded-xl border border-slate-200 shadow-sm"
-                                            style={{ backgroundColor: color.hex }}
+                                            style={{ background: fondoColor(color.hex, color.hex2) }}
                                         />
                                         <div className="flex-1 min-w-[140px]">
                                             <p className="font-bold text-slate-800 text-sm">{color.name}</p>
-                                            <p className="font-mono text-xs text-slate-400 uppercase mt-0.5">{color.hex}</p>
+                                            <p className="font-mono text-xs text-slate-400 uppercase mt-0.5">{color.hex}{color.hex2 ? ` + ${color.hex2}` : ""}</p>
                                         </div>
                                         <button
                                             onClick={() => handleToggleActive(color)}
