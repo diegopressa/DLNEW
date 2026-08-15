@@ -16,6 +16,7 @@ export type FichaProducto = {
     talles?: string | null;
     damaTalles?: string | null;
     ninoTalles?: string | null;
+    versionUnisex?: boolean;
     versionDama?: boolean;
     versionNino?: boolean;
     features?: string[];
@@ -123,6 +124,7 @@ export default function AdminQuickImages({
             talles: ficha.talles || "",
             damaTalles: ficha.damaTalles || "",
             ninoTalles: ficha.ninoTalles || "",
+            versionUnisex: ficha.versionUnisex ?? true,
             versionDama: !!ficha.versionDama,
             versionNino: !!ficha.versionNino,
             featuresSel: [...(ficha.features || [])],
@@ -308,6 +310,15 @@ export default function AdminQuickImages({
                     <div className="pt-0.5">
                         <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-amber-700">Disponible en versión</span>
                         <div className="mt-1 flex items-center gap-4">
+                            <label className="flex items-center gap-1.5 text-sm font-bold text-slate-800 cursor-pointer" title="Si está desmarcada, la ficha muestra composición y talles sin la palabra UNISEX">
+                                <input
+                                    type="checkbox"
+                                    checked={form.versionUnisex ?? true}
+                                    onChange={(e) => setForm((f) => (f ? { ...f, versionUnisex: e.target.checked } : f))}
+                                    className="w-4 h-4 accent-[#0081D1]"
+                                />
+                                Unisex
+                            </label>
                             <label className="flex items-center gap-1.5 text-sm font-bold text-slate-800 cursor-pointer">
                                 <input
                                     type="checkbox"

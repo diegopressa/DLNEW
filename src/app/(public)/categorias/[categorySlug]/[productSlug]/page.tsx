@@ -144,6 +144,7 @@ export default async function ProductDetailPage({ params }: { params: { category
                             pausadoNota={product.pausadoNota}
                             ficha={{
                                 name: product.name,
+                                versionUnisex: product.versionUnisex ?? true,
                                 masterCode: product.masterCode,
                                 description: product.description,
                                 materials: product.materials,
@@ -189,7 +190,7 @@ export default async function ProductDetailPage({ params }: { params: { category
                                 <div className="py-5 border-b border-slate-200">
                                     <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-1.5">Composición</p>
                                     {product.materials && (
-                                        <p className="text-sm font-semibold text-grafito"><b className="text-primary text-xs uppercase mr-1.5">Unisex</b>{product.materials}</p>
+                                        <p className="text-sm font-semibold text-grafito">{(product.versionUnisex ?? true) && <b className="text-primary text-xs uppercase mr-1.5">Unisex</b>}{product.materials}</p>
                                     )}
                                     {product.versionDama && product.damaCompo && (
                                         <p className="text-sm font-semibold text-grafito mt-1"><b className="text-primary text-xs uppercase mr-1.5">Dama</b>{product.damaCompo}</p>
@@ -204,7 +205,7 @@ export default async function ProductDetailPage({ params }: { params: { category
                                 <div className="py-5 border-b border-slate-200">
                                     <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-1.5">Talles</p>
                                     {product.talles && (
-                                        <p className="text-sm font-semibold text-grafito"><b className="text-primary text-xs uppercase mr-1.5">Unisex</b>{product.talles}</p>
+                                        <p className="text-sm font-semibold text-grafito">{(product.versionUnisex ?? true) && <b className="text-primary text-xs uppercase mr-1.5">Unisex</b>}{product.talles}</p>
                                     )}
                                     {product.versionDama && product.damaTalles && (
                                         <p className="text-sm font-semibold text-grafito mt-1"><b className="text-primary text-xs uppercase mr-1.5">Dama</b>{product.damaTalles}</p>

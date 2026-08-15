@@ -170,6 +170,8 @@ model Product {
   talles      String? // talles unisex, ej. "S M L XL XXL XXXL"
   rubros      String? // rubros separados por " | " (Gastronomía y Cocina | ...)
   // Versiones dama / niño (medallas del catálogo)
+  // versionUnisex controla si la ficha muestra la palabra UNISEX en composición/talles
+  versionUnisex Boolean @default(true)
   versionDama  Boolean @default(false)
   damaTalles   String?
   damaCompo    String?

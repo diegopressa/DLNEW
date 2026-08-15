@@ -282,6 +282,7 @@ export async function updateProductFicha(id: number, data: {
     talles?: string | null;
     damaTalles?: string | null;
     ninoTalles?: string | null;
+    versionUnisex?: boolean;
     versionDama?: boolean;
     versionNino?: boolean;
     features?: string[];
@@ -316,6 +317,8 @@ export async function updateProductFicha(id: number, data: {
                     ninoTalles: opcional(data.ninoTalles),
                     versionDama: !!data.versionDama,
                     versionNino: !!data.versionNino,
+                    // solo se toca si el editor la manda (default true en la base)
+                    ...(data.versionUnisex !== undefined ? { versionUnisex: !!data.versionUnisex } : {}),
                 },
             }),
             ...(featureTexts !== null && featureTexts.length
