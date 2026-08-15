@@ -496,7 +496,8 @@ export default function ProductsEditor() {
             if (!coincide) return false;
             return true; // con búsqueda activa se ignoran las pestañas
         }
-        if (activeTab === "pausados") return !p.isActive;
+        // Borradores = solo los nuevos sin activar; si además está pausado, vive en "Pausados por mí"
+        if (activeTab === "pausados") return !p.isActive && !p.pausadoManual;
         if (activeTab === "pausados-mios") return p.pausadoManual;
         if (activeTab === "faltan-fotos") return p.isActive && !p.pausadoManual && (p.images?.length ?? 0) <= 1;
         if (activeTab === "todos") return p.isActive && !p.pausadoManual;
@@ -509,7 +510,7 @@ export default function ProductsEditor() {
     const entrarModoOrden = () => {
         setBusqueda("");
         const base = products.filter(p => {
-            if (activeTab === "pausados") return !p.isActive;
+            if (activeTab === "pausados") return !p.isActive && !p.pausadoManual;
             if (activeTab === "pausados-mios") return p.pausadoManual;
             if (activeTab === "faltan-fotos") return p.isActive && !p.pausadoManual && (p.images?.length ?? 0) <= 1;
             if (activeTab === "todos") return p.isActive && !p.pausadoManual;
@@ -1055,7 +1056,7 @@ export default function ProductsEditor() {
                             : "bg-white border border-slate-200 text-slate-500 hover:text-amber-600 hover:border-amber-300"
                     }`}
                 >
-                    <Pause size={14} /> Borradores ({products.filter(p => !p.isActive).length})
+                    <Pause size={14} /> Borradores ({products.filter(p => !p.isActive && !p.pausadoManual).length})
                 </button>
             </div>
 
