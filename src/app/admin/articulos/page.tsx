@@ -1131,13 +1131,23 @@ export default function ProductsEditor() {
                                         >
                                             {prod.pausadoManual ? <PlayCircle size={18} /> : <PauseCircle size={18} />}
                                         </button>
-                                        <button
-                                            onClick={() => handleToggleActive(prod.id, !prod.isActive)}
-                                            className={`p-2 rounded-lg transition-all ${prod.isActive ? 'text-slate-400 hover:text-amber-600 hover:bg-amber-50' : 'text-amber-600 bg-amber-50 hover:bg-amber-100'}`}
-                                            title={prod.isActive ? "Pausar" : "Reactivar"}
-                                        >
-                                            {prod.isActive ? <Pause size={18} /> : <Play size={18} />}
-                                        </button>
+                                        {prod.isActive ? (
+                                            <button
+                                                onClick={() => handleToggleActive(prod.id, false)}
+                                                className="p-2 rounded-lg transition-all text-slate-400 hover:text-amber-600 hover:bg-amber-50"
+                                                title="Pasar a borrador (se oculta de la web)"
+                                            >
+                                                <Pause size={18} />
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => handleToggleActive(prod.id, true)}
+                                                className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1.5"
+                                                title="Publicar: el artículo pasa a verse en la web"
+                                            >
+                                                <Play size={14} /> Activar
+                                            </button>
+                                        )}
                                         <button
                                             onClick={() => handleDuplicate(prod)}
                                             className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
