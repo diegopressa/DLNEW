@@ -30,7 +30,8 @@ export async function getCategoryBySlug(slug: string) {
                 // En producción: ni borradores ni pausados. En preview se ven ambos (con sello).
                 where: esProduccion ? { isActive: true, pausadoManual: false } : {},
                 include: {
-                    images: true,
+                    // ordenadas para que images[0] sea SIEMPRE la imagen principal
+                    images: { orderBy: { order: "asc" } },
                     colors: {
                         include: {
                             color: true
