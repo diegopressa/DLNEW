@@ -3,12 +3,22 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
+// Normaliza un número uruguayo a formato internacional (59897534866):
+// tolera que Diego cargue "097 534 866", "97534866" o "29250584" en el admin.
+// Sin esto, el link de WhatsApp da "número inválido".
+function normalizarNumeroUy(valor?: string | null): string {
+    if (!valor) return "";
+    let digitos = String(valor).replace(/\D/g, "").replace(/^0+/, "");
+    if (digitos && !digitos.startsWith("598")) digitos = "598" + digitos;
+    return digitos;
+}
+
 export async function getGlobalSettings() {
     try {
         let settings = await prisma.globalSettings.findUnique({
             where: { id: 1 }
         });
-        
+
         if (!settings) {
             settings = await prisma.globalSettings.create({
                 data: {
@@ -20,7 +30,11 @@ export async function getGlobalSettings() {
                 }
             });
         }
-        return settings;
+        return {
+            ...settings,
+            whatsapp: normalizarNumeroUy(settings.whatsapp) || "59897534866",
+            phone: normalizarNumeroUy(settings.phone) || settings.phone,
+        };
     } catch (error) {
         return null;
     }
