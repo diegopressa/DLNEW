@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { getSession } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
     try {
+        // Solo con sesión de admin: sin esto cualquiera podría llenar el bucket
+        if (!(await getSession())) {
+            return NextResponse.json({ success: false, error: "Sin sesión de admin." }, { status: 401 });
+        }
+
         const formData = await request.formData();
         const file = formData.get("file");
         const folder = formData.get("folder") || "general"; // Carpeta opcional (home, nosotros, etc)
