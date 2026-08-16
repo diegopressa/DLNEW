@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Package, Loader2, Save, X, Hand } from "lucide-react";
+import { Package, Loader2, Save, X, Hand, Star } from "lucide-react";
 import { reorderProductsSlots } from "@/actions/productActions";
 import { fondoColor } from "@/lib/colorUtils";
 
@@ -111,9 +111,18 @@ export default function CategoryGrid({ products, categorySlug }: { products: any
                                     <Package size={56} />
                                 </div>
                             )}
-                            {product.highlight && (
-                                <span className="absolute top-3 left-3 bg-primary text-white px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.08em]">
-                                    {product.highlight}
+                            {(product.masVendido || product.highlight) && (
+                                <span className="absolute top-3 left-3 flex flex-col items-start gap-1.5">
+                                    {product.masVendido && (
+                                        <span className="flex items-center gap-1 bg-grafito text-white px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.08em]">
+                                            <Star size={11} className="text-celeste fill-celeste" /> Lo más vendido
+                                        </span>
+                                    )}
+                                    {product.highlight && (
+                                        <span className="bg-primary text-white px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.08em]">
+                                            {product.highlight}
+                                        </span>
+                                    )}
                                 </span>
                             )}
                             {(!product.isActive || product.pausadoManual) && (

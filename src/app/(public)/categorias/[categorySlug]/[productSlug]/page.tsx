@@ -1,4 +1,4 @@
-import { CheckCircle2, MessageCircle } from "lucide-react";
+import { CheckCircle2, MessageCircle, Star } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getGlobalSettings } from "@/actions/settingsActions";
@@ -143,6 +143,7 @@ export default async function ProductDetailPage({ params }: { params: { category
                             pausado={product.pausadoManual ?? false}
                             pausadoNota={product.pausadoNota}
                             activo={product.isActive ?? true}
+                            masVendido={product.masVendido ?? false}
                             categoriaPrincipalId={product.categoryId}
                             categoriasExtra={(product.extraCategories || []).map((ec: any) => ec.categoryId)}
                             ficha={{
@@ -171,6 +172,11 @@ export default async function ProductDetailPage({ params }: { params: { category
                             {product.masterCode && (
                                 <span className="text-slate-400 text-xs font-bold uppercase tracking-[0.08em]">
                                     Ref. {product.masterCode}
+                                </span>
+                            )}
+                            {product.masVendido && (
+                                <span className="flex items-center gap-1 bg-grafito text-white text-[10px] font-bold uppercase tracking-[0.08em] px-2 py-1 rounded-sm">
+                                    <Star size={11} className="text-celeste fill-celeste" /> Lo más vendido
                                 </span>
                             )}
                             {!product.isActive && (

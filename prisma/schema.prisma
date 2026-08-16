@@ -179,6 +179,9 @@ model Product {
   pausadoManual Boolean @default(false)
   pausadoNota   String? // motivo opcional, ej. "sin stock del proveedor"
 
+  // Sello "Lo más vendido" (16/08/2026): se prende/apaga desde el panel admin del artículo
+  masVendido Boolean @default(false)
+
   // Rediseño 08/2026 — ficha maestra (planilla de productos)
   masterCode  String? @unique // código estable tipo RD-001, compartido con catálogos
   talles      String? // talles unisex, ej. "S M L XL XXL XXXL"

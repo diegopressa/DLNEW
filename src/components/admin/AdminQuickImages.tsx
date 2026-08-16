@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ImagePlus, RefreshCw, Loader2, PauseCircle, PlayCircle, Pencil, X, Plus, Rocket, FolderTree } from "lucide-react";
-import { changeMainProductImage, addProductImages, togglePausadoManual, updateProductFicha, toggleProductActive, toggleProductExtraCategory } from "@/actions/productActions";
+import { ImagePlus, RefreshCw, Loader2, PauseCircle, PlayCircle, Pencil, X, Plus, Rocket, FolderTree, Star } from "lucide-react";
+import { changeMainProductImage, addProductImages, togglePausadoManual, updateProductFicha, toggleProductActive, toggleProductExtraCategory, toggleMasVendido } from "@/actions/productActions";
 import { getFeatureOptions, addFeatureOption } from "@/actions/featureOptionActions";
 import { getCategories } from "@/actions/categoryActions";
 
@@ -37,6 +37,7 @@ export default function AdminQuickImages({
     pausado = false,
     pausadoNota,
     activo = true,
+    masVendido = false,
     ficha,
     categoriaPrincipalId,
     categoriasExtra = [],
@@ -45,6 +46,7 @@ export default function AdminQuickImages({
     pausado?: boolean;
     pausadoNota?: string | null;
     activo?: boolean; // isActive: false = borrador → se ofrece el botón Activar
+    masVendido?: boolean; // sello "Lo más vendido"
     ficha?: FichaProducto;
     categoriaPrincipalId?: number;
     categoriasExtra?: number[]; // ids de categorías extra (multi-categoría)
@@ -211,6 +213,17 @@ export default function AdminQuickImages({
         </label>
     );
 
+    const alternarMasVendido = async () => {
+        setSubiendo("pausa"); // reutiliza el bloqueo general de botones
+        try {
+            const r = await toggleMasVendido(productId, !masVendido);
+            if (r.success) router.refresh();
+            else alert("No se pudo cambiar el sello");
+        } finally {
+            setSubiendo(null);
+        }
+    };
+
     const abrirCategorias = () => {
         if (verCategorias) {
             setVerCategorias(false);
@@ -316,6 +329,17 @@ export default function AdminQuickImages({
                     {verCategorias ? "Cerrar categorías" : "Categorías"}
                 </button>
             )}
+            <button
+                onClick={alternarMasVendido}
+                disabled={!!subiendo}
+                className={masVendido
+                    ? "w-full flex items-center gap-1.5 bg-grafito text-white text-xs font-bold px-3 py-2 rounded-md hover:bg-black transition-colors disabled:opacity-50"
+                    : btn}
+                title={masVendido ? "Quitar el sello de la tarjeta y la ficha" : "Mostrar el sello Lo más vendido en la tarjeta y la ficha"}
+            >
+                <Star size={14} className={masVendido ? "text-celeste fill-celeste" : ""} />
+                {masVendido ? "Quitar 'Lo más vendido'" : "Marcar 'Lo más vendido'"}
+            </button>
             <input ref={inputPrincipal} type="file" accept="image/*" className="hidden" onChange={cambiarPrincipal} />
             <input ref={inputAgregar} type="file" accept="image/*" multiple className="hidden" onChange={agregarImagenes} />
 

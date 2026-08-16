@@ -386,6 +386,19 @@ export async function duplicateProduct(id: number) {
     }
 }
 
+// Prende/apaga el sello "Lo más vendido" del artículo (panel admin de la ficha).
+export async function toggleMasVendido(id: number, valor: boolean) {
+    try {
+        if (!(await getSession())) return { success: false, error: "Sin sesión" };
+        await (prisma as any).product.update({ where: { id }, data: { masVendido: valor } });
+        revalidatePath("/", "layout");
+        return { success: true };
+    } catch (error) {
+        console.error("Error toggleMasVendido:", error);
+        return { success: false };
+    }
+}
+
 // Reordena artículos DENTRO de un listado (arrastre en la página de categoría):
 // los mismos productos se reparten sus valores de order existentes, así el
 // orden global del resto del catálogo no se toca.
