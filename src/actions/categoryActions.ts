@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/lib/auth";
 
 export async function getCategories() {
     return await prisma.productCategory.findMany({
@@ -71,6 +72,7 @@ export async function getCategoryBySlug(slug: string) {
 // I should probably add it or use a simple transform.
 
 export async function addCategory(data: any) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const { name, description, imageUrl, showOnHome, showInNav } = data;
         const last = await prisma.productCategory.findFirst({ orderBy: { order: "asc" } });
@@ -91,31 +93,15 @@ export async function addCategory(data: any) {
         revalidatePath("/admin/categorias");
         return { success: true, category };
     } catch (error) {
+        // (Se eliminó un fallback con $executeRawUnsafe y placeholders "?" que en
+        // Postgres no existen: era código roto que fallaba en silencio.)
         console.error("Error in addCategory:", error);
-        
-        // Fallback for when Client is not generated
-        try {
-            const { name, description, imageUrl, showOnHome } = data;
-            const last = await prisma.productCategory.findFirst({ orderBy: { order: "asc" } });
-            const order = (last?.order || 0) + 1;
-            const val = (showOnHome === true || showOnHome === "true") ? 1 : 0;
-            
-            await prisma.$executeRawUnsafe(
-                `INSERT INTO ProductCategory (name, description, imageUrl, showOnHome, "order") VALUES (?, ?, ?, ?, ?)`,
-                name, description || "", imageUrl, val, order
-            );
-            
-            revalidatePath("/");
-            revalidatePath("/admin/categorias");
-            return { success: true };
-        } catch (e2) {
-            console.error("Critical error in addCategory fallback:", e2);
-            return { success: false };
-        }
+        return { success: false };
     }
 }
 
 export async function updateCategory(id: number, data: any) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const { name, description, imageUrl, showOnHome, showInNav } = data;
 
@@ -135,27 +121,14 @@ export async function updateCategory(id: number, data: any) {
         revalidatePath("/admin/categorias");
         return { success: true };
     } catch (error) {
+        // (Fallback $executeRawUnsafe con "?" eliminado: sintaxis inválida en Postgres.)
         console.error("Error in updateCategory:", error);
-        
-        // Fallback: If Prisma client is not generated but the field exists in DB
-        try {
-            const { name, description, imageUrl, showOnHome } = data;
-            const val = (showOnHome === true || showOnHome === "true") ? 1 : 0;
-            await prisma.$executeRawUnsafe(
-                `UPDATE ProductCategory SET name = ?, description = ?, imageUrl = ?, showOnHome = ? WHERE id = ?`,
-                name, description || "", imageUrl, val, id
-            );
-            revalidatePath("/");
-            revalidatePath("/admin/categorias");
-            return { success: true };
-        } catch (e2) {
-            console.error("Critical error in updateCategory fallback:", e2);
-            return { success: false };
-        }
+        return { success: false };
     }
 }
 
 export async function deleteCategory(id: number) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.productCategory.delete({ where: { id } });
         revalidatePath("/");
@@ -199,6 +172,7 @@ export async function updateCategoriasHeader(data: {
     volumeTier3?: string;
     volumeTier3Label?: string;
 }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).categoriasHeader.upsert({
             where: { id: 1 },

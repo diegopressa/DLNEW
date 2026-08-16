@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/lib/auth";
 
 export async function getFaqItems() {
     try {
@@ -27,6 +28,7 @@ export async function getAllFaqItems() {
 }
 
 export async function createFaqItem(data: { question: string; answer: string; order?: number }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const count = await (prisma as any).faqItem.count();
         await (prisma as any).faqItem.create({
@@ -48,6 +50,7 @@ export async function createFaqItem(data: { question: string; answer: string; or
 }
 
 export async function updateFaqItem(id: number, data: { question: string; answer: string; order: number; active: boolean }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).faqItem.update({
             where: { id },
@@ -64,6 +67,7 @@ export async function updateFaqItem(id: number, data: { question: string; answer
 }
 
 export async function deleteFaqItem(id: number) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).faqItem.delete({ where: { id } });
         revalidatePath("/");

@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/lib/auth";
 
 export async function getPrivacyPolicy() {
     try {
@@ -22,6 +23,7 @@ export async function getPrivacyPolicy() {
 }
 
 export async function updatePrivacyPolicy(data: { title: string; content: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const policy = await prisma.privacyPolicy.findFirst();
         if (policy) {

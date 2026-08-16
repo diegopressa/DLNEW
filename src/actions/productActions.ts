@@ -22,6 +22,7 @@ export async function getProducts() {
 }
 
 export async function addProduct(data: any) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const { images, features, colorIds, categoryId, isActive, ...productData } = data;
 
@@ -53,6 +54,7 @@ export async function addProduct(data: any) {
 }
 
 export async function updateProduct(id: number, data: any) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const { images, features, colorIds, categoryId, isActive, ...productData } = data;
 
@@ -86,6 +88,7 @@ export async function updateProduct(id: number, data: any) {
 }
 
 export async function deleteProduct(id: number) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).product.delete({ where: { id } });
         revalidatePath("/", "layout");
@@ -196,6 +199,7 @@ export async function searchProducts(query: string) {
 }
 
 export async function updateProductOrder(id: number, order: number) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).product.update({
             where: { id },
@@ -477,6 +481,7 @@ export async function toggleProductColor(productId: number, colorId: number, agr
 // Guarda el orden de una lista completa de productos (modo "Ordenar" del admin):
 // recibe los ids en el orden final y les asigna 1, 2, 3…
 export async function reorderProducts(ids: number[]) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.$transaction(
             ids.map((id, i) =>

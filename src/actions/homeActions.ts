@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/lib/auth";
 
 /**
  * HOME ACTIONS - COMPLETELY STANDARDIZED
@@ -53,6 +54,7 @@ export async function updateHeroTexts(data: {
     trustStat2?: string;
     trustStat3?: string;
 }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.heroSection.update({
             where: { id: 1 },
@@ -78,6 +80,7 @@ export async function updateHeroTexts(data: {
 }
 
 export async function syncHeroImages(imageUrls: string[]) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.heroImage.deleteMany({ where: { heroId: 1 } });
         
@@ -101,6 +104,7 @@ export async function syncHeroImages(imageUrls: string[]) {
 }
 
 export async function addHeroImage(url: string) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const last = await prisma.heroImage.findFirst({
             where: { heroId: 1 },
@@ -115,6 +119,7 @@ export async function addHeroImage(url: string) {
 }
 
 export async function deleteHeroImage(id: number) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.heroImage.delete({ where: { id } });
         revalidatePath("/");
@@ -136,6 +141,7 @@ export async function getIndustriesSection() {
 }
 
 export async function updateIndustriesSection(data: { title: string; subtitle: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).industriesSection.upsert({
             where: { id: 1 },
@@ -156,6 +162,7 @@ export async function getIndustries() {
 }
 
 export async function updateIndustry(id: number, data: { name: string; description?: string; iconName?: string; imageUrl?: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.industry.update({
             where: { id },
@@ -170,6 +177,7 @@ export async function updateIndustry(id: number, data: { name: string; descripti
 }
 
 export async function addIndustry(data: { name: string; description: string; iconName: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const last = await prisma.industry.findFirst({ orderBy: { order: "desc" } });
         await prisma.industry.create({
@@ -183,6 +191,7 @@ export async function addIndustry(data: { name: string; description: string; ico
 }
 
 export async function deleteIndustry(id: number) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.industry.delete({ where: { id } });
         revalidatePath("/");
@@ -201,6 +210,7 @@ export async function getSolutionsSection() {
 }
 
 export async function updateSolutionsSection(data: { title: string; subtitle: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).solutionsSection.upsert({
             where: { id: 1 },
@@ -219,6 +229,7 @@ export async function getSolutions() {
 }
 
 export async function updateSolution(id: number, data: { title: string; description: string; iconName?: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.businessSolution.update({
             where: { id },
@@ -238,6 +249,7 @@ export async function getWhyUsSection() {
 }
 
 export async function updateWhyUsSection(data: { title: string; subtitle: string; backgroundColor: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).whyUsSection.upsert({
             where: { id: 1 },
@@ -256,6 +268,7 @@ export async function getWhyUs() {
 }
 
 export async function updateWhyUs(id: number, data: { title: string; description: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.whyChooseUs.update({ where: { id }, data });
         revalidatePath("/");
@@ -264,6 +277,7 @@ export async function updateWhyUs(id: number, data: { title: string; description
 }
 
 export async function addWhyUs(data: { title: string; description: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const last = await prisma.whyChooseUs.findFirst({ orderBy: { order: "desc" } });
         await prisma.whyChooseUs.create({
@@ -275,6 +289,7 @@ export async function addWhyUs(data: { title: string; description: string }) {
 }
 
 export async function deleteWhyUs(id: number) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.whyChooseUs.delete({ where: { id } });
         revalidatePath("/");
@@ -291,6 +306,7 @@ export async function getProcessSection() {
 }
 
 export async function updateProcessSection(data: { title: string; subtitle: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).processSection.upsert({
             where: { id: 1 },
@@ -309,6 +325,7 @@ export async function getProcessSteps() {
 }
 
 export async function updateProcessStep(id: number, data: { title: string; description?: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.processStep.update({ where: { id }, data });
         revalidatePath("/");
@@ -317,6 +334,7 @@ export async function updateProcessStep(id: number, data: { title: string; descr
 }
 
 export async function addProcessStep(data: { title: string; description: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const last = await prisma.processStep.findFirst({ orderBy: { order: "desc" } });
         await prisma.processStep.create({
@@ -332,6 +350,7 @@ export async function addProcessStep(data: { title: string; description: string 
 }
 
 export async function deleteProcessStep(id: number) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.processStep.delete({ where: { id } });
         revalidatePath("/");
@@ -348,6 +367,7 @@ export async function getCategoriesSection() {
 }
 
 export async function updateCategoriesSection(data: { title: string; subtitle: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).categoriesSection.upsert({
             where: { id: 1 },
@@ -371,6 +391,7 @@ export async function getCategories() {
 }
 
 export async function updateCategory(id: number, data: { name: string; imageUrl: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.productCategory.update({
             where: { id },
@@ -391,6 +412,7 @@ export async function getProjectsSection() {
 }
 
 export async function updateProjectsSection(data: { title: string; subtitle: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).projectsSection.upsert({
             where: { id: 1 },
@@ -409,6 +431,7 @@ export async function getProjects() {
 }
 
 export async function updateProject(id: number, data: { title: string; category?: string; imageUrl: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.project.update({
             where: { id },
@@ -421,6 +444,7 @@ export async function updateProject(id: number, data: { title: string; category?
 }
 
 export async function addProject(data: { title: string; category?: string; imageUrl: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.project.create({
             data: { ...data, order: 99 }
@@ -432,6 +456,7 @@ export async function addProject(data: { title: string; category?: string; image
 }
 
 export async function deleteProject(id: number) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.project.delete({ where: { id } });
         revalidatePath("/");
@@ -448,6 +473,7 @@ export async function getCtaSection() {
 }
 
 export async function updateCtaSection(data: { title: string; subtitle: string; buttonText: string; buttonLink: string; smallText: string; backgroundColor: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).ctaSection.upsert({
             where: { id: 1 },
@@ -472,6 +498,7 @@ export async function getBrands() {
 }
 
 export async function addBrand(data: { name: string; imageUrl: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const last = await (prisma as any).brand.findFirst({ orderBy: { order: "desc" } });
         await (prisma as any).brand.create({
@@ -487,6 +514,7 @@ export async function addBrand(data: { name: string; imageUrl: string }) {
 }
 
 export async function updateBrand(id: number, data: { name: string; imageUrl: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).brand.update({ where: { id }, data });
         revalidatePath("/");
@@ -499,6 +527,7 @@ export async function updateBrand(id: number, data: { name: string; imageUrl: st
 }
 
 export async function deleteBrand(id: number) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).brand.delete({ where: { id } });
         revalidatePath("/");
@@ -511,6 +540,7 @@ export async function deleteBrand(id: number) {
 }
 
 export async function updateBrandsOrder(ids: number[]) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.$transaction(
             ids.map((id, index) => 

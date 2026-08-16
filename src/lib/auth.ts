@@ -2,7 +2,9 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-const secretKey = process.env.ADMIN_SESSION_SECRET || "default_secret_key_change_me_in_production";
+// Sin fallback: si falta el secreto, las sesiones no pueden ni firmarse ni validarse.
+// (Antes había un secreto por defecto conocido: cualquiera podía forjar sesiones.)
+const secretKey = process.env.ADMIN_SESSION_SECRET || "";
 const key = new TextEncoder().encode(secretKey);
 
 export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
@@ -21,6 +23,7 @@ export async function encrypt(payload: any) {
 }
 
 export async function decrypt(input: string): Promise<any> {
+    if (!secretKey) throw new Error("ADMIN_SESSION_SECRET no configurado");
     const { payload } = await jwtVerify(input, key, {
         algorithms: ["HS256"],
     });
@@ -30,6 +33,10 @@ export async function decrypt(input: string): Promise<any> {
 export async function login(formData: FormData) {
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
+
+    // Falla cerrada: sin secreto o sin contraseña configurada NADIE entra
+    // (antes, con ADMIN_PASSWORD vacía, una contraseña vacía logueaba).
+    if (!secretKey || !ADMIN_PASSWORD) return false;
 
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
         // Create the session
@@ -77,6 +84,9 @@ export async function updateSession(request: NextRequest) {
         name: "admin_session",
         value: await encrypt(parsed),
         httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
         expires: parsed.expires,
     });
     return res;

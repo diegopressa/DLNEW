@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/lib/auth";
 
 // Normaliza un número uruguayo a formato internacional (59897534866):
 // tolera que Diego cargue "097 534 866", "97534866" o "29250584" en el admin.
@@ -41,6 +42,7 @@ export async function getGlobalSettings() {
 }
 
 export async function updateGlobalSettings(data: any) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await prisma.globalSettings.upsert({
             where: { id: 1 },

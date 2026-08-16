@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/lib/auth";
 
 export async function getColors(onlyActive = false) {
     try {
@@ -16,6 +17,7 @@ export async function getColors(onlyActive = false) {
 }
 
 export async function addColor(data: { name: string; hex: string; hex2?: string | null }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const slug = data.name
             .toLowerCase()
@@ -47,6 +49,7 @@ export async function addColor(data: { name: string; hex: string; hex2?: string 
 }
 
 export async function updateColor(id: number, data: { name?: string; hex?: string; hex2?: string | null; isActive?: boolean; sortOrder?: number }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const clean: any = { ...data };
         if ("hex2" in clean) clean.hex2 = clean.hex2 || null; // "" = volver a color liso
@@ -61,6 +64,7 @@ export async function updateColor(id: number, data: { name?: string; hex?: strin
 }
 
 export async function deleteColor(id: number) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).color.delete({ where: { id } });
         revalidatePath("/admin/colores");

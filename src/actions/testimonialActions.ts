@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/lib/auth";
 
 export async function getTestimonials() {
     try {
@@ -25,6 +26,7 @@ export async function getAllTestimonials() {
 }
 
 export async function createTestimonial(data: { name: string; company: string; role?: string; content: string; imageUrl?: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const last = await (prisma as any).testimonial.findFirst({ orderBy: { order: "desc" } });
         await (prisma as any).testimonial.create({
@@ -39,6 +41,7 @@ export async function createTestimonial(data: { name: string; company: string; r
 }
 
 export async function updateTestimonial(id: number, data: { name: string; company: string; role?: string; content: string; imageUrl?: string; active?: boolean }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).testimonial.update({ where: { id }, data });
         revalidatePath("/");
@@ -50,6 +53,7 @@ export async function updateTestimonial(id: number, data: { name: string; compan
 }
 
 export async function toggleTestimonial(id: number, active: boolean) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).testimonial.update({ where: { id }, data: { active } });
         revalidatePath("/");
@@ -61,6 +65,7 @@ export async function toggleTestimonial(id: number, active: boolean) {
 }
 
 export async function deleteTestimonial(id: number) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).testimonial.delete({ where: { id } });
         revalidatePath("/");

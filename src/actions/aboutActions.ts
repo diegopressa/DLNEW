@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/lib/auth";
 
 export async function getAboutUs() {
     try {
@@ -23,6 +24,7 @@ export async function getAboutUs() {
 }
 
 export async function updateAboutUs(data: { title: string; content: string; imageUrl?: string; stat1Value?: string; stat1Label?: string; stat2Value?: string; stat2Label?: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const about = await prisma.aboutUs.findFirst();
         if (about) {

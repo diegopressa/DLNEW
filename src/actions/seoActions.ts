@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/lib/auth";
 
 export async function getSeoPages() {
     try {
@@ -28,6 +29,7 @@ export async function upsertSeoPage(data: {
     robotsIndex: boolean;
     robotsFollow: boolean;
 }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).seoMetadata.upsert({
             where: { pageSlug: data.pageSlug },
@@ -43,6 +45,7 @@ export async function upsertSeoPage(data: {
 }
 
 export async function addSeoPage(data: { pageSlug: string; pageName: string }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).seoMetadata.create({
             data: { ...data, robotsIndex: true, robotsFollow: true },
@@ -56,6 +59,7 @@ export async function addSeoPage(data: { pageSlug: string; pageName: string }) {
 }
 
 export async function deleteSeoPage(id: number) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).seoMetadata.delete({ where: { id } });
         revalidatePath("/", "layout");
@@ -82,6 +86,7 @@ export async function getSeoSettings() {
 }
 
 export async function updateSeoSettings(data: any) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const existing = await (prisma as any).seoSettings.findFirst();
         if (existing) {

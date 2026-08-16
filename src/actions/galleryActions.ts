@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/lib/auth";
 
 export async function getProjects() {
     try {
@@ -20,6 +21,7 @@ export async function addProject(data: {
     imageUrl: string;
     description?: string;
 }) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         const last = await (prisma as any).project.findFirst({ orderBy: { order: "desc" } });
         const project = await (prisma as any).project.create({
@@ -38,6 +40,7 @@ export async function addProject(data: {
 }
 
 export async function deleteProject(id: number) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).project.delete({ where: { id } });
         revalidatePath("/trabajos");
@@ -50,6 +53,7 @@ export async function deleteProject(id: number) {
 }
 
 export async function updateProject(id: number, data: any) {
+    if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
         await (prisma as any).project.update({
             where: { id },
