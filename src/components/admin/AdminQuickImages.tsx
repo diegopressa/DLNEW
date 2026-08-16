@@ -335,10 +335,10 @@ export default function AdminQuickImages({
                 className={masVendido
                     ? "w-full flex items-center gap-1.5 bg-grafito text-white text-xs font-bold px-3 py-2 rounded-md hover:bg-black transition-colors disabled:opacity-50"
                     : btn}
-                title={masVendido ? "Quitar el sello de la tarjeta y la ficha" : "Mostrar el sello Lo más vendido en la tarjeta y la ficha"}
+                title={masVendido ? "Quitar el sello de la tarjeta y la ficha" : "Mostrar el sello El más pedido en la tarjeta y la ficha"}
             >
                 <Star size={14} className={masVendido ? "text-celeste fill-celeste" : ""} />
-                {masVendido ? "Quitar 'Lo más vendido'" : "Marcar 'Lo más vendido'"}
+                {masVendido ? "Quitar 'El más pedido'" : "Marcar 'El más pedido'"}
             </button>
             <input ref={inputPrincipal} type="file" accept="image/*" className="hidden" onChange={cambiarPrincipal} />
             <input ref={inputAgregar} type="file" accept="image/*" multiple className="hidden" onChange={agregarImagenes} />

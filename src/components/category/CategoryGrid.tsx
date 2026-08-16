@@ -114,8 +114,8 @@ export default function CategoryGrid({ products, categorySlug }: { products: any
                             {(product.masVendido || product.highlight) && (
                                 <span className="absolute top-3 left-3 flex flex-col items-start gap-1.5">
                                     {product.masVendido && (
-                                        <span className="flex items-center gap-1 bg-grafito text-white px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.08em]">
-                                            <Star size={11} className="text-celeste fill-celeste" /> Lo más vendido
+                                        <span className="flex items-center gap-1 bg-grafito text-white px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.03em]">
+                                            <Star size={10} className="text-celeste fill-celeste shrink-0" /> El más pedido
                                         </span>
                                     )}
                                     {product.highlight && (

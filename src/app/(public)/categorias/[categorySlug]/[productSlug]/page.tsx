@@ -175,8 +175,8 @@ export default async function ProductDetailPage({ params }: { params: { category
                                 </span>
                             )}
                             {product.masVendido && (
-                                <span className="flex items-center gap-1 bg-grafito text-white text-[10px] font-bold uppercase tracking-[0.08em] px-2 py-1 rounded-sm">
-                                    <Star size={11} className="text-celeste fill-celeste" /> Lo más vendido
+                                <span className="flex items-center gap-1 bg-grafito text-white text-[10px] font-bold uppercase tracking-[0.03em] px-2 py-1 rounded-sm">
+                                    <Star size={10} className="text-celeste fill-celeste shrink-0" /> El más pedido
                                 </span>
                             )}
                             {!product.isActive && (
