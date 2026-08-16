@@ -386,6 +386,35 @@ export async function duplicateProduct(id: number) {
     }
 }
 
+// Reordena artículos DENTRO de un listado (arrastre en la página de categoría):
+// los mismos productos se reparten sus valores de order existentes, así el
+// orden global del resto del catálogo no se toca.
+export async function reorderProductsSlots(ids: number[]) {
+    try {
+        if (!(await getSession())) return { success: false, error: "Sin sesión" };
+        if (!ids.length) return { success: false, error: "Lista vacía" };
+        const productos = await (prisma as any).product.findMany({
+            where: { id: { in: ids } },
+            select: { id: true, order: true },
+        });
+        const slots: number[] = productos.map((p: any) => p.order ?? 0).sort((a: number, b: number) => a - b);
+        // Si hay valores repetidos, separarlos para que el orden nuevo quede firme
+        for (let i = 1; i < slots.length; i++) {
+            if (slots[i] <= slots[i - 1]) slots[i] = slots[i - 1] + 1;
+        }
+        await prisma.$transaction(
+            ids.map((id, i) =>
+                (prisma as any).product.update({ where: { id }, data: { order: slots[i] } })
+            )
+        );
+        revalidatePath("/", "layout");
+        return { success: true };
+    } catch (error) {
+        console.error("Error reorderProductsSlots:", error);
+        return { success: false };
+    }
+}
+
 // Agrega o quita una categoría EXTRA del artículo (además de la principal).
 // La principal no se toca acá: se cambia desde el formulario del admin.
 export async function toggleProductExtraCategory(productId: number, categoryId: number, agregar: boolean) {

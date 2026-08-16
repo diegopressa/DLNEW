@@ -6,7 +6,7 @@ import { getCategoryBySlug, getCategories } from "@/actions/categoryActions";
 import { getReflectiveProducts } from "@/actions/productActions";
 import { getGlobalSettings } from "@/actions/settingsActions";
 import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
-import { fondoColor } from "@/lib/colorUtils";
+import CategoryGrid from "@/components/category/CategoryGrid";
 import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
@@ -209,97 +209,8 @@ export default async function CategoryListingPage({
                             </span>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                            {productosFiltrados.map((product: any) => (
-                                <Link
-                                    key={product.id}
-                                    href={`/categorias/${params.categorySlug}/${product.slug}`}
-                                    className="group bg-white border border-slate-200 rounded-md overflow-hidden hover:border-grafito hover:shadow-lg transition-all"
-                                >
-                                    <div className="relative aspect-square bg-[#F7F7F7]">
-                                        {product.images[0] ? (
-                                            <img
-                                                src={product.images[0].url}
-                                                alt={product.name}
-                                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-slate-300">
-                                                <Package size={56} />
-                                            </div>
-                                        )}
-                                        {product.highlight && (
-                                            <span className="absolute top-3 left-3 bg-primary text-white px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.08em]">
-                                                {product.highlight}
-                                            </span>
-                                        )}
-                                        {(!product.isActive || product.pausadoManual) && (
-                                            <span className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
-                                                {!product.isActive && (
-                                                    <span className="bg-red-600 text-white px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em]">
-                                                        Borrador
-                                                    </span>
-                                                )}
-                                                {product.pausadoManual && (
-                                                    <span className="bg-orange-500 text-white px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em]">
-                                                        Pausado
-                                                    </span>
-                                                )}
-                                            </span>
-                                        )}
-                                        {(product.hasScreenPrint || product.hasEmbroidery) && (
-                                            <span className="absolute bottom-3 left-3 flex gap-1.5">
-                                                {product.hasScreenPrint && (
-                                                    <span className="bg-white/95 text-grafito px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em] border border-slate-200">
-                                                        Estampado
-                                                    </span>
-                                                )}
-                                                {product.hasEmbroidery && (
-                                                    <span className="bg-white/95 text-grafito px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em] border border-slate-200">
-                                                        Bordado
-                                                    </span>
-                                                )}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    <div className="p-4">
-                                        <h3 className="font-bold text-[15px] text-grafito leading-snug mb-1">
-                                            {product.name}
-                                        </h3>
-                                        {product.description && (
-                                            <p className="text-[13px] text-slate-500 line-clamp-2 mb-3">
-                                                {product.description}
-                                            </p>
-                                        )}
-                                        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                                            <span className="flex items-center gap-1">
-                                                {product.colors.slice(0, 6).map((pc: any, i: number) => {
-                                                    const color = pc.color;
-                                                    if (!color) return null;
-                                                    return (
-                                                        <span
-                                                            key={i}
-                                                            className="w-[15px] h-[15px] rounded-full border border-grafito/20"
-                                                            style={{ background: fondoColor(color.hex, color.hex2) }}
-                                                            title={color.name}
-                                                        />
-                                                    );
-                                                })}
-                                                {product.colors.length > 6 && (
-                                                    <span className="text-[11px] font-bold text-slate-500 ml-0.5">
-                                                        +{product.colors.length - 6}
-                                                    </span>
-                                                )}
-                                            </span>
-                                            <span className="text-[13px] font-bold text-grafito border-b-2 border-primary pb-0.5">
-                                                Ver prenda →
-                                            </span>
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
+                        {/* Grilla con arrastre en modo admin (el público la ve igual que siempre) */}
+                        <CategoryGrid products={productosFiltrados} categorySlug={params.categorySlug} />
 
                         {productosFiltrados.length === 0 && (
                             <div className="border border-dashed border-slate-300 rounded-md p-14 text-center">
