@@ -27,12 +27,13 @@ export default async function WorksPreview() {
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {/* En celular: carrusel horizontal; en pantallas grandes: grilla */}
+                <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 sm:gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:overflow-visible">
                     {works.map((work: any) => (
                         <Link
                             key={work.id}
                             href="/trabajos"
-                            className="group bg-white border border-slate-200 rounded-md overflow-hidden hover:border-grafito hover:shadow-lg transition-all"
+                            className="group bg-white border border-slate-200 rounded-md overflow-hidden hover:border-grafito hover:shadow-lg transition-all min-w-[80%] snap-start sm:min-w-0"
                         >
                             <div className="relative aspect-[4/3]">
                                 <Image

@@ -40,7 +40,7 @@ export default function BrandSlider({ brands }: BrandSliderProps) {
                     return (
                         <div
                             key={`${brand.id}-${index}`}
-                            className="flex-shrink-0 hover:scale-110 transition-all duration-500 px-2 relative h-14 md:h-20 w-[130px] md:w-[170px]"
+                            className="flex-shrink-0 hover:scale-110 transition-all duration-500 px-2 relative h-20 w-[170px]"
                             aria-hidden={isFirstSet ? undefined : true}
                         >
                             <Image

@@ -14,13 +14,14 @@ export default async function ServicesStrip() {
 
     return (
         <div className="bg-white border-b border-slate-100">
-            <div className="max-w-[1240px] mx-auto px-4 sm:px-6 pt-10 sm:pt-12 pb-5 sm:pb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* En celular: carrusel horizontal (deslizar al costado); en pantallas grandes: grilla */}
+            <div className="max-w-[1240px] mx-auto px-4 sm:px-6 pt-10 sm:pt-12 pb-5 sm:pb-6 flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-visible">
                 {solutions.map((item) => {
                     const IconComponent = (LucideIcons as any)[item.iconName || "Shirt"] || LucideIcons.Shirt;
                     return (
                         <div
                             key={item.id}
-                            className="group relative overflow-hidden border border-slate-200 rounded-md p-6 bg-white shadow-sm hover:shadow-xl hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200"
+                            className="group relative overflow-hidden border border-slate-200 rounded-md p-6 bg-white shadow-sm hover:shadow-xl hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-200 min-w-[76%] snap-start sm:min-w-0"
                         >
                             {/* Barra superior que se enciende al pasar el mouse */}
                             <span className="absolute top-0 left-0 h-1 w-8 bg-primary transition-all duration-300 group-hover:w-full" />

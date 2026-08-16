@@ -52,7 +52,8 @@ export default function Testimonials({ items }: { items: Testimonial[] }) {
                     </a>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                {/* En celular: carrusel horizontal; en pantallas grandes: grilla */}
+                <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 md:gap-5 md:grid md:grid-cols-3 md:overflow-visible">
                     {destacados.map((t) => (
                         <a
                             key={t.id}
@@ -60,7 +61,7 @@ export default function Testimonials({ items }: { items: Testimonial[] }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             title="Ver las reseñas en Google"
-                            className="bg-white border border-slate-200 rounded-md p-6 shadow-sm hover:shadow-lg hover:border-primary/40 transition-all flex flex-col"
+                            className="bg-white border border-slate-200 rounded-md p-6 shadow-sm hover:shadow-lg hover:border-primary/40 transition-all flex flex-col min-w-[85%] snap-start md:min-w-0"
                         >
                             <Estrellas />
                             <p className="mt-4 mb-5 text-[15px] font-medium text-grafito leading-relaxed flex-1">
