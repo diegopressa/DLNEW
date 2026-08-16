@@ -26,7 +26,13 @@ export default async function ContactoPage() {
         { icono: MessageCircle, etiqueta: "WhatsApp", valor: formattedWhatsapp, href: waUrl },
         { icono: Mail, etiqueta: "Email", valor: email, href: `mailto:${email}` },
         { icono: MapPin, etiqueta: "Dirección", valor: address, href: null },
-        { icono: Clock, etiqueta: "Horario de atención", valor: "Lunes a Viernes, 9 a 18 Hs", href: null },
+        {
+            icono: Clock,
+            etiqueta: "Horario de atención",
+            // El horario sale del admin (Configuración → Horarios); si hay de sábado, se suma
+            valor: `Lunes a Viernes, ${settings?.hoursWeek || "09:00 - 18:00 hs"}${settings?.hoursSat ? ` · Sábados, ${settings.hoursSat}` : ""}`,
+            href: null,
+        },
     ];
 
     return (

@@ -10,6 +10,14 @@ export default function Footer({ settings }: { settings: any }) {
         email: "info@dldiseno.uy"
     };
 
+    // Teléfono y WhatsApp salen del admin (Configuración), formateados para leerse bien.
+    const telefono = String(contact.phone || "");
+    const telefonoLindo = telefono.startsWith("598") ? `+598 ${telefono.slice(3, 7)} ${telefono.slice(7)}` : telefono;
+    const wpp = String(settings?.whatsapp || "");
+    const wppLindo = wpp.startsWith("598") ? `+598 0${wpp.slice(3, 5)} ${wpp.slice(5, 8)} ${wpp.slice(8)}` : wpp;
+    // Link estándar de WhatsApp: el interceptor global le suma el código de prioridad
+    const waUrl = `https://api.whatsapp.com/send/?phone=${wpp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`;
+
     return (
         <footer className="bg-grafito text-slate-400">
             <div className="max-w-[1240px] mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr] gap-10 md:gap-12 py-14">
@@ -56,9 +64,16 @@ export default function Footer({ settings }: { settings: any }) {
                         <li><Link href="/politicas-de-privacidad" className="hover:text-celeste transition-colors">Políticas de privacidad</Link></li>
                     </ul>
                     <ul className="space-y-1.5 text-sm mt-5">
-                        <li>{contact.phone}</li>
+                        {telefono && (
+                            <li><a href={`tel:${telefono}`} className="hover:text-celeste transition-colors">Tel. {telefonoLindo}</a></li>
+                        )}
+                        {wpp && (
+                            <li><a href={waUrl} target="_blank" rel="noopener noreferrer" className="hover:text-celeste transition-colors">WhatsApp {wppLindo}</a></li>
+                        )}
                         <li>{contact.email}</li>
-                        <li>Lun–Vie, 9 a 18 hs</li>
+                        {/* Horario desde el admin (Configuración → Horarios) */}
+                        {contact.hoursWeek && <li>Lun–Vie, {contact.hoursWeek}</li>}
+                        {contact.hoursSat && <li>Sábados, {contact.hoursSat}</li>}
                     </ul>
                 </div>
             </div>
