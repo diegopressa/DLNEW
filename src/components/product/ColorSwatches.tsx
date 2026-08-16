@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { fondoColor } from "@/lib/colorUtils";
 
 interface ColorItem {
     name: string;
     hex: string;
+    hex2?: string | null;
 }
 
 interface ColorSwatchesProps {
@@ -35,7 +37,7 @@ export default function ColorSwatches({ colors }: ColorSwatchesProps) {
                                 ? "scale-125 border-primary shadow-lg shadow-primary/30 ring-2 ring-white ring-offset-1"
                                 : "border-slate-300 hover:scale-110 hover:border-slate-400 shadow-sm"
                         }`}
-                        style={{ backgroundColor: color.hex }}
+                        style={{ background: fondoColor(color.hex, color.hex2) }}
                         aria-label={color.name}
                         aria-pressed={i === selected}
                     />

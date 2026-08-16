@@ -170,6 +170,8 @@ model Product {
   talles      String? // talles unisex, ej. "S M L XL XXL XXXL"
   rubros      String? // rubros separados por " | " (Gastronomía y Cocina | ...)
   // Versiones dama / niño (medallas del catálogo)
+  // versionUnisex controla si la ficha muestra la palabra UNISEX en composición/talles
+  versionUnisex Boolean @default(true)
   versionDama  Boolean @default(false)
   damaTalles   String?
   damaCompo    String?
@@ -195,11 +197,21 @@ model ProductFeature {
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
+// Catálogo maestro de características reutilizables: se administra en
+// /admin/caracteristicas y se eligen por desplegable en el editor de ficha.
+model FeatureOption {
+  id    Int    @id @default(autoincrement())
+  text  String @unique
+  order Int    @default(0)
+}
+
 model Color {
   id         Int            @id @default(autoincrement())
   name       String
   slug       String         @unique
   hex        String
+  // Segundo tono para colores combinados (ej. Negro y Amarillo): el círculo se muestra partido
+  hex2       String?
   sortOrder  Int            @default(0)
   isActive   Boolean        @default(true)
   createdAt  DateTime       @default(now())

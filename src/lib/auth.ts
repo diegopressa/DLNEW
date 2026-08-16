@@ -8,11 +8,15 @@ const key = new TextEncoder().encode(secretKey);
 export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "";
 
+// Sesión de larga duración (pedido de Diego 14/08/2026): un año.
+// Antes era 2h y obligaba a reloguearse todo el tiempo.
+const SESION_DURACION_MS = 365 * 24 * 60 * 60 * 1000;
+
 export async function encrypt(payload: any) {
     return await new SignJWT(payload)
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
-        .setExpirationTime("2h")
+        .setExpirationTime("365d")
         .sign(key);
 }
 
@@ -29,7 +33,7 @@ export async function login(formData: FormData) {
 
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
         // Create the session
-        const expires = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2 hours
+        const expires = new Date(Date.now() + SESION_DURACION_MS);
         const session = await encrypt({ username, expires });
 
         // Save the session in a cookie
@@ -67,7 +71,7 @@ export async function updateSession(request: NextRequest) {
 
     // Refresh the session so it doesn't expire
     const parsed = await decrypt(session);
-    parsed.expires = new Date(Date.now() + 2 * 60 * 60 * 1000);
+    parsed.expires = new Date(Date.now() + SESION_DURACION_MS);
     const res = NextResponse.next();
     res.cookies.set({
         name: "admin_session",

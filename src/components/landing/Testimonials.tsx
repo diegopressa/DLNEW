@@ -1,7 +1,4 @@
-"use client";
-
-import { useState } from "react";
-import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
+import { Star } from "lucide-react";
 
 interface Testimonial {
     id: number;
@@ -12,110 +9,86 @@ interface Testimonial {
     imageUrl?: string;
 }
 
-interface Props {
-    items: Testimonial[];
+// Perfil de Google Business de DL (place_id encontrado en el listado del negocio).
+// VERIFICAR con Diego que abre su ficha correcta antes del lanzamiento.
+const GOOGLE_REVIEWS_URL =
+    "https://www.google.com/maps/place/?q=place_id:ChIJaQbG8iuBn5URN69g_bK4BRk";
+
+function Estrellas() {
+    return (
+        <div className="flex gap-0.5" aria-label="5 de 5 estrellas">
+            {[...Array(5)].map((_, i) => (
+                <Star key={i} size={18} className="fill-[#FBBC04] text-[#FBBC04]" />
+            ))}
+        </div>
+    );
 }
 
-export default function Testimonials({ items }: Props) {
-    const [page, setPage] = useState(0);
-
+// Testimonios con 5 estrellas tipo Google; cada tarjeta linkea a las reseñas reales.
+export default function Testimonials({ items }: { items: Testimonial[] }) {
     if (!items || items.length === 0) return null;
-
-    // Calculate items per page based on total items
-    // On mobile always 1, tablet 2, desktop 3
-    // We use the max (3) for pagination math, CSS handles visibility
-    const perPage = 3;
-    const totalPages = Math.ceil(items.length / perPage);
-
-    const prev = () => setPage((p) => (p === 0 ? totalPages - 1 : p - 1));
-    const next = () => setPage((p) => (p === totalPages - 1 ? 0 : p + 1));
-
-    // Get current page items (always grab up to 3)
-    const startIdx = page * perPage;
-    const pageItems = items.slice(startIdx, startIdx + perPage);
+    const destacados = items.slice(0, 3);
 
     return (
-        <section className="py-20 bg-slate-50">
-            <div className="section-container">
-                <div className="text-center mb-12">
-                    <p className="text-xs font-black text-primary uppercase tracking-[0.2em] mb-3">Lo que dicen nuestros clientes</p>
-                    <h2 className="text-4xl font-black text-slate-900 tracking-tight">Empresas que confiaron en DL</h2>
+        <section className="bg-[#F7F7F7] py-14 sm:py-20">
+            <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+                <div className="mb-8 sm:mb-10 flex flex-wrap items-end justify-between gap-4">
+                    <div>
+                        <h2 className="font-display uppercase text-4xl sm:text-5xl text-grafito">
+                            Lo que dicen nuestros clientes
+                        </h2>
+                        <div className="mt-3 flex items-center gap-2.5">
+                            <Estrellas />
+                            <span className="text-sm font-semibold text-slate-500">Opiniones reales de empresas que ya pidieron</span>
+                        </div>
+                    </div>
+                    <a
+                        href={GOOGLE_REVIEWS_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-bold text-sm text-grafito border-b-2 border-primary pb-0.5 hover:text-primary transition-colors"
+                    >
+                        Ver todas las opiniones en Google →
+                    </a>
                 </div>
 
-                <div className="max-w-6xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {pageItems.map((t) => (
-                            <div
-                                key={t.id}
-                                className="bg-white rounded-2xl shadow-lg shadow-slate-200/50 p-8 relative border border-slate-100 flex flex-col justify-between"
-                            >
-                                <div>
-                                    <Quote className="text-primary/15 mb-4" size={32} />
-
-                                    <div className="flex gap-1 mb-4">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star key={i} size={16} className="fill-amber-400 text-amber-400" />
-                                        ))}
-                                    </div>
-
-                                    <p className="text-slate-700 font-medium leading-relaxed mb-6">
-                                        &ldquo;{t.content}&rdquo;
-                                    </p>
-                                </div>
-
-                                <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
-                                    {t.imageUrl ? (
-                                        <img
-                                            src={t.imageUrl}
-                                            alt={t.name}
-                                            className="w-11 h-11 rounded-full object-cover border-2 border-slate-100 shrink-0"
-                                        />
-                                    ) : (
-                                        <div className="w-11 h-11 rounded-full bg-primary/10 text-primary font-black text-sm flex items-center justify-center shrink-0 border-2 border-primary/20">
-                                            {t.name.charAt(0).toUpperCase()}
-                                        </div>
-                                    )}
-                                    <div>
-                                        <p className="font-bold text-slate-900 text-sm">{t.name}</p>
-                                        {(t.company || t.role) && (
-                                            <p className="text-xs text-slate-500 font-medium">
-                                                {t.role && t.company ? `${t.role} · ${t.company}` : t.role || t.company}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {totalPages > 1 && (
-                        <div className="flex items-center justify-center gap-4 mt-10">
-                            <button
-                                onClick={prev}
-                                className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 hover:border-primary/30 transition-all shadow-sm"
-                                aria-label="Anterior"
-                            >
-                                <ChevronLeft size={18} />
-                            </button>
-                            <div className="flex gap-2">
-                                {[...Array(totalPages)].map((_, i) => (
-                                    <button
-                                        key={i}
-                                        onClick={() => setPage(i)}
-                                        className={`w-2 h-2 rounded-full transition-all ${i === page ? "bg-primary w-6" : "bg-slate-300"}`}
-                                        aria-label={`Página ${i + 1}`}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    {destacados.map((t) => (
+                        <a
+                            key={t.id}
+                            href={GOOGLE_REVIEWS_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Ver las reseñas en Google"
+                            className="bg-white border border-slate-200 rounded-md p-6 shadow-sm hover:shadow-lg hover:border-primary/40 transition-all flex flex-col"
+                        >
+                            <Estrellas />
+                            <p className="mt-4 mb-5 text-[15px] font-medium text-grafito leading-relaxed flex-1">
+                                “{t.content}”
+                            </p>
+                            <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
+                                {t.imageUrl ? (
+                                    <img
+                                        src={t.imageUrl}
+                                        alt={t.name}
+                                        className="w-10 h-10 rounded-full object-cover border border-slate-200 shrink-0"
                                     />
-                                ))}
+                                ) : (
+                                    <div className="w-10 h-10 rounded-full bg-primary/10 text-primary font-bold text-sm grid place-items-center shrink-0">
+                                        {t.name.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
+                                <div>
+                                    <p className="font-bold text-sm text-grafito">{t.name}</p>
+                                    {(t.company || t.role) && (
+                                        <p className="text-xs text-slate-500">
+                                            {t.role && t.company ? `${t.role} · ${t.company}` : t.role || t.company}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
-                            <button
-                                onClick={next}
-                                className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 hover:border-primary/30 transition-all shadow-sm"
-                                aria-label="Siguiente"
-                            >
-                                <ChevronRight size={18} />
-                            </button>
-                        </div>
-                    )}
+                        </a>
+                    ))}
                 </div>
             </div>
         </section>

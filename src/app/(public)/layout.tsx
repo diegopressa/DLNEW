@@ -2,7 +2,10 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
 import { getGlobalSettings } from "@/actions/settingsActions";
-import { getVisibleCategories } from "@/actions/categoryActions";
+// En la rama del rediseño mostramos TODAS las categorías (incluidas las ocultas)
+// para poder revisarlas en el preview. La web vieja (main) usa getVisibleCategories.
+import { getCategories } from "@/actions/categoryActions";
+import { leagueGothic, spaceGrotesk } from "@/lib/fonts";
 
 export default async function PublicLayout({
     children,
@@ -12,7 +15,7 @@ export default async function PublicLayout({
     const settings: any = await getGlobalSettings();
     const whatsapp = settings?.whatsapp || "59897534866";
 
-    const dbCategories = await getVisibleCategories();
+    const dbCategories = await getCategories();
     const navCategories = dbCategories.map((c: any) => ({
         name: c.name,
         href: `/categorias/lista-${c.name
@@ -21,6 +24,7 @@ export default async function PublicLayout({
             .replace(/[̀-ͯ]/g, "")
             .replace(/\s+/g, "-")}`,
         image: c.imageUrl,
+        showInNav: c.showInNav !== false,
     }));
     const phone = settings?.phone || "59829250584";
     const email = settings?.email || "info@dldiseno.uy";
@@ -84,7 +88,7 @@ export default async function PublicLayout({
     };
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className={`${leagueGothic.variable} ${spaceGrotesk.variable} font-sans flex flex-col min-h-screen`}>
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -15,7 +15,7 @@ export async function getColors(onlyActive = false) {
     }
 }
 
-export async function addColor(data: { name: string; hex: string }) {
+export async function addColor(data: { name: string; hex: string; hex2?: string | null }) {
     try {
         const slug = data.name
             .toLowerCase()
@@ -33,6 +33,7 @@ export async function addColor(data: { name: string; hex: string }) {
                 name: data.name,
                 slug,
                 hex: data.hex,
+                hex2: data.hex2 || null,
                 sortOrder: (last?.sortOrder ?? 0) + 1,
             },
         });
@@ -45,9 +46,11 @@ export async function addColor(data: { name: string; hex: string }) {
     }
 }
 
-export async function updateColor(id: number, data: { name?: string; hex?: string; isActive?: boolean; sortOrder?: number }) {
+export async function updateColor(id: number, data: { name?: string; hex?: string; hex2?: string | null; isActive?: boolean; sortOrder?: number }) {
     try {
-        await (prisma as any).color.update({ where: { id }, data });
+        const clean: any = { ...data };
+        if ("hex2" in clean) clean.hex2 = clean.hex2 || null; // "" = volver a color liso
+        await (prisma as any).color.update({ where: { id }, data: clean });
         revalidatePath("/admin/colores");
         revalidatePath("/admin/articulos");
         return { success: true };

@@ -102,48 +102,62 @@ export default function FaqAdmin() {
         setDeleting(null);
     };
 
+    const portadaIds = items.filter(i => i.active).slice(0, 4).map(i => i.id);
+
     return (
-        <div className="max-w-5xl mx-auto p-6 space-y-8">
+        <div className="max-w-5xl mx-auto p-6 space-y-6">
+            {/* HEADER */}
             <div>
-                <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Preguntas Frecuentes</h1>
-                <p className="text-slate-500">Administrá las preguntas que aparecen en la web y en /preguntas</p>
+                <h1 className="text-2xl font-bold text-slate-900">Preguntas frecuentes</h1>
+                <p className="text-sm text-slate-500 mt-1">
+                    Las primeras 4 por orden aparecen también en la portada (bloque desplegable); todas aparecen en la página Preguntas.
+                </p>
             </div>
 
             {/* FORM */}
             <form
                 onSubmit={handleSubmit}
-                className="bg-white p-8 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 space-y-5"
+                className="bg-white rounded-2xl border border-slate-100 p-6 space-y-5"
             >
-                <h2 className="text-lg font-black text-slate-800">
-                    {editing ? "Editar pregunta" : "Agregar nueva pregunta"}
-                </h2>
+                <div>
+                    <h2 className="text-lg font-bold text-slate-900">
+                        {editing ? "Editar pregunta" : "Agregar nueva pregunta"}
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                        {editing
+                            ? "Cambiá el texto y guardá; mantiene su orden y si está activa."
+                            : "Se agrega al final de la lista y queda activa (visible en la web)."}
+                    </p>
+                </div>
 
-                <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Pregunta</label>
+                <div className="space-y-1.5">
+                    <label className="text-sm font-bold text-slate-700 block">Pregunta</label>
                     <input
                         value={form.question}
                         onChange={e => setForm({ ...form, question: e.target.value })}
-                        className="w-full bg-slate-50 border border-slate-100 p-4 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none font-semibold text-slate-800"
+                        className="bg-slate-50 border border-slate-200 rounded-xl p-3 w-full outline-none focus:border-[#0081D1] text-sm"
                         placeholder="Ej: ¿Cuántas unidades es el pedido mínimo?"
                     />
+                    <p className="text-xs text-slate-400">Escribila tal como la haría un cliente.</p>
                 </div>
 
-                <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Respuesta</label>
+                <div className="space-y-1.5">
+                    <label className="text-sm font-bold text-slate-700 block">Respuesta</label>
                     <textarea
                         value={form.answer}
                         onChange={e => setForm({ ...form, answer: e.target.value })}
                         rows={4}
-                        className="w-full bg-slate-50 border border-slate-100 p-4 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-slate-700 leading-relaxed"
+                        className="bg-slate-50 border border-slate-200 rounded-xl p-3 w-full outline-none focus:border-[#0081D1] text-sm leading-relaxed"
                         placeholder="Escribí la respuesta..."
                     />
+                    <p className="text-xs text-slate-400">Respuesta corta y clara; se muestra al desplegar la pregunta.</p>
                 </div>
 
-                <div className="flex items-center gap-4 pt-2">
+                <div className="flex flex-wrap items-center gap-3 pt-1">
                     <button
                         type="submit"
                         disabled={saving}
-                        className="bg-blue-600 text-white px-8 py-3 rounded-2xl font-black flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50"
+                        className="bg-[#0081D1] hover:bg-[#006BAE] text-white font-bold rounded-xl px-6 py-3 flex items-center gap-2 transition-colors disabled:opacity-50"
                     >
                         {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
                         {saving ? "Guardando..." : editing ? "Guardar cambios" : "Agregar pregunta"}
@@ -153,14 +167,14 @@ export default function FaqAdmin() {
                         <button
                             type="button"
                             onClick={handleCancelEdit}
-                            className="px-6 py-3 rounded-2xl font-bold text-slate-500 hover:bg-slate-100 transition-all"
+                            className="px-5 py-3 rounded-xl font-bold text-sm text-slate-500 hover:bg-slate-100 transition-colors"
                         >
                             Cancelar
                         </button>
                     )}
 
                     {message.text && (
-                        <span className={`font-black text-sm uppercase animate-in fade-in ${
+                        <span className={`text-sm font-bold ${
                             message.type === "success" ? "text-green-600" : "text-red-600"
                         }`}>
                             {message.text}
@@ -170,70 +184,94 @@ export default function FaqAdmin() {
             </form>
 
             {/* LIST */}
-            <div className="space-y-3">
-                <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest px-1">
-                    {items.length} {items.length === 1 ? "pregunta" : "preguntas"} cargadas
-                </h2>
+            <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+                <div>
+                    <h2 className="text-lg font-bold text-slate-900">
+                        Preguntas cargadas {!loading && <span className="text-slate-400 font-normal">({items.length})</span>}
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                        Las marcadas con "Portada" son las 4 primeras activas: son las que se ven en la página de inicio.
+                    </p>
+                </div>
 
                 {loading ? (
-                    <div className="flex justify-center py-20">
-                        <Loader2 className="animate-spin text-blue-600" size={36} />
+                    <div className="flex justify-center py-16">
+                        <Loader2 className="animate-spin text-[#0081D1]" size={32} />
                     </div>
                 ) : items.length === 0 ? (
-                    <div className="text-center py-16 text-slate-400">
-                        <p className="font-bold">No hay preguntas todavía.</p>
-                        <p className="text-sm mt-1">Usá el formulario de arriba para agregar la primera.</p>
+                    <div className="text-center py-12 text-slate-400">
+                        <p className="font-bold text-slate-500">No hay preguntas todavía.</p>
+                        <p className="text-xs mt-1">Usá el formulario de arriba para agregar la primera.</p>
                     </div>
                 ) : (
-                    items.map((item, idx) => (
-                        <div
-                            key={item.id}
-                            className={`bg-white rounded-2xl border p-5 flex gap-4 items-start transition-all ${
-                                !item.active ? "opacity-50 border-slate-100" : "border-slate-100 shadow-sm"
-                            } ${editing?.id === item.id ? "ring-2 ring-blue-500" : ""}`}
-                        >
-                            <div className="text-slate-300 mt-1 cursor-grab shrink-0">
-                                <GripVertical size={18} />
+                    <div className="space-y-3">
+                        {items.map((item, idx) => (
+                            <div
+                                key={item.id}
+                                className={`rounded-xl border p-4 flex flex-col sm:flex-row gap-3 sm:items-start transition-all ${
+                                    editing?.id === item.id
+                                        ? "border-[#0081D1] ring-1 ring-[#0081D1] bg-blue-50/30"
+                                        : item.active
+                                            ? "border-slate-200 bg-white"
+                                            : "border-slate-100 bg-slate-50 opacity-60"
+                                }`}
+                            >
+                                <div className="shrink-0 w-9 h-9 rounded-lg bg-slate-100 text-slate-500 font-bold text-sm flex items-center justify-center">
+                                    {item.order}
+                                </div>
+
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                                        <p className="font-bold text-slate-900">{item.question}</p>
+                                        {portadaIds.includes(item.id) && (
+                                            <span className="text-[11px] font-bold uppercase tracking-wide bg-[#0081D1]/10 text-[#0081D1] rounded-full px-2 py-0.5">
+                                                Portada
+                                            </span>
+                                        )}
+                                        {!item.active && (
+                                            <span className="text-[11px] font-bold uppercase tracking-wide bg-slate-200 text-slate-500 rounded-full px-2 py-0.5">
+                                                Inactiva
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-sm text-slate-500 leading-relaxed line-clamp-2">{item.answer}</p>
+                                </div>
+
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                    <button
+                                        onClick={() => handleToggleActive(item)}
+                                        title={item.active ? "Ocultar en la web" : "Mostrar en la web"}
+                                        className={`p-2 rounded-xl transition-colors ${
+                                            item.active
+                                                ? "text-green-600 hover:bg-green-50"
+                                                : "text-slate-400 hover:bg-slate-200"
+                                        }`}
+                                    >
+                                        {item.active ? <Eye size={18} /> : <EyeOff size={18} />}
+                                    </button>
+
+                                    <button
+                                        onClick={() => handleEdit(item)}
+                                        className="px-3 py-2 text-sm font-bold text-[#0081D1] hover:bg-blue-50 rounded-xl transition-colors"
+                                    >
+                                        Editar
+                                    </button>
+
+                                    <button
+                                        onClick={() => handleDelete(item.id)}
+                                        disabled={deleting === item.id}
+                                        title="Eliminar"
+                                        className="p-2 text-red-400 hover:bg-red-50 hover:text-red-600 rounded-xl transition-colors disabled:opacity-50"
+                                    >
+                                        {deleting === item.id
+                                            ? <Loader2 size={18} className="animate-spin" />
+                                            : <Trash2 size={18} />
+                                        }
+                                    </button>
+                                </div>
                             </div>
-
-                            <div className="flex-1 min-w-0">
-                                <p className="font-bold text-slate-900 mb-1">{item.question}</p>
-                                <p className="text-sm text-slate-500 leading-relaxed line-clamp-2">{item.answer}</p>
-                            </div>
-
-                            <div className="flex items-center gap-2 shrink-0">
-                                <button
-                                    onClick={() => handleToggleActive(item)}
-                                    title={item.active ? "Ocultar en la web" : "Mostrar en la web"}
-                                    className={`p-2 rounded-xl transition-colors ${
-                                        item.active
-                                            ? "text-green-600 hover:bg-green-50"
-                                            : "text-slate-400 hover:bg-slate-100"
-                                    }`}
-                                >
-                                    {item.active ? <Eye size={18} /> : <EyeOff size={18} />}
-                                </button>
-
-                                <button
-                                    onClick={() => handleEdit(item)}
-                                    className="px-4 py-2 text-sm font-bold text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
-                                >
-                                    Editar
-                                </button>
-
-                                <button
-                                    onClick={() => handleDelete(item.id)}
-                                    disabled={deleting === item.id}
-                                    className="p-2 text-red-400 hover:bg-red-50 hover:text-red-600 rounded-xl transition-colors disabled:opacity-50"
-                                >
-                                    {deleting === item.id
-                                        ? <Loader2 size={18} className="animate-spin" />
-                                        : <Trash2 size={18} />
-                                    }
-                                </button>
-                            </div>
-                        </div>
-                    ))
+                        ))}
+                    </div>
                 )}
             </div>
         </div>

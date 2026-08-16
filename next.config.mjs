@@ -3,6 +3,32 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // URLs de categorías renombradas en la reorganización de 08/2026:
+  // redirect permanente para no perder el posicionamiento ni los links viejos.
+  async redirects() {
+    return [
+      {
+        source: "/categorias/lista-accesorios",
+        destination: "/categorias/lista-gorros",
+        permanent: true,
+      },
+      {
+        source: "/categorias/lista-accesorios/:slug",
+        destination: "/categorias/lista-gorros/:slug",
+        permanent: true,
+      },
+      {
+        source: "/categorias/lista-ropa-de-trabajo-y-alta-visibilidad",
+        destination: "/categorias/lista-alta-visibilidad-y-seguridad",
+        permanent: true,
+      },
+      {
+        source: "/categorias/lista-ropa-de-trabajo-y-alta-visibilidad/:slug",
+        destination: "/categorias/lista-alta-visibilidad-y-seguridad/:slug",
+        permanent: true,
+      },
+    ];
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },

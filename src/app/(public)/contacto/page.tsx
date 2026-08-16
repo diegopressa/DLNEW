@@ -17,121 +17,89 @@ export default async function ContactoPage() {
     const phone = settings?.phone || "59829250584";
     const address = settings?.address || "Montevideo, Uruguay";
 
-    const formattedPhone = phone.startsWith('598') ? `+598 ${phone.slice(3, 7)} ${phone.slice(7)}` : phone;
-    const formattedWhatsapp = whatsapp.startsWith('598') ? `+598 0${whatsapp.slice(3, 5)} ${whatsapp.slice(5, 8)} ${whatsapp.slice(8)}` : whatsapp;
+    const formattedPhone = phone.startsWith("598") ? `+598 ${phone.slice(3, 7)} ${phone.slice(7)}` : phone;
+    const formattedWhatsapp = whatsapp.startsWith("598") ? `+598 0${whatsapp.slice(3, 5)} ${whatsapp.slice(5, 8)} ${whatsapp.slice(8)}` : whatsapp;
+    const waUrl = `https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`;
+
+    const datos = [
+        { icono: Phone, etiqueta: "Teléfono", valor: formattedPhone, href: `tel:${phone}` },
+        { icono: MessageCircle, etiqueta: "WhatsApp", valor: formattedWhatsapp, href: waUrl },
+        { icono: Mail, etiqueta: "Email", valor: email, href: `mailto:${email}` },
+        { icono: MapPin, etiqueta: "Dirección", valor: address, href: null },
+        { icono: Clock, etiqueta: "Horario de atención", valor: "Lunes a Viernes, 9 a 18 Hs", href: null },
+    ];
 
     return (
-        <div className="pt-32 pb-20 px-4 flex flex-col items-center bg-[#fafbfc]">
-            <div className="max-w-7xl w-full">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                    {/* Left Card: Information */}
-                    <div className="animate-in fade-in slide-in-from-left duration-700 delay-200">
-                        <div className="bg-white p-10 lg:p-12 rounded-[3.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col h-full">
-                            <h2 className="text-[2.2rem] font-black text-slate-800 text-center mb-10">Información de contacto</h2>
+        <div className="bg-white min-h-screen">
+            <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+                <header className="pt-10 sm:pt-14 pb-8 sm:pb-10">
+                    <h1 className="font-display uppercase leading-none text-5xl sm:text-6xl lg:text-7xl text-grafito">
+                        Contacto
+                    </h1>
+                    <p className="mt-3 text-slate-600 max-w-[62ch]">
+                        Escribinos por donde te quede más cómodo. Respondemos en menos de 2 horas en horario laboral.
+                    </p>
+                </header>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 mb-10">
-                                {/* Teléfono */}
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-slate-50 text-blue-900 rounded-xl flex items-center justify-center shrink-0 border border-slate-100">
-                                        <Phone size={18} />
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Teléfono</p>
-                                        <a href={`tel:${phone}`} className="text-sm font-bold text-slate-800 hover:text-blue-600 transition-colors">{formattedPhone}</a>
-                                    </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start pb-14">
+                    {/* Información + mapa */}
+                    <div className="border border-slate-200 rounded-md p-6 sm:p-8">
+                        <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-5">
+                            Información de contacto
+                        </h2>
+                        <div className="flex flex-col divide-y divide-slate-100 mb-7">
+                            {datos.map((d) => (
+                                <div key={d.etiqueta} className="flex items-center gap-4 py-3.5 min-w-0">
+                                    <span className="w-10 h-10 rounded-md bg-primary/10 text-primary grid place-items-center shrink-0">
+                                        <d.icono size={18} />
+                                    </span>
+                                    <span className="min-w-0">
+                                        <span className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.1em] mb-0.5">{d.etiqueta}</span>
+                                        {d.href ? (
+                                            <a
+                                                href={d.href}
+                                                target={d.href.startsWith("http") ? "_blank" : undefined}
+                                                rel={d.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                                                className="block text-sm font-bold text-grafito hover:text-primary transition-colors break-words"
+                                            >
+                                                {d.valor}
+                                            </a>
+                                        ) : (
+                                            <span className="block text-sm font-bold text-grafito break-words">{d.valor}</span>
+                                        )}
+                                    </span>
                                 </div>
-
-                                {/* WhatsApp */}
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-slate-50 text-green-600 rounded-xl flex items-center justify-center shrink-0 border border-slate-100">
-                                        <MessageCircle size={18} />
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">WhatsApp</p>
-                                        <a 
-                                            href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`}
-                                            target="_blank"
-                                            className="text-sm font-bold text-slate-800 hover:text-green-600 transition-colors"
-                                        >
-                                            {formattedWhatsapp}
-                                        </a>
-                                    </div>
-                                </div>
-
-                                {/* Email */}
-                                <div className="flex items-center gap-3 md:col-span-2">
-                                    <div className="w-10 h-10 bg-slate-50 text-pink-600 rounded-xl flex items-center justify-center shrink-0 border border-slate-100">
-                                        <Mail size={18} />
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Email</p>
-                                        <a href={`mailto:${email}`} className="text-sm font-bold text-slate-800 hover:text-blue-600 transition-colors">{email}</a>
-                                    </div>
-                                </div>
-
-                                {/* Dirección */}
-                                <div className="flex items-center gap-3 md:col-span-2">
-                                    <div className="w-10 h-10 bg-slate-50 text-amber-500 rounded-xl flex items-center justify-center shrink-0 border border-slate-100">
-                                        <MapPin size={18} />
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Dirección</p>
-                                        <p className="text-sm font-bold text-slate-800 leading-tight">{address}</p>
-                                    </div>
-                                </div>
-
-                                {/* Horario */}
-                                <div className="flex items-center gap-3 md:col-span-2">
-                                    <div className="w-10 h-10 bg-slate-50 text-violet-500 rounded-xl flex items-center justify-center shrink-0 border border-slate-100">
-                                        <Clock size={18} />
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Horario de atención</p>
-                                        <p className="text-sm font-bold text-slate-800">Lunes a Viernes, 9 a 18 hs</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Map inside card */}
-                            {(settings as any)?.mapEmbedUrl && (
-                                <div className="mt-auto text-center space-y-4">
-                                    <h3 className="text-sm font-black text-slate-900 leading-none">Visítanos en nuestro local</h3>
-                                    
-                                    <div 
-                                        className="w-full h-72 rounded-[2rem] overflow-hidden shadow-inner border border-slate-100"
-                                        dangerouslySetInnerHTML={{ 
-                                            __html: (settings as any).mapEmbedUrl.replace(/width="[^"]*"/, 'width="100%"').replace(/height="[^"]*"/, 'height="100%"') 
-                                        }}
-                                    />
-                                </div>
-                            )}
+                            ))}
                         </div>
+
+                        {(settings as any)?.mapEmbedUrl && (
+                            <div
+                                className="w-full h-72 rounded-md overflow-hidden border border-slate-200"
+                                dangerouslySetInnerHTML={{
+                                    __html: (settings as any).mapEmbedUrl.replace(/width="[^"]*"/, 'width="100%"').replace(/height="[^"]*"/, 'height="100%"')
+                                }}
+                            />
+                        )}
                     </div>
 
-                    {/* Right Card: Form + WhatsApp */}
-                    <div className="animate-in fade-in slide-in-from-right duration-700 delay-400 space-y-6">
-                        {/* Formulario */}
+                    {/* Formulario + WhatsApp directo */}
+                    <div className="space-y-6">
                         <ContactForm />
 
-                        {/* WhatsApp CTA */}
-                        <div className="bg-[#1e293b] p-8 rounded-[2.5rem] text-white space-y-6 shadow-2xl shadow-blue-900/10">
-                            <p className="text-slate-400 text-sm font-medium text-center">¿Preferís hablar directo?</p>
+                        <div className="bg-grafito rounded-md p-6 sm:p-8 text-center">
+                            <p className="text-slate-400 text-sm mb-4">¿Preferís hablar directo?</p>
                             <a
-                                href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`}
+                                href={waUrl}
                                 target="_blank"
-                                className="block w-full bg-[#25D366] hover:bg-[#20ba59] text-white text-center py-5 rounded-[1.5rem] text-xl font-black shadow-xl shadow-green-500/20 transition-all active:scale-95 flex items-center justify-center gap-3"
+                                rel="noopener noreferrer"
+                                className="w-full bg-[#25D366] hover:bg-[#20ba59] text-white py-4 rounded-md font-bold uppercase tracking-wide text-sm transition-colors flex items-center justify-center gap-2.5"
                             >
-                                <MessageCircle size={24} />
+                                <MessageCircle size={20} />
                                 Hablar por WhatsApp ahora
                             </a>
-                            <div className="text-center">
-                                <div className="flex items-center justify-center gap-2">
-                                    <div className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
-                                    <p className="text-slate-400 font-bold text-[11px] uppercase tracking-[0.2em]">
-                                        Te respondemos en menos de 10 minutos.
-                                    </p>
-                                </div>
-                            </div>
+                            <p className="mt-4 text-slate-400 font-semibold text-[11px] uppercase tracking-[0.14em]">
+                                Te respondemos en menos de 10 minutos
+                            </p>
                         </div>
                     </div>
                 </div>

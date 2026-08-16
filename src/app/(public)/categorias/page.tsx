@@ -1,6 +1,6 @@
-import { MessageCircle, ArrowRight, Search } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import Link from "next/link";
-import { getVisibleCategories, getCategoriasHeader } from "@/actions/categoryActions";
+import { getCategories, getCategoriasHeader } from "@/actions/categoryActions";
 import { getGlobalSettings } from "@/actions/settingsActions";
 import FeaturedProductSearch from "@/components/product/FeaturedProductSearch";
 import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
@@ -8,60 +8,65 @@ import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 export const dynamic = "force-dynamic";
 
 export default async function ProductosPage() {
-    const dbCategories = await getVisibleCategories();
+    const dbCategories = await getCategories();
     const settings = await getGlobalSettings();
     const headers = await getCategoriasHeader();
     const whatsapp = settings?.whatsapp || "59897534866";
-    
-    // Fallback if no categories in DB yet
-    const categories = dbCategories.length > 0 ? dbCategories.map(c => ({
+
+    const categories = dbCategories.map((c) => ({
         id: c.id,
         name: c.name,
-        slug: c.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-'),
+        slug: c.name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-"),
         image: c.imageUrl,
-        items: "Ver modelos" // You can customize this
-    })) : [];
+    }));
+
+    const waUrl = `https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`;
 
     return (
-        <div className="pt-24 pb-24 bg-slate-50 min-h-screen">
-            <div className="section-container">
-                <header className="mb-12 text-center flex flex-col items-center">
-                    <h1 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter mb-4">{headers.title}</h1>
-                    <p className="text-lead text-slate-500 max-w-2xl mb-8">
+        <div className="bg-white min-h-screen">
+            <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+                {/* ── Encabezado ── */}
+                <header className="pt-10 sm:pt-14 pb-8 sm:pb-10">
+                    <h1 className="font-display uppercase leading-none text-5xl sm:text-6xl lg:text-7xl text-grafito">
+                        {headers.title}
+                    </h1>
+                    <p className="mt-3 text-slate-600 max-w-[62ch]">
                         {headers.subtitle}
                     </p>
-
-                    <FeaturedProductSearch />
+                    <div className="mt-6 max-w-2xl">
+                        <FeaturedProductSearch />
+                    </div>
                 </header>
 
-                <div className="flex items-center justify-between mb-10 px-4">
-                    <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-                        Categorías Principales
-                        <div className="h-[2px] w-12 bg-primary rounded-full" />
+                {/* ── Categorías ── */}
+                <div className="flex items-baseline justify-between gap-4 mb-5">
+                    <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                        Categorías principales
                     </h2>
-                    <span className="text-sm font-bold text-slate-400">{categories.length} categorías</span>
+                    <span className="text-sm font-semibold text-slate-500">
+                        <b className="text-grafito">{categories.length}</b> categorías
+                    </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {categories.map((cat) => (
-                        <Link key={cat.id} href={`/categorias/lista-${cat.slug}`} className="group cursor-pointer">
-                            <div className="aspect-square bg-slate-100 rounded-[2.5rem] mb-6 overflow-hidden relative shadow-sm border border-slate-100">
-                                <img
-                                    src={cat.image}
-                                    alt={cat.name}
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
-                                <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-transparent transition-colors" />
+                        <Link key={cat.id} href={`/categorias/lista-${cat.slug}`} className="group relative rounded-md overflow-hidden">
+                            <div className="relative aspect-[5/6] bg-[#F7F7F7]">
+                                {cat.image && (
+                                    <img
+                                        src={cat.image}
+                                        alt={cat.name}
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                    />
+                                )}
                             </div>
-                            <h3 className="text-2xl font-black text-slate-900 group-hover:text-primary transition-colors flex items-center gap-2">
-                                {cat.name}
-                                <ArrowRight className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-primary" size={20} />
-                            </h3>
-                            <p className="text-slate-500 mb-6 font-medium">{cat.items}</p>
-                            <div
-                                className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-primary group-hover:underline"
-                            >
-                                Ver prendas disponibles
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-grafito/90 to-transparent pt-10 pb-4 px-4">
+                                <span className="text-white font-bold text-[15px] border-b-2 border-celeste pb-0.5">
+                                    {cat.name}
+                                </span>
+                                <span className="block mt-1.5 text-slate-300 text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                                    Ver prendas →
+                                </span>
                             </div>
                         </Link>
                     ))}
@@ -73,45 +78,51 @@ export default async function ProductosPage() {
                     </div>
                 )}
 
-                {/* Descuento por volumen */}
-                <div className="mt-16 bg-primary/5 border border-primary/15 rounded-2xl p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+                {/* ── Precio por volumen ── */}
+                <div className="mt-12 border border-slate-200 rounded-md p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                     <div>
-                        <h3 className="text-xl font-black text-slate-900 mb-1">{(headers as any).volumeTitle || "Precio especial por volumen"}</h3>
-                        <p className="text-slate-500 text-sm">{(headers as any).volumeSubtitle || "Cuantas más unidades pedís, mejor precio por prenda. Consultanos para un presupuesto según tu cantidad."}</p>
+                        <h3 className="font-display uppercase text-3xl text-grafito mb-1">
+                            {(headers as any).volumeTitle || "Precio especial por volumen"}
+                        </h3>
+                        <p className="text-slate-500 text-sm max-w-[52ch]">
+                            {(headers as any).volumeSubtitle || "Cuantas más unidades pedís, mejor precio por prenda. Consultanos para un presupuesto según tu cantidad."}
+                        </p>
                     </div>
-                    <div className="flex gap-6 text-center shrink-0">
+                    <div className="flex gap-6 sm:gap-8 text-center shrink-0">
                         <div>
-                            <p className="text-2xl font-black text-primary">{(headers as any).volumeTier1 || "10–50"}</p>
-                            <p className="text-xs text-slate-500 font-medium">{(headers as any).volumeTier1Label || "unidades"}</p>
+                            <p className="font-display text-4xl text-primary">{(headers as any).volumeTier1 || "10–50"}</p>
+                            <p className="text-xs text-slate-500 font-semibold">{(headers as any).volumeTier1Label || "unidades"}</p>
                         </div>
-                        <div className="text-slate-200 self-center text-2xl font-light">/</div>
                         <div>
-                            <p className="text-2xl font-black text-primary">{(headers as any).volumeTier2 || "51–200"}</p>
-                            <p className="text-xs text-slate-500 font-medium">{(headers as any).volumeTier2Label || "precio mejor"}</p>
+                            <p className="font-display text-4xl text-primary">{(headers as any).volumeTier2 || "51–200"}</p>
+                            <p className="text-xs text-slate-500 font-semibold">{(headers as any).volumeTier2Label || "precio mejor"}</p>
                         </div>
-                        <div className="text-slate-200 self-center text-2xl font-light">/</div>
                         <div>
-                            <p className="text-2xl font-black text-primary">{(headers as any).volumeTier3 || "+200"}</p>
-                            <p className="text-xs text-slate-500 font-medium">{(headers as any).volumeTier3Label || "precio especial"}</p>
+                            <p className="font-display text-4xl text-primary">{(headers as any).volumeTier3 || "+200"}</p>
+                            <p className="text-xs text-slate-500 font-semibold">{(headers as any).volumeTier3Label || "precio especial"}</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-10 bg-slate-900 rounded-[3rem] p-10 md:p-16 flex flex-col lg:flex-row items-center justify-between gap-10 text-white relative overflow-hidden shadow-2xl">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] rounded-full" />
-                    <div className="max-w-xl relative z-10">
-                        <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight text-white">¿No encontrás lo que buscás?</h2>
-                        <p className="text-slate-400 text-lg">
+                {/* ── ¿No encontrás lo que buscás? ── */}
+                <div className="mt-6 mb-14 bg-grafito rounded-md p-6 sm:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-white">
+                    <div>
+                        <h2 className="font-display uppercase text-3xl sm:text-4xl text-white mb-1.5">
+                            ¿No encontrás lo que buscás?
+                        </h2>
+                        <p className="text-slate-300 text-sm max-w-[52ch]">
                             Tenemos acceso a cientos de proveedores de prendas. Decinos qué necesitás y nosotros lo resolvemos.
                         </p>
                     </div>
-                    <Link
-                        href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`}
-                        className="bg-primary text-white px-10 py-5 rounded-2xl font-black text-lg hover:scale-105 transition-all flex items-center gap-3 shadow-xl shadow-primary/20 relative z-10"
+                    <a
+                        href={waUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-primary text-white px-6 py-4 rounded-md text-sm font-bold uppercase tracking-wide hover:bg-primary/90 transition-colors flex items-center gap-2.5 shrink-0"
                     >
+                        <MessageCircle className="w-5 h-5" />
                         Preguntar por otras prendas
-                        <MessageCircle />
-                    </Link>
+                    </a>
                 </div>
             </div>
             <AdminEditButtonGate href="/admin/categorias" label="Editar Categorías" />

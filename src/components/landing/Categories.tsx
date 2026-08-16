@@ -1,65 +1,53 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
 import { getCategoriesSection, getCategories } from "@/actions/homeActions";
 
+// Mosaico de categorías con el nombre sobre la foto (estilo tienda workwear).
 export default async function Categories() {
     const [data, sectionData] = await Promise.all([
         getCategories(),
         getCategoriesSection(),
     ]);
 
-    const categories = data.length > 0 ? data : [
-        { name: "Remeras y Polos", imageUrl: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=600" },
-        { name: "Buzos y Canguros", imageUrl: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=600" },
-        { name: "Camperas y Abrigo", imageUrl: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=600" },
-        { name: "Ropa de Trabajo", imageUrl: "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80&w=600" },
-        { name: "Gorros y Accesorios", imageUrl: "https://images.unsplash.com/photo-1534215754734-18e55d13e346?auto=format&fit=crop&q=80&w=600" },
-        { name: "Uniformes Clínicos", imageUrl: "https://images.unsplash.com/photo-1599493758267-c6c884c7071f?auto=format&fit=crop&q=80&w=600" }
-    ];
+    if (!data || data.length === 0) return null;
 
     return (
-        <section className="bg-slate-900 py-24 text-white">
-            <div className="section-container">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-                    <div className="space-y-4 max-w-xl">
-                        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                            {sectionData.title}
-                        </h2>
-                        <p className="text-slate-400">
-                            {sectionData.subtitle}
-                        </p>
-                    </div>
+        <section className="bg-white pt-7 sm:pt-10 pb-14 sm:pb-20">
+            <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+                <div className="flex flex-wrap justify-between items-baseline gap-4 mb-6 sm:mb-8">
+                    <h2 className="font-display uppercase text-4xl sm:text-5xl text-grafito">
+                        {sectionData?.title || "Elegí por categoría"}
+                    </h2>
                     <Link
                         href="/categorias"
-                        className="text-primary font-bold flex items-center gap-2 hover:text-white transition-colors"
+                        className="font-bold text-sm text-grafito border-b-2 border-celeste pb-0.5 hover:text-primary transition-colors"
                     >
-                        Ver catálogo completo <ArrowRight size={20} />
+                        Ver catálogo completo →
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                    {categories.map((cat: any, index: number) => {
-                        const slug = cat.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    {data.map((cat: any) => {
+                        const slug = cat.name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-");
                         return (
                             <Link
-                                key={index}
+                                key={cat.id}
                                 href={`/categorias/lista-${slug}`}
-                                className="group relative h-80 overflow-hidden rounded-2xl cursor-pointer"
+                                className="group relative rounded-md overflow-hidden"
                             >
-                                <Image
-                                    src={cat.imageUrl}
-                                    alt={cat.name}
-                                    fill
-                                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                                <div className="absolute bottom-6 left-6">
-                                    <h3 className="text-lg lg:text-xl font-bold text-white mb-2">{cat.name}</h3>
-                                    <div className="flex items-center gap-2 text-sm text-primary font-semibold opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
-                                        Ver opciones <ArrowRight size={14} />
-                                    </div>
+                                <div className="relative aspect-[5/6]">
+                                    <Image
+                                        src={cat.imageUrl}
+                                        alt={cat.name}
+                                        fill
+                                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                                    />
+                                </div>
+                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-grafito/90 to-transparent pt-9 pb-3.5 px-3.5">
+                                    <span className="text-white font-bold text-sm border-b-2 border-celeste pb-0.5">
+                                        {cat.name}
+                                    </span>
                                 </div>
                             </Link>
                         );

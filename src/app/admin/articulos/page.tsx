@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrder, toggleProductActive } from "@/actions/productActions";
+import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrder, toggleProductActive, reorderProducts, togglePausadoManual, duplicateProduct } from "@/actions/productActions";
 import { getCategories } from "@/actions/categoryActions";
 import { getColors } from "@/actions/colorActions";
-import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff, ArrowUp, ArrowDown, AlertTriangle } from "lucide-react";
+import { fondoColor } from "@/lib/colorUtils";
+import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff, ArrowUp, ArrowDown, AlertTriangle, GripVertical, ListOrdered, PauseCircle, PlayCircle, Copy } from "lucide-react";
 
 // ─── Color Multi-Select Picker ───────────────────────────────────────────────
 function ColorPicker({
@@ -53,7 +54,7 @@ function ColorPicker({
                             key={c.id}
                             className="inline-flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700"
                         >
-                            <span className="w-3 h-3 rounded-full border border-slate-200 shadow-sm" style={{ backgroundColor: c.hex }} />
+                            <span className="w-3 h-3 rounded-full border border-slate-200 shadow-sm" style={{ background: fondoColor(c.hex, c.hex2) }} />
                             {c.name}
                             <button
                                 type="button"
@@ -115,10 +116,10 @@ function ColorPicker({
                                         >
                                             <span
                                                 className="w-5 h-5 rounded-md border border-slate-200 shadow-sm shrink-0"
-                                                style={{ backgroundColor: c.hex }}
+                                                style={{ background: fondoColor(c.hex, c.hex2) }}
                                             />
                                             <span className="flex-1 text-left font-medium">{c.name}</span>
-                                            <span className="font-mono text-xs text-slate-400 uppercase">{c.hex}</span>
+                                            <span className="font-mono text-xs text-slate-400 uppercase">{c.hex}{c.hex2 ? `+${c.hex2}` : ""}</span>
                                             {isSelected && (
                                                 <span className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center shrink-0">
                                                     <svg viewBox="0 0 10 10" className="w-2.5 h-2.5 text-white fill-current">
@@ -158,6 +159,18 @@ const emptyForm = {
     hasScreenPrint: false,
     isActive: true,
     order: 0,
+    // Ficha maestra (rediseño 08/2026)
+    masterCode: "",
+    talles: "",
+    rubros: "",
+    versionDama: false,
+    damaTalles: "",
+    damaCompo: "",
+    damaImageUrl: "",
+    versionNino: false,
+    ninoTalles: "",
+    ninoCompo: "",
+    ninoImageUrl: "",
 };
 
 // ─── Inline Order Input ───────────────────────────────────────────────────
@@ -217,6 +230,12 @@ export default function ProductsEditor() {
     const [uploading, setUploading] = useState(false);
     const [bulkProgress, setBulkProgress] = useState<{ done: number; total: number } | null>(null);
     const [activeTab, setActiveTab] = useState<string>("todos");
+    const [busqueda, setBusqueda] = useState("");
+    // Modo "Ordenar": lista compacta que se arrastra para reordenar
+    const [modoOrden, setModoOrden] = useState(false);
+    const [ordenLista, setOrdenLista] = useState<any[]>([]);
+    const [guardandoOrden, setGuardandoOrden] = useState(false);
+    const dragIndexRef = useRef<number | null>(null);
 
     const [newProd, setNewProd] = useState(emptyForm);
 
@@ -268,6 +287,26 @@ export default function ProductsEditor() {
                 updatedImages[index] = data.url;
                 setNewProd({ ...newProd, images: updatedImages });
             }
+        } catch (error) {
+            console.error("Upload error:", error);
+            alert("Error al subir la imagen");
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    // Sube la foto de una versión (dama o niño) y la guarda en el campo indicado
+    const handleVersionFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, campo: "damaImageUrl" | "ninoImageUrl") => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploading(true);
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("folder", "articulos");
+        try {
+            const res = await fetch("/api/upload", { method: "POST", body: formData });
+            const data = await res.json();
+            if (data.success) setNewProd(prev => ({ ...prev, [campo]: data.url }));
         } catch (error) {
             console.error("Upload error:", error);
             alert("Error al subir la imagen");
@@ -344,11 +383,25 @@ export default function ProductsEditor() {
         e.preventDefault();
         setLoading(true);
 
+        // Los campos de texto vacíos van como null (masterCode es único: "" repetido rompería)
+        const payload = {
+            ...newProd,
+            masterCode: newProd.masterCode.trim() || null,
+            talles: newProd.talles.trim() || null,
+            rubros: newProd.rubros.trim() || null,
+            damaTalles: newProd.versionDama ? newProd.damaTalles.trim() || null : null,
+            damaCompo: newProd.versionDama ? newProd.damaCompo.trim() || null : null,
+            damaImageUrl: newProd.versionDama ? newProd.damaImageUrl.trim() || null : null,
+            ninoTalles: newProd.versionNino ? newProd.ninoTalles.trim() || null : null,
+            ninoCompo: newProd.versionNino ? newProd.ninoCompo.trim() || null : null,
+            ninoImageUrl: newProd.versionNino ? newProd.ninoImageUrl.trim() || null : null,
+        };
+
         let res;
         if (isEditing && editId) {
-            res = await updateProduct(editId, newProd);
+            res = await updateProduct(editId, payload);
         } else {
-            res = await addProduct(newProd);
+            res = await addProduct(payload);
         }
 
         if (res.success) {
@@ -379,6 +432,17 @@ export default function ProductsEditor() {
             hasScreenPrint: prod.hasScreenPrint ?? false,
             isActive: prod.isActive ?? true,
             order: prod.order ?? 0,
+            masterCode: prod.masterCode || "",
+            talles: prod.talles || "",
+            rubros: prod.rubros || "",
+            versionDama: prod.versionDama ?? false,
+            damaTalles: prod.damaTalles || "",
+            damaCompo: prod.damaCompo || "",
+            damaImageUrl: prod.damaImageUrl || "",
+            versionNino: prod.versionNino ?? false,
+            ninoTalles: prod.ninoTalles || "",
+            ninoCompo: prod.ninoCompo || "",
+            ninoImageUrl: prod.ninoImageUrl || "",
         });
         setEditId(prod.id);
         setIsEditing(true);
@@ -398,14 +462,84 @@ export default function ProductsEditor() {
         loadData();
     };
 
+    // Pausa manual (decisión de negocio), distinta del borrador
+    const handleTogglePausado = async (prod: any) => {
+        let nota: string | undefined;
+        if (!prod.pausadoManual) {
+            const respuesta = window.prompt("¿Motivo de la pausa? (opcional — Aceptar para pausar, Cancelar para abortar)", prod.pausadoNota || "");
+            if (respuesta === null) return;
+            nota = respuesta;
+        }
+        await togglePausadoManual(prod.id, !prod.pausadoManual, nota);
+        loadData();
+    };
+
+    // Duplicar: la copia se crea como borrador para editarla tranquilo antes de publicarla
+    const handleDuplicate = async (prod: any) => {
+        if (!confirm(`¿Duplicar "${prod.name}"?\n\nLa copia se crea como BORRADOR (no visible en la web) con todas las fotos, colores y datos, para que la edites tranquilo.`)) return;
+        const res = await duplicateProduct(prod.id);
+        if (res.success) {
+            await loadData();
+            alert(`Listo: se creó "${res.product.name}" en la pestaña Borradores.`);
+        } else {
+            alert(res.error || "No se pudo duplicar el artículo");
+        }
+    };
+
     const filteredProducts = products.filter(p => {
-        if (activeTab === "pausados") return !p.isActive;
-        if (activeTab === "faltan-fotos") return p.isActive && (p.images?.length ?? 0) <= 1;
-        if (activeTab === "todos") return p.isActive;
-        return p.isActive && p.categoryId.toString() === activeTab;
+        // Búsqueda por nombre, slug o código maestro (cruza todas las pestañas)
+        if (busqueda.trim()) {
+            const q = busqueda.trim().toLowerCase();
+            const coincide =
+                p.name?.toLowerCase().includes(q) ||
+                p.slug?.toLowerCase().includes(q) ||
+                p.masterCode?.toLowerCase().includes(q);
+            if (!coincide) return false;
+            return true; // con búsqueda activa se ignoran las pestañas
+        }
+        // Borradores = solo los nuevos sin activar; si además está pausado, vive en "Pausados por mí"
+        if (activeTab === "pausados") return !p.isActive && !p.pausadoManual;
+        if (activeTab === "pausados-mios") return p.pausadoManual;
+        if (activeTab === "faltan-fotos") return p.isActive && !p.pausadoManual && (p.images?.length ?? 0) <= 1;
+        if (activeTab === "todos") return p.isActive && !p.pausadoManual;
+        return p.isActive && !p.pausadoManual && p.categoryId.toString() === activeTab;
     });
 
-    const productsMissingImages = products.filter(p => p.isActive && (p.images?.length ?? 0) <= 1).length;
+    const productsMissingImages = products.filter(p => p.isActive && !p.pausadoManual && (p.images?.length ?? 0) <= 1).length;
+
+    // ── Modo Ordenar: entrar tomando lo que muestra la pestaña actual ──
+    const entrarModoOrden = () => {
+        setBusqueda("");
+        const base = products.filter(p => {
+            if (activeTab === "pausados") return !p.isActive && !p.pausadoManual;
+            if (activeTab === "pausados-mios") return p.pausadoManual;
+            if (activeTab === "faltan-fotos") return p.isActive && !p.pausadoManual && (p.images?.length ?? 0) <= 1;
+            if (activeTab === "todos") return p.isActive && !p.pausadoManual;
+            return p.isActive && !p.pausadoManual && p.categoryId.toString() === activeTab;
+        });
+        setOrdenLista(base);
+        setModoOrden(true);
+    };
+
+    const moverEnLista = (desde: number, hasta: number) => {
+        if (hasta < 0 || hasta >= ordenLista.length) return;
+        const copia = [...ordenLista];
+        const [item] = copia.splice(desde, 1);
+        copia.splice(hasta, 0, item);
+        setOrdenLista(copia);
+    };
+
+    const guardarOrden = async () => {
+        setGuardandoOrden(true);
+        const res = await reorderProducts(ordenLista.map(p => p.id));
+        setGuardandoOrden(false);
+        if (res.success) {
+            setModoOrden(false);
+            loadData();
+        } else {
+            alert("Error al guardar el orden");
+        }
+    };
 
     if (loading && products.length === 0) return <div className="flex justify-center p-20"><Loader2 className="animate-spin" /></div>;
 
@@ -416,15 +550,26 @@ export default function ProductsEditor() {
                     <h1 className="text-3xl font-bold text-slate-900">Artículos / Productos</h1>
                     <p className="text-slate-500">Gestioná el catálogo de prendas de la empresa.</p>
                 </div>
-                <button
-                    onClick={() => {
-                        setShowAdd(!showAdd);
-                        if (showAdd) { setIsEditing(false); setEditId(null); }
-                    }}
-                    className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 transition-all"
-                >
-                    <Plus size={20} /> {showAdd ? "Cancelar" : "Nuevo Artículo"}
-                </button>
+                <div className="flex gap-3">
+                    {!showAdd && !modoOrden && (
+                        <button
+                            onClick={entrarModoOrden}
+                            className="border border-slate-200 text-slate-700 px-5 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-50 transition-all"
+                            title="Ordenar arrastrando en una lista"
+                        >
+                            <ListOrdered size={18} /> Ordenar la lista
+                        </button>
+                    )}
+                    <button
+                        onClick={() => {
+                            setShowAdd(!showAdd);
+                            if (showAdd) { setIsEditing(false); setEditId(null); }
+                        }}
+                        className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 transition-all"
+                    >
+                        <Plus size={20} /> {showAdd ? "Cancelar" : "Nuevo Artículo"}
+                    </button>
+                </div>
             </header>
 
             {/* ── Product form ─────────────────────────────────────────── */}
@@ -683,6 +828,130 @@ export default function ProductsEditor() {
                         </div>
                     </div>
 
+                    {/* ── Ficha técnica (código, talles, rubros) ── */}
+                    <div className="space-y-3 pt-4 border-t border-slate-100">
+                        <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">Ficha técnica</label>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700">Código maestro</label>
+                                <input
+                                    placeholder="Ej: RD-001"
+                                    className="bg-slate-50 p-3 rounded-xl w-full border border-slate-100 font-mono uppercase"
+                                    value={newProd.masterCode}
+                                    onChange={e => setNewProd({ ...newProd, masterCode: e.target.value.toUpperCase() })}
+                                />
+                                <p className="text-[11px] text-slate-400">El mismo código que en los catálogos PDF. Único por prenda.</p>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700">Talles (unisex)</label>
+                                <input
+                                    placeholder="Ej: S M L XL XXL XXXL"
+                                    className="bg-slate-50 p-3 rounded-xl w-full border border-slate-100"
+                                    value={newProd.talles}
+                                    onChange={e => setNewProd({ ...newProd, talles: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700">Rubros</label>
+                                <input
+                                    placeholder="Ej: Gastronomía y Cocina | Hotelería y Turismo"
+                                    className="bg-slate-50 p-3 rounded-xl w-full border border-slate-100"
+                                    value={newProd.rubros}
+                                    onChange={e => setNewProd({ ...newProd, rubros: e.target.value })}
+                                />
+                                <p className="text-[11px] text-slate-400">Separados con " | ". Se usarán para las páginas por rubro.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ── Versiones dama / niño ── */}
+                    <div className="space-y-4 pt-4 border-t border-slate-100">
+                        <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">Versiones dama / niño</label>
+                        <p className="text-xs text-slate-400">Si esta prenda también viene en versión de dama o de niño, activala y completá sus talles. Aparecen en la ficha del producto y en el filtro de categorías.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* DAMA */}
+                            <div className={`rounded-2xl border-2 p-4 space-y-3 transition-all ${newProd.versionDama ? "border-blue-400 bg-blue-50/40" : "border-slate-200 bg-slate-50"}`}>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={newProd.versionDama}
+                                        onChange={e => setNewProd({ ...newProd, versionDama: e.target.checked })}
+                                        className="w-5 h-5 accent-blue-600"
+                                    />
+                                    <span className="text-sm font-bold text-slate-700">Disponible en versión DAMA</span>
+                                </label>
+                                {newProd.versionDama && (
+                                    <div className="space-y-3">
+                                        <input
+                                            placeholder="Talles dama (Ej: T01 T02 T03 T04 T05)"
+                                            className="bg-white p-3 rounded-xl w-full border border-slate-200 text-sm"
+                                            value={newProd.damaTalles}
+                                            onChange={e => setNewProd({ ...newProd, damaTalles: e.target.value })}
+                                        />
+                                        <input
+                                            placeholder="Composición si difiere (opcional)"
+                                            className="bg-white p-3 rounded-xl w-full border border-slate-200 text-sm"
+                                            value={newProd.damaCompo}
+                                            onChange={e => setNewProd({ ...newProd, damaCompo: e.target.value })}
+                                        />
+                                        <div className="flex items-center gap-3">
+                                            {newProd.damaImageUrl && (
+                                                <img src={newProd.damaImageUrl} className="w-14 h-14 rounded-xl object-cover border border-slate-200" alt="Versión dama" />
+                                            )}
+                                            <label className="flex-1 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-xl p-2.5 hover:border-blue-400 hover:bg-white cursor-pointer transition-all">
+                                                <Upload className="text-slate-400 mr-2" size={14} />
+                                                <span className="text-[11px] font-bold text-slate-500">
+                                                    {uploading ? "Subiendo..." : newProd.damaImageUrl ? "Cambiar foto dama" : "Subir foto dama"}
+                                                </span>
+                                                <input type="file" className="hidden" accept="image/*" onChange={(e) => handleVersionFileUpload(e, "damaImageUrl")} />
+                                            </label>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            {/* NIÑO */}
+                            <div className={`rounded-2xl border-2 p-4 space-y-3 transition-all ${newProd.versionNino ? "border-blue-400 bg-blue-50/40" : "border-slate-200 bg-slate-50"}`}>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={newProd.versionNino}
+                                        onChange={e => setNewProd({ ...newProd, versionNino: e.target.checked })}
+                                        className="w-5 h-5 accent-blue-600"
+                                    />
+                                    <span className="text-sm font-bold text-slate-700">Disponible en versión NIÑO</span>
+                                </label>
+                                {newProd.versionNino && (
+                                    <div className="space-y-3">
+                                        <input
+                                            placeholder="Talles niño (Ej: T4 T6 T8 T10 T12 T14 T16)"
+                                            className="bg-white p-3 rounded-xl w-full border border-slate-200 text-sm"
+                                            value={newProd.ninoTalles}
+                                            onChange={e => setNewProd({ ...newProd, ninoTalles: e.target.value })}
+                                        />
+                                        <input
+                                            placeholder="Composición si difiere (opcional)"
+                                            className="bg-white p-3 rounded-xl w-full border border-slate-200 text-sm"
+                                            value={newProd.ninoCompo}
+                                            onChange={e => setNewProd({ ...newProd, ninoCompo: e.target.value })}
+                                        />
+                                        <div className="flex items-center gap-3">
+                                            {newProd.ninoImageUrl && (
+                                                <img src={newProd.ninoImageUrl} className="w-14 h-14 rounded-xl object-cover border border-slate-200" alt="Versión niño" />
+                                            )}
+                                            <label className="flex-1 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-xl p-2.5 hover:border-blue-400 hover:bg-white cursor-pointer transition-all">
+                                                <Upload className="text-slate-400 mr-2" size={14} />
+                                                <span className="text-[11px] font-bold text-slate-500">
+                                                    {uploading ? "Subiendo..." : newProd.ninoImageUrl ? "Cambiar foto niño" : "Subir foto niño"}
+                                                </span>
+                                                <input type="file" className="hidden" accept="image/*" onChange={(e) => handleVersionFileUpload(e, "ninoImageUrl")} />
+                                            </label>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="pt-6 border-t border-slate-100 flex items-center gap-4">
                         <button
                             type="submit"
@@ -705,50 +974,90 @@ export default function ProductsEditor() {
                 </form>
             )}
 
-            {/* ── Tabs ── */}
-            <div className="flex flex-wrap gap-2 border-b border-slate-100 pb-1">
+            {!modoOrden && (<>
+            {/* ── Buscador ── */}
+            <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-3 max-w-md">
+                <Search size={16} className="text-slate-400 shrink-0" />
+                <input
+                    type="text"
+                    placeholder="Buscar por nombre, código o slug…"
+                    value={busqueda}
+                    onChange={e => setBusqueda(e.target.value)}
+                    className="bg-transparent text-sm outline-none w-full text-slate-700 placeholder:text-slate-400"
+                />
+                {busqueda && (
+                    <button type="button" onClick={() => setBusqueda("")} className="text-slate-400 hover:text-slate-600">
+                        <X size={14} />
+                    </button>
+                )}
+            </div>
+            {busqueda.trim() && (
+                <p className="text-xs text-slate-500 -mt-4">
+                    {filteredProducts.length} resultado{filteredProducts.length !== 1 ? "s" : ""} para “{busqueda.trim()}” (busca en activos y pausados)
+                </p>
+            )}
+
+            {/* ── Filtros: una sola fila prolija ── */}
+            <div className="flex flex-wrap items-center gap-2">
                 <button
                     onClick={() => setActiveTab("todos")}
-                    className={`px-4 py-2 rounded-t-xl text-sm font-bold transition-all border-b-2 ${
-                        activeTab === "todos" 
-                        ? "text-blue-600 border-blue-600 bg-blue-50/50" 
-                        : "text-slate-400 border-transparent hover:text-slate-600"
+                    className={`px-4 py-2.5 rounded-full text-sm font-bold transition-all ${
+                        activeTab === "todos"
+                            ? "bg-[#0081D1] text-white"
+                            : "bg-white border border-slate-200 text-slate-500 hover:text-slate-700 hover:border-slate-300"
                     }`}
                 >
-                    Todos Activos ({products.filter(p => p.isActive).length})
+                    Todos los activos ({products.filter(p => p.isActive).length})
                 </button>
-                {categories.map(cat => (
-                    <button
-                        key={cat.id}
-                        onClick={() => setActiveTab(cat.id.toString())}
-                        className={`px-4 py-2 rounded-t-xl text-sm font-bold transition-all border-b-2 ${
-                            activeTab === cat.id.toString() 
-                            ? "text-blue-600 border-blue-600 bg-blue-50/50" 
-                            : "text-slate-400 border-transparent hover:text-slate-600"
-                        }`}
-                    >
-                        {cat.name} ({products.filter(p => p.isActive && p.categoryId === cat.id).length})
-                    </button>
-                ))}
+
+                <select
+                    value={categories.some(c => c.id.toString() === activeTab) ? activeTab : ""}
+                    onChange={e => setActiveTab(e.target.value || "todos")}
+                    className={`px-4 py-2.5 rounded-full text-sm font-bold outline-none cursor-pointer transition-all appearance-none ${
+                        categories.some(c => c.id.toString() === activeTab)
+                            ? "bg-[#0081D1] text-white border border-[#0081D1]"
+                            : "bg-white border border-slate-200 text-slate-500 hover:border-slate-300"
+                    }`}
+                >
+                    <option value="">Por categoría…</option>
+                    {categories.map(cat => (
+                        <option key={cat.id} value={cat.id.toString()}>
+                            {cat.name} ({products.filter(p => p.isActive && p.categoryId === cat.id).length})
+                        </option>
+                    ))}
+                </select>
+
+                <span className="flex-1" />
+
                 <button
                     onClick={() => setActiveTab("faltan-fotos")}
-                    className={`ml-auto px-4 py-2 rounded-t-xl text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
+                    className={`px-4 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-1.5 ${
                         activeTab === "faltan-fotos"
-                        ? "text-amber-600 border-amber-600 bg-amber-50"
-                        : "text-slate-400 border-transparent hover:text-amber-500"
+                            ? "bg-amber-500 text-white"
+                            : "bg-white border border-slate-200 text-slate-500 hover:text-amber-600 hover:border-amber-300"
                     }`}
                 >
                     <AlertTriangle size={14} /> Faltan fotos ({productsMissingImages})
                 </button>
                 <button
-                    onClick={() => setActiveTab("pausados")}
-                    className={`px-4 py-2 rounded-t-xl text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
-                        activeTab === "pausados"
-                        ? "text-amber-600 border-amber-600 bg-amber-50"
-                        : "text-slate-400 border-transparent hover:text-amber-500"
+                    onClick={() => setActiveTab("pausados-mios")}
+                    className={`px-4 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-1.5 ${
+                        activeTab === "pausados-mios"
+                            ? "bg-orange-500 text-white"
+                            : "bg-white border border-slate-200 text-slate-500 hover:text-orange-600 hover:border-orange-300"
                     }`}
                 >
-                    <Pause size={14} /> Pausados ({products.filter(p => !p.isActive).length})
+                    <PauseCircle size={14} /> Pausados por mí ({products.filter(p => p.pausadoManual).length})
+                </button>
+                <button
+                    onClick={() => setActiveTab("pausados")}
+                    className={`px-4 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-1.5 ${
+                        activeTab === "pausados"
+                            ? "bg-amber-500 text-white"
+                            : "bg-white border border-slate-200 text-slate-500 hover:text-amber-600 hover:border-amber-300"
+                    }`}
+                >
+                    <Pause size={14} /> Borradores ({products.filter(p => !p.isActive && !p.pausadoManual).length})
                 </button>
             </div>
 
@@ -764,8 +1073,15 @@ export default function ProductsEditor() {
                                     <ImageIcon size={48} />
                                 </div>
                             )}
-                            <div className="absolute top-3 left-3 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase">
-                                {prod.category?.name}
+                            <div className="absolute top-3 left-3 flex flex-col items-start gap-1">
+                                <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase">
+                                    {prod.category?.name}
+                                </span>
+                                {prod.pausadoManual && (
+                                    <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase" title={prod.pausadoNota || undefined}>
+                                        Pausado{prod.pausadoNota ? ` · ${prod.pausadoNota.slice(0, 24)}` : ""}
+                                    </span>
+                                )}
                             </div>
                             {(prod.images?.length ?? 0) <= 1 && (
                                 <div
@@ -782,7 +1098,7 @@ export default function ProductsEditor() {
                                         <span
                                             key={pc.id}
                                             className="w-4 h-4 rounded-full border border-slate-200 shadow-sm"
-                                            style={{ backgroundColor: pc.color?.hex ?? "#ccc" }}
+                                            style={{ background: fondoColor(pc.color?.hex, pc.color?.hex2) }}
                                             title={pc.color?.name}
                                         />
                                     ))}
@@ -797,21 +1113,48 @@ export default function ProductsEditor() {
                             <p className="text-sm text-slate-500 line-clamp-2 mb-4">{prod.description}</p>
 
                             <div className="mt-auto space-y-4">
-                                <OrderInput 
-                                    initialOrder={prod.order} 
-                                    productId={prod.id} 
-                                    onUpdate={loadData} 
-                                />
-
-                                <div className="flex justify-between items-center bg-slate-50 -mx-5 -mb-5 p-4 border-t border-slate-100">
-                                    <span className="text-[10px] font-mono text-slate-400 bg-white px-2 py-1 rounded border border-slate-100">/{prod.slug}</span>
-                                    <div className="flex gap-2">
-                                        <button 
-                                            onClick={() => handleToggleActive(prod.id, !prod.isActive)} 
-                                            className={`p-2 rounded-lg transition-all ${prod.isActive ? 'text-slate-400 hover:text-amber-600 hover:bg-amber-50' : 'text-amber-600 bg-amber-50 hover:bg-amber-100'}`} 
-                                            title={prod.isActive ? "Pausar" : "Reactivar"}
+                                <div className="flex flex-wrap justify-between items-center gap-2 bg-slate-50 -mx-5 -mb-5 p-4 border-t border-slate-100">
+                                    <span className="text-[10px] font-mono text-slate-400 bg-white px-2 py-1 rounded border border-slate-100 truncate max-w-[130px]" title={`/${prod.slug}`}>/{prod.slug}</span>
+                                    <div className="flex flex-wrap justify-end gap-1.5">
+                                        <a
+                                            href={`/categorias/lista-${(prod.category?.name || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-")}/${prod.slug}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="p-2 text-slate-400 hover:text-[#0081D1] hover:bg-blue-50 rounded-lg transition-all"
+                                            title="Ver en la web"
                                         >
-                                            {prod.isActive ? <Pause size={18} /> : <Play size={18} />}
+                                            <Eye size={18} />
+                                        </a>
+                                        <button
+                                            onClick={() => handleTogglePausado(prod)}
+                                            className={`p-2 rounded-lg transition-all ${prod.pausadoManual ? 'text-orange-600 bg-orange-50 hover:bg-orange-100' : 'text-slate-400 hover:text-orange-600 hover:bg-orange-50'}`}
+                                            title={prod.pausadoManual ? `Reanudar${prod.pausadoNota ? ` (pausado: ${prod.pausadoNota})` : ""}` : "Pausar (decisión de negocio: se oculta de la web)"}
+                                        >
+                                            {prod.pausadoManual ? <PlayCircle size={18} /> : <PauseCircle size={18} />}
+                                        </button>
+                                        {prod.isActive ? (
+                                            <button
+                                                onClick={() => handleToggleActive(prod.id, false)}
+                                                className="p-2 rounded-lg transition-all text-slate-400 hover:text-amber-600 hover:bg-amber-50"
+                                                title="Pasar a borrador (se oculta de la web)"
+                                            >
+                                                <Pause size={18} />
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => handleToggleActive(prod.id, true)}
+                                                className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1.5"
+                                                title="Publicar: el artículo pasa a verse en la web"
+                                            >
+                                                <Play size={14} /> Activar
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => handleDuplicate(prod)}
+                                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                                            title="Duplicar (crea una copia como borrador)"
+                                        >
+                                            <Copy size={18} />
                                         </button>
                                         <button onClick={() => handleEdit(prod)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Editar">
                                             <Pencil size={18} />
@@ -838,6 +1181,65 @@ export default function ProductsEditor() {
                     </div>
                 )}
             </div>
+            </>)}
+
+            {/* ── Modo Ordenar: lista arrastrable ── */}
+            {modoOrden && (
+                <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+                    <div className="p-5 border-b border-slate-100 flex items-center justify-between gap-4 flex-wrap">
+                        <div>
+                            <h2 className="font-bold text-slate-900">Ordenar artículos</h2>
+                            <p className="text-xs text-slate-500">Arrastrá las filas (o usá las flechas) y tocá Guardar. El primero de la lista es el primero que se ve en la web.</p>
+                        </div>
+                        <div className="flex gap-2">
+                            <button onClick={() => setModoOrden(false)} className="px-4 py-2.5 rounded-xl text-sm font-bold border border-slate-200 text-slate-600 hover:bg-slate-50">
+                                Cancelar
+                            </button>
+                            <button onClick={guardarOrden} disabled={guardandoOrden} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-[#0081D1] hover:bg-[#006BAE] text-white flex items-center gap-2 disabled:opacity-50">
+                                {guardandoOrden ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
+                                Guardar orden
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        {ordenLista.map((p, idx) => (
+                            <div
+                                key={p.id}
+                                draggable
+                                onDragStart={() => { dragIndexRef.current = idx; }}
+                                onDragOver={(e) => e.preventDefault()}
+                                onDrop={() => {
+                                    if (dragIndexRef.current !== null && dragIndexRef.current !== idx) {
+                                        moverEnLista(dragIndexRef.current, idx);
+                                    }
+                                    dragIndexRef.current = null;
+                                }}
+                                className="flex items-center gap-3 px-4 py-2.5 border-b border-slate-50 last:border-b-0 bg-white hover:bg-slate-50 cursor-grab active:cursor-grabbing"
+                            >
+                                <GripVertical size={16} className="text-slate-300 shrink-0" />
+                                <span className="w-7 text-center text-xs font-bold text-slate-400 shrink-0">{idx + 1}</span>
+                                {p.images?.[0]?.url ? (
+                                    <img src={p.images[0].url} className="w-10 h-10 rounded-lg object-cover border border-slate-100 shrink-0" alt="" />
+                                ) : (
+                                    <span className="w-10 h-10 rounded-lg bg-slate-100 grid place-items-center text-slate-300 shrink-0"><ImageIcon size={16} /></span>
+                                )}
+                                <span className="flex-1 min-w-0">
+                                    <span className="block text-sm font-bold text-slate-900 truncate">{p.name}</span>
+                                    <span className="block text-[11px] text-slate-400">{p.category?.name}{!p.isActive ? " · pausado" : ""}</span>
+                                </span>
+                                <span className="flex gap-1 shrink-0">
+                                    <button onClick={() => moverEnLista(idx, idx - 1)} disabled={idx === 0} className="p-1.5 rounded-lg text-slate-400 hover:text-[#0081D1] hover:bg-blue-50 disabled:opacity-30" title="Subir">
+                                        <ArrowUp size={15} />
+                                    </button>
+                                    <button onClick={() => moverEnLista(idx, idx + 1)} disabled={idx === ordenLista.length - 1} className="p-1.5 rounded-lg text-slate-400 hover:text-[#0081D1] hover:bg-blue-50 disabled:opacity-30" title="Bajar">
+                                        <ArrowDown size={15} />
+                                    </button>
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

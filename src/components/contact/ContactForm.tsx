@@ -6,6 +6,10 @@ import { submitContact } from "@/actions/contactActions";
 
 const EMPTY = { name: "", company: "", email: "", phone: "", message: "" };
 
+const inputClass =
+    "w-full bg-white border border-slate-300 p-3 rounded-md text-sm text-grafito focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all";
+const labelClass = "text-[10px] font-bold text-slate-500 uppercase tracking-[0.1em]";
+
 export default function ContactForm() {
     const [form, setForm] = useState(EMPTY);
     const [sending, setSending] = useState(false);
@@ -28,13 +32,13 @@ export default function ContactForm() {
 
     if (sent) {
         return (
-            <div className="bg-white rounded-[2.5rem] p-10 shadow-xl shadow-slate-200/50 border border-slate-100 text-center space-y-4">
-                <CheckCircle className="mx-auto text-green-500" size={48} />
-                <h3 className="text-2xl font-black text-slate-900">¡Mensaje recibido!</h3>
-                <p className="text-slate-500">Te respondemos en menos de 2 horas en horario laboral.</p>
+            <div className="border border-slate-200 rounded-md p-8 text-center">
+                <CheckCircle className="mx-auto text-primary mb-3" size={44} />
+                <h3 className="font-bold text-lg text-grafito mb-1">¡Mensaje recibido!</h3>
+                <p className="text-sm text-slate-500">Te respondemos en menos de 2 horas en horario laboral.</p>
                 <button
                     onClick={() => setSent(false)}
-                    className="text-sm font-bold text-blue-600 hover:underline mt-2"
+                    className="mt-4 text-sm font-bold text-grafito border-b-2 border-primary pb-0.5 hover:text-primary transition-colors"
                 >
                     Enviar otro mensaje
                 </button>
@@ -43,62 +47,64 @@ export default function ContactForm() {
     }
 
     return (
-        <div className="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
-            <h2 className="text-2xl font-black text-slate-900 mb-6">Envianos un mensaje</h2>
+        <div className="border border-slate-200 rounded-md p-6 sm:p-8">
+            <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-5">
+                Envianos un mensaje
+            </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Nombre *</label>
+                        <label className={labelClass}>Nombre *</label>
                         <input
                             required
                             value={form.name}
                             onChange={e => setForm({ ...form, name: e.target.value })}
-                            className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl font-bold text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                            className={inputClass}
                             placeholder="Tu nombre"
                         />
                     </div>
                     <div className="space-y-1">
-                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Empresa *</label>
+                        <label className={labelClass}>Empresa *</label>
                         <input
                             required
                             value={form.company}
                             onChange={e => setForm({ ...form, company: e.target.value })}
-                            className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl font-bold text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                            className={inputClass}
                             placeholder="Nombre de empresa"
                         />
                     </div>
                     <div className="space-y-1">
-                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Email *</label>
+                        <label className={labelClass}>Email *</label>
                         <input
                             required
                             type="email"
                             value={form.email}
                             onChange={e => setForm({ ...form, email: e.target.value })}
-                            className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                            className={inputClass}
                             placeholder="tu@email.com"
                         />
                     </div>
                     <div className="space-y-1">
-                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Teléfono</label>
+                        <label className={labelClass}>Teléfono</label>
                         <input
                             type="tel"
                             value={form.phone}
                             onChange={e => setForm({ ...form, phone: e.target.value })}
-                            className="w-full bg-slate-50 border border-slate-100 p-3 rounded-2xl text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                            className={inputClass}
                             placeholder="099 000 000"
                         />
                     </div>
                 </div>
 
                 <div className="space-y-1">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Mensaje *</label>
+                    <label className={labelClass}>Mensaje *</label>
                     <textarea
                         required
                         value={form.message}
                         onChange={e => setForm({ ...form, message: e.target.value })}
                         rows={4}
-                        className="w-full bg-slate-50 border border-slate-100 p-4 rounded-2xl text-slate-700 leading-relaxed focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
+                        className={`${inputClass} resize-none leading-relaxed`}
                         placeholder="Contanos qué necesitás: tipo de prenda, cantidad aproximada, empresa..."
                     />
                 </div>
@@ -108,9 +114,9 @@ export default function ContactForm() {
                 <button
                     type="submit"
                     disabled={sending}
-                    className="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 flex items-center justify-center gap-3 disabled:opacity-50 active:scale-95"
+                    className="w-full bg-primary text-white py-4 rounded-md font-bold uppercase tracking-wide text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2.5 disabled:opacity-50"
                 >
-                    {sending ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
+                    {sending ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
                     {sending ? "Enviando..." : "Enviar mensaje"}
                 </button>
             </form>

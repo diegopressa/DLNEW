@@ -18,13 +18,17 @@ export async function getVisibleCategories() {
     });
 }
 
+// En previews de Vercel (y en dev local) se muestran también los borradores
+// (isActive=false) para poder revisarlos; en producción jamás.
+const esProduccion = process.env.VERCEL_ENV === "production";
+
 export async function getCategoryBySlug(slug: string) {
     // Try to find by name converted to slug
     const categories = await prisma.productCategory.findMany({
         include: {
             products: {
-                // pausadoManual: pausa de negocio de Diego (14/08/2026) — oculta el artículo
-                where: { isActive: true, pausadoManual: false },
+                // Pausados por Diego: NUNCA en el listado (ni en preview). Borradores: solo en preview, con sello.
+                where: esProduccion ? { isActive: true, pausadoManual: false } : { pausadoManual: false },
                 include: {
                     // ordenadas para que images[0] sea SIEMPRE la imagen principal
                     images: { orderBy: { order: "asc" } },
@@ -51,10 +55,10 @@ export async function getCategoryBySlug(slug: string) {
 
 export async function addCategory(data: any) {
     try {
-        const { name, description, imageUrl, showOnHome } = data;
+        const { name, description, imageUrl, showOnHome, showInNav } = data;
         const last = await prisma.productCategory.findFirst({ orderBy: { order: "asc" } });
         const order = (last?.order || 0) + 1;
-        
+
         // Try standard Prisma update first
         const category = await (prisma as any).productCategory.create({
             data: {
@@ -62,6 +66,7 @@ export async function addCategory(data: any) {
                 description,
                 imageUrl,
                 showOnHome: showOnHome || false,
+                showInNav: showInNav !== false,
                 order
             }
         });
@@ -95,8 +100,8 @@ export async function addCategory(data: any) {
 
 export async function updateCategory(id: number, data: any) {
     try {
-        const { name, description, imageUrl, showOnHome } = data;
-        
+        const { name, description, imageUrl, showOnHome, showInNav } = data;
+
         // Use any to avoid type errors during compilation while the schema is updating
         await (prisma as any).productCategory.update({
             where: { id },
@@ -105,6 +110,7 @@ export async function updateCategory(id: number, data: any) {
                 description,
                 imageUrl,
                 showOnHome: showOnHome === true || showOnHome === "true",
+                ...(showInNav !== undefined && { showInNav: showInNav === true || showInNav === "true" }),
             }
         });
 
