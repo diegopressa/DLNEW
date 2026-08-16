@@ -1,11 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getCategoriesSection, getCategories } from "@/actions/homeActions";
+import { ArrowRight } from "lucide-react";
+import { getCategoriesSection } from "@/actions/homeActions";
+import { getVisibleCategories } from "@/actions/categoryActions";
 
 // Mosaico de categorías con el nombre sobre la foto (estilo tienda workwear).
+// Muestra TODAS las categorías visibles (pedido de Diego 16/08: que llenen el
+// ancho según la pantalla, no solo las 4 marcadas "en portada").
 export default async function Categories() {
     const [data, sectionData] = await Promise.all([
-        getCategories(),
+        getVisibleCategories(),
         getCategoriesSection(),
     ]);
 
@@ -26,7 +30,7 @@ export default async function Categories() {
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {data.map((cat: any) => {
                         const slug = cat.name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-");
                         return (
@@ -52,6 +56,19 @@ export default async function Categories() {
                             </Link>
                         );
                     })}
+
+                    {/* Tarjeta final: cierre del mosaico hacia el catálogo completo */}
+                    <Link
+                        href="/categorias"
+                        className="group relative rounded-md overflow-hidden bg-grafito flex flex-col items-center justify-center gap-3 aspect-[5/6] hover:bg-grafito2 transition-colors"
+                    >
+                        <span className="w-11 h-11 rounded-full bg-primary flex items-center justify-center transition-transform duration-300 group-hover:translate-x-1">
+                            <ArrowRight className="text-white" size={20} />
+                        </span>
+                        <span className="text-white font-bold text-sm text-center px-4">
+                            Ver catálogo<br />completo
+                        </span>
+                    </Link>
                 </div>
             </div>
         </section>
