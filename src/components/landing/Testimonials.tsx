@@ -9,10 +9,11 @@ interface Testimonial {
     imageUrl?: string;
 }
 
-// Perfil de Google Business de DL (place_id encontrado en el listado del negocio).
-// VERIFICAR con Diego que abre su ficha correcta antes del lanzamiento.
+// Reseñas de Google del negocio. Es el link que Diego verificó que funciona (16/08/2026),
+// depurado: búsqueda del nombre + #lrd con el feature id del local, que abre el panel
+// de opiniones. (Los formatos place_id de maps/place y search.google.com daban error.)
 const GOOGLE_REVIEWS_URL =
-    "https://www.google.com/maps/place/?q=place_id:ChIJaQbG8iuBn5URN69g_bK4BRk";
+    "https://www.google.com/search?q=DL+Dise%C3%B1o+%26+Estampado#lrd=0x959f812bf2c60669:0x1905b8b2fd60af37,1,,,,";
 
 function Estrellas() {
     return (
