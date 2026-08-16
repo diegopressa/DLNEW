@@ -61,7 +61,12 @@ export default async function CategoryListingPage({
     // físicas (EPP), suma automáticamente toda prenda reflectiva del catálogo.
     const esAltaVisibilidad = category.name.toLowerCase().includes("alta visibilidad");
     const extrasReflectivos = esAltaVisibilidad ? await getReflectiveProducts(category.id) : [];
-    const todosLosProductos = [...(category.products as any[]), ...extrasReflectivos];
+    // Dedupe: un artículo puede llegar por categoría extra Y por la colección reflectiva
+    const idsYaListados = new Set((category.products as any[]).map((p: any) => p.id));
+    const todosLosProductos = [
+        ...(category.products as any[]),
+        ...extrasReflectivos.filter((p: any) => !idsYaListados.has(p.id)),
+    ];
 
     // Filtro por versión (?version=dama | nino)
     const filtroVersion = searchParams?.version;

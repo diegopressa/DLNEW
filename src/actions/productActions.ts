@@ -107,6 +107,7 @@ export async function getProductBySlug(slug: string) {
             where: { slug: decodedSlug, ...filtroActivo },
             include: {
                 category: true,
+                extraCategories: true,
                 images: { orderBy: { order: "asc" } },
                 features: true,
                 colors: { include: { color: true } }
@@ -119,6 +120,7 @@ export async function getProductBySlug(slug: string) {
             where: filtroActivo,
             include: {
                 category: true,
+                extraCategories: true,
                 images: { orderBy: { order: "asc" } },
                 features: true,
                 colors: { include: { color: true } }
@@ -380,6 +382,32 @@ export async function duplicateProduct(id: number) {
         return { success: true, product: copia };
     } catch (error) {
         console.error("Error duplicateProduct:", error);
+        return { success: false };
+    }
+}
+
+// Agrega o quita una categoría EXTRA del artículo (además de la principal).
+// La principal no se toca acá: se cambia desde el formulario del admin.
+export async function toggleProductExtraCategory(productId: number, categoryId: number, agregar: boolean) {
+    try {
+        if (!(await getSession())) return { success: false, error: "Sin sesión" };
+        const producto = await (prisma as any).product.findUnique({ where: { id: productId }, select: { categoryId: true } });
+        if (!producto) return { success: false, error: "No se encontró el artículo" };
+        if (producto.categoryId === categoryId) {
+            return { success: false, error: "Esa ya es la categoría principal del artículo" };
+        }
+        if (agregar) {
+            const existe = await (prisma as any).productExtraCategory.findFirst({ where: { productId, categoryId } });
+            if (!existe) {
+                await (prisma as any).productExtraCategory.create({ data: { productId, categoryId } });
+            }
+        } else {
+            await (prisma as any).productExtraCategory.deleteMany({ where: { productId, categoryId } });
+        }
+        revalidatePath("/", "layout");
+        return { success: true };
+    } catch (error) {
+        console.error("Error toggleProductExtraCategory:", error);
         return { success: false };
     }
 }

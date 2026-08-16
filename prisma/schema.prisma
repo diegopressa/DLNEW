@@ -140,6 +140,19 @@ model ProductCategory {
   // Aparece en la tira horizontal del menú (el desplegable siempre muestra todas)
   showInNav   Boolean   @default(true)
   products    Product[]
+  extraProducts ProductExtraCategory[]
+}
+
+// Categorías EXTRA de un artículo (además de la principal categoryId):
+// una campera reflectiva puede vivir en Camperas y Abrigos Y en Alta visibilidad.
+model ProductExtraCategory {
+  id         Int             @id @default(autoincrement())
+  productId  Int
+  categoryId Int
+  product    Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   ProductCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, categoryId])
 }
 
 model Product {
@@ -151,6 +164,7 @@ model Product {
   materials   String?
   categoryId  Int
   category    ProductCategory @relation(fields: [categoryId], references: [id])
+  extraCategories ProductExtraCategory[]
   images      ProductImage[]
   features    ProductFeature[]
   colors      ProductColor[]  @relation("ProductColorsNew")

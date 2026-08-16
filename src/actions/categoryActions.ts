@@ -23,30 +23,47 @@ export async function getVisibleCategories() {
 const esProduccion = process.env.VERCEL_ENV === "production";
 
 export async function getCategoryBySlug(slug: string) {
+    // Pausados por Diego: NUNCA en el listado (ni en preview). Borradores: solo en preview, con sello.
+    const filtroVisibles = esProduccion ? { isActive: true, pausadoManual: false } : { pausadoManual: false };
+    const incluirDetalle = {
+        // ordenadas para que images[0] sea SIEMPRE la imagen principal
+        images: { orderBy: { order: "asc" as const } },
+        colors: { include: { color: true } },
+        features: true
+    };
+
     // Try to find by name converted to slug
     const categories = await prisma.productCategory.findMany({
         include: {
             products: {
-                // Pausados por Diego: NUNCA en el listado (ni en preview). Borradores: solo en preview, con sello.
-                where: esProduccion ? { isActive: true, pausadoManual: false } : { pausadoManual: false },
-                include: {
-                    // ordenadas para que images[0] sea SIEMPRE la imagen principal
-                    images: { orderBy: { order: "asc" } },
-                    colors: {
-                        include: {
-                            color: true
-                        }
-                    },
-                    features: true
-                },
+                where: filtroVisibles,
+                include: incluirDetalle,
                 orderBy: { order: "asc" }
             }
         }
     });
-    
-    return categories.find(c => 
+
+    const categoria: any = categories.find(c =>
         c.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') === slug
     );
+    if (!categoria) return categoria;
+
+    // Sumar los art\u00edculos que tienen esta categor\u00eda como EXTRA (multi-categor\u00eda)
+    try {
+        const extras = await (prisma as any).productExtraCategory.findMany({
+            where: { categoryId: categoria.id, product: filtroVisibles },
+            include: { product: { include: incluirDetalle } }
+        });
+        const idsBase = new Set(categoria.products.map((p: any) => p.id));
+        const productosExtra = extras.map((e: any) => e.product).filter((p: any) => !idsBase.has(p.id));
+        if (productosExtra.length) {
+            categoria.products = [...categoria.products, ...productosExtra].sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
+        }
+    } catch (e) {
+        console.error("Error sumando categor\u00edas extra:", e);
+    }
+
+    return categoria;
 }
 
 // More precise search: normally categories should have slugs too. 

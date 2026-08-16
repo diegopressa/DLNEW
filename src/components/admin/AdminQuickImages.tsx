@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ImagePlus, RefreshCw, Loader2, PauseCircle, PlayCircle, Pencil, X, Plus, Rocket } from "lucide-react";
-import { changeMainProductImage, addProductImages, togglePausadoManual, updateProductFicha, toggleProductActive } from "@/actions/productActions";
+import { ImagePlus, RefreshCw, Loader2, PauseCircle, PlayCircle, Pencil, X, Plus, Rocket, FolderTree } from "lucide-react";
+import { changeMainProductImage, addProductImages, togglePausadoManual, updateProductFicha, toggleProductActive, toggleProductExtraCategory } from "@/actions/productActions";
 import { getFeatureOptions, addFeatureOption } from "@/actions/featureOptionActions";
+import { getCategories } from "@/actions/categoryActions";
 
 export type FichaProducto = {
     name: string;
@@ -37,18 +38,26 @@ export default function AdminQuickImages({
     pausadoNota,
     activo = true,
     ficha,
+    categoriaPrincipalId,
+    categoriasExtra = [],
 }: {
     productId: number;
     pausado?: boolean;
     pausadoNota?: string | null;
     activo?: boolean; // isActive: false = borrador → se ofrece el botón Activar
     ficha?: FichaProducto;
+    categoriaPrincipalId?: number;
+    categoriasExtra?: number[]; // ids de categorías extra (multi-categoría)
 }) {
     const [isAdmin, setIsAdmin] = useState(false);
     const [subiendo, setSubiendo] = useState<"principal" | "agregar" | "pausa" | "ficha" | "activar" | null>(null);
     const [editando, setEditando] = useState(false);
     const [form, setForm] = useState<FormFicha | null>(null);
     const [opciones, setOpciones] = useState<string[]>([]);
+    const [verCategorias, setVerCategorias] = useState(false);
+    const [listaCategorias, setListaCategorias] = useState<any[]>([]);
+    const [extrasSel, setExtrasSel] = useState<number[]>(categoriasExtra);
+    const [guardandoCat, setGuardandoCat] = useState<number | null>(null);
     const inputPrincipal = useRef<HTMLInputElement>(null);
     const inputAgregar = useRef<HTMLInputElement>(null);
     const router = useRouter();
@@ -202,6 +211,35 @@ export default function AdminQuickImages({
         </label>
     );
 
+    const abrirCategorias = () => {
+        if (verCategorias) {
+            setVerCategorias(false);
+            return;
+        }
+        setVerCategorias(true);
+        if (listaCategorias.length === 0) {
+            getCategories().then((cats: any[]) => setListaCategorias(cats)).catch(() => {});
+        }
+    };
+
+    const alternarCategoria = async (categoriaId: number) => {
+        if (guardandoCat !== null || categoriaId === categoriaPrincipalId) return;
+        const agregar = !extrasSel.includes(categoriaId);
+        setGuardandoCat(categoriaId);
+        setExtrasSel((prev) => (agregar ? [...prev, categoriaId] : prev.filter((id) => id !== categoriaId)));
+        try {
+            const r = await toggleProductExtraCategory(productId, categoriaId, agregar);
+            if (r.success) {
+                router.refresh();
+            } else {
+                setExtrasSel((prev) => (agregar ? prev.filter((id) => id !== categoriaId) : [...prev, categoriaId]));
+                alert(r.error || "No se pudo guardar el cambio de categoría");
+            }
+        } finally {
+            setGuardandoCat(null);
+        }
+    };
+
     const activarPublicacion = async () => {
         if (!confirm("¿Activar esta publicación? El artículo pasa a verse en la web.")) return;
         setSubiendo("activar");
@@ -272,8 +310,56 @@ export default function AdminQuickImages({
                     {editando ? "Cerrar editor" : "Editar ficha"}
                 </button>
             )}
+            {categoriaPrincipalId !== undefined && (
+                <button onClick={abrirCategorias} disabled={!!subiendo} className={btn}>
+                    {verCategorias ? <X size={14} /> : <FolderTree size={14} />}
+                    {verCategorias ? "Cerrar categorías" : "Categorías"}
+                </button>
+            )}
             <input ref={inputPrincipal} type="file" accept="image/*" className="hidden" onChange={cambiarPrincipal} />
             <input ref={inputAgregar} type="file" accept="image/*" multiple className="hidden" onChange={agregarImagenes} />
+
+            {verCategorias && (
+                <div className="border-t border-amber-300 pt-2.5">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-amber-700">En qué categorías aparece</span>
+                    {listaCategorias.length === 0 ? (
+                        <p className="text-xs text-slate-500 mt-1.5">Cargando…</p>
+                    ) : (
+                        <div className="mt-1.5 space-y-1.5">
+                            {listaCategorias.map((cat: any) => {
+                                const esPrincipal = cat.id === categoriaPrincipalId;
+                                const marcada = esPrincipal || extrasSel.includes(cat.id);
+                                return (
+                                    <label
+                                        key={cat.id}
+                                        className={`flex items-center gap-2 text-sm font-semibold ${esPrincipal ? "text-slate-500" : "text-slate-800 cursor-pointer"}`}
+                                    >
+                                        {guardandoCat === cat.id ? (
+                                            <Loader2 size={16} className="animate-spin text-amber-600" />
+                                        ) : (
+                                            <input
+                                                type="checkbox"
+                                                checked={marcada}
+                                                disabled={esPrincipal || guardandoCat !== null}
+                                                onChange={() => alternarCategoria(cat.id)}
+                                                className="w-4 h-4 accent-[#0081D1]"
+                                            />
+                                        )}
+                                        <span className="leading-tight">
+                                            {cat.name}
+                                            {esPrincipal && <b className="ml-1.5 text-[10px] uppercase text-amber-700">(principal)</b>}
+                                            {cat.isVisible === false && <b className="ml-1.5 text-[10px] uppercase text-slate-400">(oculta)</b>}
+                                        </span>
+                                    </label>
+                                );
+                            })}
+                            <p className="text-[11px] text-slate-500 pt-1">
+                                La principal define el link del artículo (se cambia desde el admin). Las que tildes acá lo hacen aparecer también en esas categorías.
+                            </p>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {editando && form && (
                 <div className="border-t border-amber-300 pt-2.5 space-y-2.5">
