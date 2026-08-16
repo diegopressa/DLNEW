@@ -1,14 +1,24 @@
 import { MessageCircle } from "lucide-react";
 import Link from "next/link";
-import { getCategories, getCategoriasHeader } from "@/actions/categoryActions";
+import type { Metadata } from "next";
+import { getVisibleCategories, getCategoriasHeader } from "@/actions/categoryActions";
 import { getGlobalSettings } from "@/actions/settingsActions";
+import { buildMetadata } from "@/lib/buildMetadata";
 import FeaturedProductSearch from "@/components/product/FeaturedProductSearch";
 import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata(): Promise<Metadata> {
+    return buildMetadata("/categorias", {
+        title: "Catálogo de Uniformes y Prendas para Empresas | DL Diseño & Estampado",
+        description: "Remeras, camisas, buzos, camperas, pantalones y más para uniformar a tu equipo. Con tu logo estampado o bordado. Entrega en todo Uruguay.",
+    });
+}
+
 export default async function ProductosPage() {
-    const dbCategories = await getCategories();
+    // Solo categorías visibles (las ocultas no deben salir al público)
+    const dbCategories = await getVisibleCategories();
     const settings = await getGlobalSettings();
     const headers = await getCategoriasHeader();
     const whatsapp = settings?.whatsapp || "59897534866";

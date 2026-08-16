@@ -3,11 +3,15 @@ import { Plus } from "lucide-react";
 import { getFaqItems } from "@/actions/faqActions";
 import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/buildMetadata";
 
-export const metadata: Metadata = {
-    title: "Preguntas Frecuentes | DL Diseño & Estampado",
-    description: "Respondemos las dudas más comunes sobre pedidos mínimos, tiempos de entrega, formatos de diseño y más."
-};
+// Editable desde /admin/seo (fila "/preguntas"); estos son los textos por defecto
+export async function generateMetadata(): Promise<Metadata> {
+    return buildMetadata("/preguntas", {
+        title: "Preguntas Frecuentes | DL Diseño & Estampado",
+        description: "Respondemos las dudas más comunes sobre pedidos mínimos, tiempos de entrega, formatos de diseño y más.",
+    });
+}
 
 export default async function PreguntasPage() {
     const faqItems = ((await getFaqItems()) as any[]) || [];

@@ -1,22 +1,18 @@
 import { getProjects } from "@/actions/galleryActions";
 import { getGlobalSettings } from "@/actions/settingsActions";
+import { buildMetadata } from "@/lib/buildMetadata";
 import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 import type { Metadata } from "next";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-    title: "Trabajos Realizados para Empresas en Uruguay | DL Diseño & Estampado",
-    description: "Casos reales de uniformes, estampado y bordado para empresas e instituciones en Uruguay. Mirá los trabajos que ya entregamos.",
-    alternates: { canonical: "https://dldisenoyestampado.uy/trabajos" },
-    openGraph: {
-        type: "website",
-        url: "https://dldisenoyestampado.uy/trabajos",
-        title: "Trabajos Realizados para Empresas | DL Diseño & Estampado",
-        description: "Casos reales de uniformes y personalización para empresas uruguayas. +500 empresas atendidas.",
-        siteName: "DL Diseño & Estampado",
-    },
-};
+// Editable desde /admin/seo (fila "/trabajos"); estos son los textos por defecto
+export async function generateMetadata(): Promise<Metadata> {
+    return buildMetadata("/trabajos", {
+        title: "Trabajos Realizados para Empresas en Uruguay | DL Diseño & Estampado",
+        description: "Casos reales de uniformes, estampado y bordado para empresas e instituciones en Uruguay. Mirá los trabajos que ya entregamos.",
+    });
+}
 
 export default async function TrabajosPage() {
     const [projects, settings] = await Promise.all([

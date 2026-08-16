@@ -23,9 +23,8 @@ export const metadata: Metadata = {
     "uniformes laborales",
   ],
   metadataBase: new URL("https://dldisenoyestampado.uy"),
-  alternates: {
-    canonical: "/",
-  },
+  // OJO: no declarar canonical acá — se hereda a TODAS las páginas y les dice a
+  // Google que son duplicados de la home. Cada página declara el suyo.
   openGraph: {
     type: "website",
     locale: "es_UY",
@@ -33,13 +32,13 @@ export const metadata: Metadata = {
     siteName: "DL Diseño & Estampado",
     title: "DL Diseño & Estampado | Uniformes Personalizados para Empresas",
     description: "Uniformes personalizados para empresas en Uruguay. Estampado, bordado y entrega en 24-48h. +500 empresas confían en nosotros.",
-    images: [{ url: "/logo.png", width: 1200, height: 630, alt: "DL Diseño & Estampado" }],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "DL Diseño & Estampado — Uniformes personalizados para empresas" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "DL Diseño & Estampado | Uniformes para Empresas",
     description: "Uniformes personalizados para empresas en Uruguay. Estampado, bordado y entrega en 24-48h.",
-    images: ["/logo.png"],
+    images: ["/og-image.jpg"],
   },
   icons: {
     icon: [

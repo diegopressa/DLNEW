@@ -53,7 +53,7 @@ function Card({ title, desc, children }: { title: string; desc: string; children
 function GooglePreview({ title, slug, description, siteName }: any) {
     const safeTitle = title || `Página | ${siteName}`;
     const safeDesc = description || "Sin descripción todavía.";
-    const safeUrl = `dldiseno.uy${slug || "/"}`;
+    const safeUrl = `dldisenoyestampado.uy${slug || "/"}`;
     return (
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
             <p className="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
@@ -87,7 +87,7 @@ function SocialPreview({ title, description, image, siteName }: any) {
                     </div>
                 )}
                 <div className="p-3">
-                    <p className="text-[10px] uppercase text-slate-400 font-bold tracking-widest mb-1">dldiseno.uy</p>
+                    <p className="text-[10px] uppercase text-slate-400 font-bold tracking-widest mb-1">dldisenoyestampado.uy</p>
                     <p className="font-bold text-slate-900 text-sm leading-snug line-clamp-2">{safeTitle}</p>
                     <p className="text-xs text-slate-500 mt-1 line-clamp-2">{safeDesc}</p>
                 </div>
@@ -445,7 +445,7 @@ export default function SeoAdminPage() {
                                 <div>
                                     <label className="text-sm font-bold text-slate-700">URL canónica <span className="font-normal text-slate-400">(opcional, avanzado)</span></label>
                                     <p className="text-xs text-slate-400 mb-1.5">Dejalo vacío salvo que alguien técnico te lo pida.</p>
-                                    <input className={`${inputCls} font-mono`} value={form.canonicalUrl} onChange={f("canonicalUrl")} placeholder="https://dldiseno.uy/..." />
+                                    <input className={`${inputCls} font-mono`} value={form.canonicalUrl} onChange={f("canonicalUrl")} placeholder="https://dldisenoyestampado.uy/..." />
                                 </div>
                                 <GooglePreview
                                     title={form.metaTitle}

@@ -116,7 +116,7 @@ export default function FeaturedProductSearch() {
                         
                         <div className="mt-8 pt-6 border-t border-slate-50 text-center">
                             <p className="text-sm text-slate-400 font-medium">
-                                ¿No encontrás lo que buscás? <Link href="/contacto" className="text-primary font-black hover:underline">Escribinos por WhatsApp</Link>
+                                ¿No encontrás lo que buscás? <a href="https://api.whatsapp.com/send/?phone=59897534866&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" className="text-primary font-black hover:underline">Escribinos por WhatsApp</a>
                             </p>
                         </div>
                     </div>

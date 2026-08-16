@@ -7,7 +7,7 @@ export default function Footer({ settings }: { settings: any }) {
     const contact = settings || {
         address: "Montevideo, Uruguay",
         phone: "+598 97 534 866",
-        email: "info@dldiseno.uy"
+        email: "contacto@dldisenoyestampado.uy"
     };
 
     // Teléfono y WhatsApp salen del admin (Configuración), formateados para leerse bien.

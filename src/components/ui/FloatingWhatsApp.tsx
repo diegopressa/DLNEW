@@ -3,7 +3,7 @@
 import { MessageCircle } from "lucide-react";
 import Link from "next/link";
 
-export default function FloatingWhatsApp({ whatsapp = "59899000000" }: { whatsapp?: string }) {
+export default function FloatingWhatsApp({ whatsapp = "59897534866" }: { whatsapp?: string }) {
     return (
         <Link
             href={`https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`}

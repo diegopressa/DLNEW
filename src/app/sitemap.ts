@@ -7,14 +7,16 @@ const slugify = (name: string) =>
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = "https://dldisenoyestampado.uy";
 
-    // Páginas estáticas
+    // Páginas estáticas. Sin lastModified inventado (new Date() cambiaba en cada
+    // request y le quita credibilidad al dato ante Google).
     const staticPages: MetadataRoute.Sitemap = [
-        { url: baseUrl, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
-        { url: `${baseUrl}/categorias`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-        { url: `${baseUrl}/trabajos`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-        { url: `${baseUrl}/contacto`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-        { url: `${baseUrl}/nosotros`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
-        { url: `${baseUrl}/preguntas`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+        { url: baseUrl, changeFrequency: "weekly", priority: 1 },
+        { url: `${baseUrl}/categorias`, changeFrequency: "weekly", priority: 0.9 },
+        { url: `${baseUrl}/trabajos`, changeFrequency: "weekly", priority: 0.8 },
+        { url: `${baseUrl}/contacto`, changeFrequency: "monthly", priority: 0.8 },
+        { url: `${baseUrl}/nosotros`, changeFrequency: "monthly", priority: 0.6 },
+        { url: `${baseUrl}/preguntas`, changeFrequency: "monthly", priority: 0.5 },
+        { url: `${baseUrl}/politicas-de-privacidad`, changeFrequency: "yearly", priority: 0.3 },
     ];
 
     // Categorías y productos desde la BD.
@@ -35,7 +37,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ]);
         categoryPages = categories.map((cat: any) => ({
             url: `${baseUrl}/categorias/lista-${slugify(cat.name)}`,
-            lastModified: new Date(),
             changeFrequency: "weekly" as const,
             priority: 0.7,
         }));

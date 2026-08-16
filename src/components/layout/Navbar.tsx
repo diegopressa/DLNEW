@@ -5,7 +5,7 @@ type NavCategory = { name: string; href: string; image?: string | null; showInNa
 
 // Header estilo tienda de workwear: barra superior grafito + logo/buscador/CTA + tira de categorías.
 const Navbar = ({
-    whatsapp = "59899000000",
+    whatsapp = "59897534866",
     categories = [],
     logoUrl,
 }: {
@@ -14,6 +14,10 @@ const Navbar = ({
     logoUrl?: string | null;
 }) => {
     const waHref = `https://api.whatsapp.com/send/?phone=${whatsapp}&text=Hola%2C+quiero+consultar+por+uniformes+para+mi+empresa.&type=phone_number&app_absent=0`;
+    // Número visible del topbar: sale del admin (formato local 097 534 866)
+    const wappVisible = whatsapp.startsWith("598")
+        ? `0${whatsapp.slice(3, 5)} ${whatsapp.slice(5, 8)} ${whatsapp.slice(8)}`
+        : whatsapp;
 
     return (
         <header className="relative z-50">
@@ -25,7 +29,7 @@ const Navbar = ({
                         <span className="hidden sm:inline"> · Envíos en <b className="text-white font-semibold">Montevideo y todo el Uruguay</b></span>
                     </span>
                     <a href={waHref} target="_blank" rel="noopener noreferrer" className="shrink-0 hover:text-white transition-colors">
-                        WhatsApp: <b className="text-white font-semibold">097 534 866</b>
+                        WhatsApp: <b className="text-white font-semibold">{wappVisible}</b>
                     </a>
                 </div>
             </div>

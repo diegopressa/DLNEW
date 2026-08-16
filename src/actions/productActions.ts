@@ -70,6 +70,8 @@ export async function updateProduct(id: number, data: any) {
                 where: { id },
                 data: {
                     ...productData,
+                    // Igual que en addProduct: el slug editado se normaliza (sin mayúsculas/espacios/tildes)
+                    ...(productData.slug ? { slug: String(productData.slug).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, '-') } : {}),
                     categoryId: parseInt(categoryId) || 0,
                     isActive: isActive !== undefined ? Boolean(isActive) : true,
                     images: { create: cleanImages.map((url: string, index: number) => ({ url, order: index })) },

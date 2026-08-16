@@ -25,7 +25,7 @@ export async function getGlobalSettings() {
                 data: {
                     id: 1,
                     whatsapp: "59897534866",
-                    email: "info@dldiseno.uy",
+                    email: "contacto@dldisenoyestampado.uy",
                     phone: "59829250584",
                     address: "Montevideo, Uruguay"
                 }

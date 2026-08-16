@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ContactoPage() {
     const settings = await getGlobalSettings();
     const whatsapp = settings?.whatsapp || "59897534866";
-    const email = settings?.email || "info@dldiseno.uy";
+    const email = settings?.email || "contacto@dldisenoyestampado.uy";
     const phone = settings?.phone || "59829250584";
     const address = settings?.address || "Montevideo, Uruguay";
 
@@ -104,7 +104,7 @@ export default async function ContactoPage() {
                                 Hablar por WhatsApp ahora
                             </a>
                             <p className="mt-4 text-slate-400 font-semibold text-[11px] uppercase tracking-[0.14em]">
-                                Te respondemos en menos de 10 minutos
+                                Respondemos en menos de 2 Hs en horario laboral
                             </p>
                         </div>
                     </div>

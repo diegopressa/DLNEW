@@ -9,7 +9,8 @@ import { getCategoryBySlug } from "@/actions/categoryActions";
 import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 import AdminQuickImages from "@/components/admin/AdminQuickImages";
 import AdminQuickColors from "@/components/admin/AdminQuickColors";
-import { notFound } from "next/navigation";
+import { slugCategoria, textoPlano } from "@/lib/slugs";
+import { notFound, permanentRedirect } from "next/navigation";
 
 export const revalidate = 3600;
 
@@ -18,10 +19,15 @@ export async function generateMetadata({ params }: { params: { categorySlug: str
     if (!product) return {};
 
     const baseUrl = "https://dldisenoyestampado.uy";
-    const url = `${baseUrl}/categorias/${params.categorySlug}/${product.slug}`;
+    // Canonical SIEMPRE con la categoría REAL del producto (la URL con cualquier
+    // otra categoría redirige — ver el componente): una sola URL indexable por prenda.
+    const url = `${baseUrl}/categorias/${slugCategoria(product.category?.name || "productos")}/${product.slug}`;
     const categoryName = product.category?.name || "";
-    const title = `${product.name} Personalizada para Empresas | DL`;
-    const description = (product.description || `${product.name} para uniformes corporativos. Estampado, bordado y entrega en 24-48h. Pedido mínimo 10 unidades. Montevideo y todo Uruguay.`).slice(0, 160);
+    // Sin adjetivo con género ("Personalizada" quedaba mal en Buzo, Pantalón, etc.)
+    const title = product.name.length > 32
+        ? `${product.name} para Empresas | DL`
+        : `${product.name} para Empresas | DL Diseño & Estampado`;
+    const description = textoPlano(product.description || `${product.name} para uniformes de empresa con tu logo estampado o bordado. Entrega en 24-48 Hs en Montevideo y todo Uruguay.`);
     const ogImage = product.images?.[0]?.url;
 
     return {
@@ -67,6 +73,13 @@ export default async function ProductDetailPage({ params }: { params: { category
 
     const category = product.category;
 
+    // Cada prenda vive en UNA sola URL (la de su categoría real). Si llegan por
+    // otra categoría o sin el prefijo "lista-", redirect permanente a la canónica.
+    const slugCanonico = slugCategoria(category?.name || "");
+    if (slugCanonico && params.categorySlug !== slugCanonico) {
+        permanentRedirect(`/categorias/${slugCanonico}/${product.slug}`);
+    }
+
     // Mensaje de WhatsApp personalizado con la prenda
     const waProducto = `https://api.whatsapp.com/send/?phone=${whatsapp}&text=${encodeURIComponent(`Hola, quiero consultar por ${product.name} para mi empresa.`)}&type=phone_number&app_absent=0`;
 
@@ -83,19 +96,14 @@ export default async function ProductDetailPage({ params }: { params: { category
         "@context": "https://schema.org",
         "@type": "Product",
         name: product.name,
-        description: product.description,
+        description: textoPlano(product.description, 500),
         image: product.images?.map((img: any) => img.url) || [],
-        sku: product.slug,
+        sku: product.masterCode || product.slug,
         brand: { "@type": "Brand", "name": "DL Diseño & Estampado" },
         category: category?.name,
         url: productUrl,
-        offers: {
-            "@type": "Offer",
-            availability: "https://schema.org/InStock",
-            priceCurrency: "UYU",
-            url: productUrl,
-            seller: { "@type": "Organization", "name": "DL Diseño & Estampado" },
-        },
+        // Sin bloque offers: al no tener precio publicado, un Offer sin price
+        // hace que Google marque la structured data como incompleta.
     };
     const breadcrumbJsonLd = {
         "@context": "https://schema.org",

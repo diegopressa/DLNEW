@@ -1,25 +1,28 @@
 import Link from "next/link";
 import prisma from "@/lib/prisma";
-import { Mail, Package, Pause, AlertTriangle, ImageIcon, Briefcase, ArrowRight } from "lucide-react";
+import { Mail, Package, Pause, PauseCircle, AlertTriangle, ImageIcon, Briefcase, ArrowRight } from "lucide-react";
 
+// Mismos criterios que las pestañas de /admin/articulos:
+// activos = isActive && !pausadoManual · borradores = !isActive && !pausadoManual · pausados = pausadoManual
 async function getStats() {
     try {
-        const [mensajesSinLeer, activos, borradores, trabajos, categorias, categoriasOcultas, productosConFotos] = await Promise.all([
+        const [mensajesSinLeer, activos, borradores, pausados, trabajos, categorias, categoriasOcultas, productosConFotos] = await Promise.all([
             prisma.contactSubmission.count({ where: { read: false } }),
-            prisma.product.count({ where: { isActive: true } }),
-            prisma.product.count({ where: { isActive: false } }),
+            (prisma as any).product.count({ where: { isActive: true, pausadoManual: false } }),
+            (prisma as any).product.count({ where: { isActive: false, pausadoManual: false } }),
+            (prisma as any).product.count({ where: { pausadoManual: true } }),
             prisma.project.count(),
             prisma.productCategory.count(),
             (prisma as any).productCategory.count({ where: { isVisible: false } }),
-            prisma.product.findMany({
-                where: { isActive: true },
+            (prisma as any).product.findMany({
+                where: { isActive: true, pausadoManual: false },
                 select: { id: true, _count: { select: { images: true } } },
             }),
         ]);
-        const faltanFotos = productosConFotos.filter((p) => p._count.images <= 1).length;
-        return { mensajesSinLeer, activos, borradores, trabajos, categorias, categoriasOcultas, faltanFotos };
+        const faltanFotos = productosConFotos.filter((p: any) => p._count.images <= 1).length;
+        return { mensajesSinLeer, activos, borradores, pausados, trabajos, categorias, categoriasOcultas, faltanFotos };
     } catch {
-        return { mensajesSinLeer: 0, activos: 0, borradores: 0, trabajos: 0, categorias: 0, categoriasOcultas: 0, faltanFotos: 0 };
+        return { mensajesSinLeer: 0, activos: 0, borradores: 0, pausados: 0, trabajos: 0, categorias: 0, categoriasOcultas: 0, faltanFotos: 0 };
     }
 }
 
@@ -43,11 +46,19 @@ export default async function AdminDashboard() {
             detalle: "visibles en la web",
         },
         {
-            label: "En borrador / pausados",
+            label: "Borradores",
             value: s.borradores,
             icon: Pause,
             href: "/admin/articulos",
-            detalle: "invisibles al público — revisar y activar",
+            detalle: "sin activar todavía — invisibles al público",
+        },
+        {
+            label: "Pausados por mí",
+            value: s.pausados,
+            icon: PauseCircle,
+            href: "/admin/articulos",
+            alerta: s.pausados > 0,
+            detalle: "pausa de negocio — ocultos hasta reanudar",
         },
         {
             label: "Artículos con pocas fotos",

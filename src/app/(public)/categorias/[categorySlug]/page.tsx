@@ -2,12 +2,13 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { Package } from "lucide-react";
-import { getCategoryBySlug, getCategories } from "@/actions/categoryActions";
+import { getCategoryBySlug, getVisibleCategories } from "@/actions/categoryActions";
 import { getReflectiveProducts } from "@/actions/productActions";
 import { getGlobalSettings } from "@/actions/settingsActions";
 import AdminEditButtonGate from "@/components/admin/AdminEditButtonGate";
 import CategoryGrid from "@/components/category/CategoryGrid";
-import { notFound } from "next/navigation";
+import { textoPlano } from "@/lib/slugs";
+import { notFound, permanentRedirect } from "next/navigation";
 
 export const revalidate = 3600;
 
@@ -20,9 +21,14 @@ export async function generateMetadata({ params }: { params: { categorySlug: str
     if (!category) return {};
 
     const baseUrl = "https://dldisenoyestampado.uy";
-    const url = `${baseUrl}/categorias/${params.categorySlug}`;
-    const title = `${category.name} Personalizados para Empresas | DL Uruguay`;
-    const description = `${category.name} para uniformes corporativos en Uruguay. Estampado, bordado y entrega en 24-48h. Pedido mínimo 10 unidades. Montevideo, Canelones y todo el país.`.slice(0, 160);
+    // Canonical siempre con el prefijo lista- (la URL sin prefijo redirige)
+    const url = `${baseUrl}/categorias/lista-${slugify(category.name)}`;
+    // Sin adjetivo con género ("Personalizados" quedaba mal en Camisas, etc.)
+    const title = `${category.name} para Empresas con tu Logo | DL Uruguay`;
+    const description = textoPlano(
+        category.description ||
+        `${category.name} para uniformes de empresa en Uruguay. Estampado, bordado y entrega en 24-48 Hs en Montevideo y todo el país.`
+    );
 
     return {
         title,
@@ -46,10 +52,15 @@ export default async function CategoryListingPage({
     params: { categorySlug: string };
     searchParams: { version?: string };
 }) {
-    const slug = params.categorySlug.startsWith("lista-") ? params.categorySlug.replace("lista-", "") : params.categorySlug;
+    // Una sola URL indexable por categoría: sin el prefijo "lista-" se redirige
+    if (!params.categorySlug.startsWith("lista-")) {
+        permanentRedirect(`/categorias/lista-${params.categorySlug}`);
+    }
+
+    const slug = params.categorySlug.replace("lista-", "");
     const [category, allCategories, settings] = await Promise.all([
         getCategoryBySlug(slug) as any,
-        getCategories() as any,
+        getVisibleCategories() as any, // sidebar: solo categorías visibles
         getGlobalSettings() as any,
     ]);
 

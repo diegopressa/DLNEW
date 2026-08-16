@@ -5,7 +5,7 @@ import { getProducts, addProduct, updateProduct, deleteProduct, updateProductOrd
 import { getCategories } from "@/actions/categoryActions";
 import { getColors } from "@/actions/colorActions";
 import { fondoColor } from "@/lib/colorUtils";
-import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, EyeOff, ArrowUp, ArrowDown, AlertTriangle, GripVertical, ListOrdered, PauseCircle, PlayCircle, Copy } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Package, Image as ImageIcon, Pencil, Upload, X, Search, Palette, Pause, Play, Eye, ArrowUp, ArrowDown, AlertTriangle, GripVertical, ListOrdered, PauseCircle, PlayCircle, Copy } from "lucide-react";
 
 // ─── Color Multi-Select Picker ───────────────────────────────────────────────
 function ColorPicker({
@@ -993,7 +993,7 @@ export default function ProductsEditor() {
             </div>
             {busqueda.trim() && (
                 <p className="text-xs text-slate-500 -mt-4">
-                    {filteredProducts.length} resultado{filteredProducts.length !== 1 ? "s" : ""} para “{busqueda.trim()}” (busca en activos y pausados)
+                    {filteredProducts.length} resultado{filteredProducts.length !== 1 ? "s" : ""} para “{busqueda.trim()}” (busca en activos, borradores y pausados)
                 </p>
             )}
 
@@ -1007,7 +1007,7 @@ export default function ProductsEditor() {
                             : "bg-white border border-slate-200 text-slate-500 hover:text-slate-700 hover:border-slate-300"
                     }`}
                 >
-                    Todos los activos ({products.filter(p => p.isActive).length})
+                    Todos los activos ({products.filter(p => p.isActive && !p.pausadoManual).length})
                 </button>
 
                 <select
@@ -1022,7 +1022,7 @@ export default function ProductsEditor() {
                     <option value="">Por categoría…</option>
                     {categories.map(cat => (
                         <option key={cat.id} value={cat.id.toString()}>
-                            {cat.name} ({products.filter(p => p.isActive && p.categoryId === cat.id).length})
+                            {cat.name} ({products.filter(p => p.isActive && !p.pausadoManual && p.categoryId === cat.id).length})
                         </option>
                     ))}
                 </select>
@@ -1116,15 +1116,18 @@ export default function ProductsEditor() {
                                 <div className="flex flex-wrap justify-between items-center gap-2 bg-slate-50 -mx-5 -mb-5 p-4 border-t border-slate-100">
                                     <span className="text-[10px] font-mono text-slate-400 bg-white px-2 py-1 rounded border border-slate-100 truncate max-w-[130px]" title={`/${prod.slug}`}>/{prod.slug}</span>
                                     <div className="flex flex-wrap justify-end gap-1.5">
-                                        <a
-                                            href={`/categorias/lista-${(prod.category?.name || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-")}/${prod.slug}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="p-2 text-slate-400 hover:text-[#0081D1] hover:bg-blue-50 rounded-lg transition-all"
-                                            title="Ver en la web"
-                                        >
-                                            <Eye size={18} />
-                                        </a>
+                                        {prod.isActive && !prod.pausadoManual && (
+                                            /* Solo para artículos visibles: un borrador/pausado da 404 en la web */
+                                            <a
+                                                href={`/categorias/lista-${(prod.category?.name || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-")}/${prod.slug}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="p-2 text-slate-400 hover:text-[#0081D1] hover:bg-blue-50 rounded-lg transition-all"
+                                                title="Ver en la web"
+                                            >
+                                                <Eye size={18} />
+                                            </a>
+                                        )}
                                         <button
                                             onClick={() => handleTogglePausado(prod)}
                                             className={`p-2 rounded-lg transition-all ${prod.pausadoManual ? 'text-orange-600 bg-orange-50 hover:bg-orange-100' : 'text-slate-400 hover:text-orange-600 hover:bg-orange-50'}`}
@@ -1173,10 +1176,10 @@ export default function ProductsEditor() {
                     <div className="col-span-full py-20 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
                         <Package className="mx-auto text-slate-300 mb-4" size={48} />
                         <h3 className="text-lg font-bold text-slate-500">
-                            {activeTab === "pausados" ? "No hay artículos pausados" : "No hay artículos en esta sección"}
+                            {activeTab === "pausados" ? "No hay borradores" : activeTab === "pausados-mios" ? "No hay artículos pausados por vos" : "No hay artículos en esta sección"}
                         </h3>
                         <p className="text-slate-400">
-                            {activeTab === "pausados" ? "Todos tus productos están visibles en la web." : "Probá seleccionando otra categoría o agregá un producto nuevo."}
+                            {activeTab === "pausados" ? "Todo lo cargado ya está activado." : activeTab === "pausados-mios" ? "No pausaste ningún artículo." : "Probá seleccionando otra categoría o agregá un producto nuevo."}
                         </p>
                     </div>
                 )}
@@ -1225,7 +1228,7 @@ export default function ProductsEditor() {
                                 )}
                                 <span className="flex-1 min-w-0">
                                     <span className="block text-sm font-bold text-slate-900 truncate">{p.name}</span>
-                                    <span className="block text-[11px] text-slate-400">{p.category?.name}{!p.isActive ? " · pausado" : ""}</span>
+                                    <span className="block text-[11px] text-slate-400">{p.category?.name}{!p.isActive ? " · borrador" : ""}{p.pausadoManual ? " · pausado por mí" : ""}</span>
                                 </span>
                                 <span className="flex gap-1 shrink-0">
                                     <button onClick={() => moverEnLista(idx, idx - 1)} disabled={idx === 0} className="p-1.5 rounded-lg text-slate-400 hover:text-[#0081D1] hover:bg-blue-50 disabled:opacity-30" title="Subir">

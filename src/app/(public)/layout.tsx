@@ -2,9 +2,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
 import { getGlobalSettings } from "@/actions/settingsActions";
-// En la rama del rediseño mostramos TODAS las categorías (incluidas las ocultas)
-// para poder revisarlas en el preview. La web vieja (main) usa getVisibleCategories.
-import { getCategories } from "@/actions/categoryActions";
+// Solo categorías visibles: las ocultas (isVisible=false) no salen al público.
+import { getVisibleCategories } from "@/actions/categoryActions";
 import { leagueGothic, spaceGrotesk } from "@/lib/fonts";
 
 export default async function PublicLayout({
@@ -15,7 +14,7 @@ export default async function PublicLayout({
     const settings: any = await getGlobalSettings();
     const whatsapp = settings?.whatsapp || "59897534866";
 
-    const dbCategories = await getCategories();
+    const dbCategories = await getVisibleCategories();
     const navCategories = dbCategories.map((c: any) => ({
         name: c.name,
         href: `/categorias/lista-${c.name
@@ -27,7 +26,7 @@ export default async function PublicLayout({
         showInNav: c.showInNav !== false,
     }));
     const phone = settings?.phone || "59829250584";
-    const email = settings?.email || "info@dldiseno.uy";
+    const email = settings?.email || "contacto@dldisenoyestampado.uy";
     const address = settings?.address || "Montevideo, Uruguay";
 
     const sameAs = [settings?.facebookUrl, settings?.instagramUrl].filter(Boolean);
@@ -58,12 +57,16 @@ export default async function PublicLayout({
             { "@type": "AdministrativeArea", name: "Canelones" },
             { "@type": "AdministrativeArea", name: "Maldonado" },
         ],
-        openingHoursSpecification: {
-            "@type": "OpeningHoursSpecification",
-            dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-            opens: "09:00",
-            closes: "18:00",
-        },
+        // Horario real desde el admin (Configuración → Horarios), ej. "09:00 - 17:00 hs."
+        openingHoursSpecification: (() => {
+            const horas = String(settings?.hoursWeek || "").match(/\d{1,2}:\d{2}/g) || ["09:00", "18:00"];
+            return {
+                "@type": "OpeningHoursSpecification",
+                dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                opens: horas[0],
+                closes: horas[1] || horas[0],
+            };
+        })(),
         priceRange: "$$",
         image: "https://dldisenoyestampado.uy/og-image.jpg",
         logo: "https://dldisenoyestampado.uy/logo.png",
