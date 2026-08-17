@@ -85,9 +85,24 @@ export async function getSeoSettings() {
     } catch { return null; }
 }
 
+// Google y Facebook entregan la etiqueta entera (<meta ... content="XXX" />) y
+// es lo que uno copia y pega. Nos quedamos solo con el código.
+function soloElCodigo(valor: any) {
+    if (typeof valor !== "string") return valor;
+    const v = valor.trim();
+    if (!v) return v;
+    const enEtiqueta = v.match(/content=["']([^"']+)["']/i);
+    if (enEtiqueta) return enEtiqueta[1].trim();
+    return v.replace(/^google-site-verification[:=]\s*/i, "").replace(/^facebook-domain-verification[:=]\s*/i, "").trim();
+}
+
 export async function updateSeoSettings(data: any) {
     if (!(await getSession())) return { success: false, error: "Sin sesión" };
     try {
+        if (data && typeof data === "object") {
+            if ("googleSiteVerification" in data) data.googleSiteVerification = soloElCodigo(data.googleSiteVerification);
+            if ("facebookDomainVerification" in data) data.facebookDomainVerification = soloElCodigo(data.facebookDomainVerification);
+        }
         const existing = await (prisma as any).seoSettings.findFirst();
         if (existing) {
             await (prisma as any).seoSettings.update({ where: { id: existing.id }, data });

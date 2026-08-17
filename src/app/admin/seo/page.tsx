@@ -264,8 +264,11 @@ export default function SeoAdminPage() {
                     >
                         <div>
                             <label className="text-sm font-bold text-slate-700">Google Search Console</label>
-                            <p className="text-xs text-slate-400 mb-1.5">Código de verificación de Google.</p>
-                            <input className={`${inputCls} font-mono`} value={globalSettings.googleSiteVerification || ""} onChange={g("googleSiteVerification")} placeholder="google-site-verification: xxxxxxxx..." />
+                            <p className="text-xs text-slate-400 mb-1.5">
+                                Pegá acá la etiqueta que te da Google (opción &quot;Etiqueta HTML&quot;), entera o solo el código —
+                                nosotros nos quedamos con lo que hace falta. Guardá y recién ahí tocá &quot;Verificar&quot; en Google.
+                            </p>
+                            <input className={`${inputCls} font-mono`} value={globalSettings.googleSiteVerification || ""} onChange={g("googleSiteVerification")} placeholder='<meta name="google-site-verification" content="..." />' />
                         </div>
                         <div>
                             <label className="text-sm font-bold text-slate-700">Facebook / Meta</label>
