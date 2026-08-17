@@ -37,3 +37,6 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# respaldo local de imagenes antes de re-subirlas con cache (scripts/cachear_imagenes.js)
+.backup-imagenes/
