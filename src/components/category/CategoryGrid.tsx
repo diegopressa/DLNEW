@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Package, Loader2, Save, X, Hand, Star } from "lucide-react";
+import { Package, Loader2, Save, X, Hand } from "lucide-react";
 import { reorderProductsSlots } from "@/actions/productActions";
+import SelloMasPedido from "@/components/product/SelloMasPedido";
 import { fondoColor } from "@/lib/colorUtils";
 
 // Grilla de la página de categoría. Para el público es idéntica a siempre;
@@ -112,12 +113,8 @@ export default function CategoryGrid({ products, categorySlug }: { products: any
                                 </div>
                             )}
                             {(product.masVendido || product.highlight) && (
-                                <span className="absolute top-3 left-3 flex flex-col items-start gap-1.5">
-                                    {product.masVendido && (
-                                        <span className="flex items-center gap-1 bg-grafito text-white px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.03em]">
-                                            <Star size={10} className="text-celeste fill-celeste shrink-0" /> El más pedido
-                                        </span>
-                                    )}
+                                <span className="absolute top-4 left-4 flex flex-col items-start gap-1.5">
+                                    {product.masVendido && <SelloMasPedido />}
                                     {product.highlight && (
                                         <span className="bg-primary text-white px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.08em]">
                                             {product.highlight}

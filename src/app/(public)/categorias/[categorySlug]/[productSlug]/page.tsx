@@ -1,4 +1,5 @@
-import { CheckCircle2, MessageCircle, Star } from "lucide-react";
+import { CheckCircle2, MessageCircle } from "lucide-react";
+import SelloMasPedido from "@/components/product/SelloMasPedido";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getGlobalSettings } from "@/actions/settingsActions";
@@ -182,11 +183,7 @@ export default async function ProductDetailPage({ params }: { params: { category
                                     Ref. {product.masterCode}
                                 </span>
                             )}
-                            {product.masVendido && (
-                                <span className="flex items-center gap-1 bg-grafito text-white text-[10px] font-bold uppercase tracking-[0.03em] px-2 py-1 rounded-sm">
-                                    <Star size={10} className="text-celeste fill-celeste shrink-0" /> El más pedido
-                                </span>
-                            )}
+                            {product.masVendido && <SelloMasPedido variant="ficha" />}
                             {!product.isActive && (
                                 <span className="bg-red-600 text-white text-[10px] font-bold uppercase tracking-[0.08em] px-2 py-0.5 rounded-sm">
                                     Borrador — no visible al público
