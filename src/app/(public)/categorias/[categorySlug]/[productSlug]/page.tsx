@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getGlobalSettings } from "@/actions/settingsActions";
 import ProductGallery from "@/components/product/ProductGallery";
+import ChipsTecnicas from "@/components/product/ChipsTecnicas";
 import ColorSwatches from "@/components/product/ColorSwatches";
 import { getProductBySlug } from "@/actions/productActions";
 import { getCategoryBySlug } from "@/actions/categoryActions";
@@ -286,14 +287,12 @@ export default async function ProductDetailPage({ params }: { params: { category
                             {(product.hasScreenPrint || product.hasEmbroidery) && (
                                 <div className="py-5 border-b border-slate-200">
                                     <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-3">Personalización</p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {product.hasScreenPrint && (
-                                            <span className="border-2 border-grafito rounded-full px-4 py-1.5 text-sm font-bold text-grafito">Estampado</span>
-                                        )}
-                                        {product.hasEmbroidery && (
-                                            <span className="border-2 border-grafito rounded-full px-4 py-1.5 text-sm font-bold text-grafito">Bordado</span>
-                                        )}
-                                    </div>
+                                    <ChipsTecnicas
+                                        hasScreenPrint={product.hasScreenPrint}
+                                        hasEmbroidery={product.hasEmbroidery}
+                                        variant="pildora"
+                                        posicion="abajo"
+                                    />
                                     <p className="mt-2.5 text-[13px] text-slate-500">Tu logo en frente, espalda y/o mangas. Sin límite de colores.</p>
                                 </div>
                             )}

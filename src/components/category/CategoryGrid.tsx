@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Package, Loader2, Save, X, Hand } from "lucide-react";
 import { reorderProductsSlots } from "@/actions/productActions";
 import SelloMasPedido from "@/components/product/SelloMasPedido";
+import ChipsTecnicas from "@/components/product/ChipsTecnicas";
 import { fondoColor } from "@/lib/colorUtils";
 
 // Grilla de la página de categoría. Para el público es idéntica a siempre;
@@ -136,20 +137,13 @@ export default function CategoryGrid({ products, categorySlug }: { products: any
                                     )}
                                 </span>
                             )}
-                            {(product.hasScreenPrint || product.hasEmbroidery) && (
-                                <span className="absolute bottom-3 left-3 flex gap-1.5">
-                                    {product.hasScreenPrint && (
-                                        <span className="bg-white/95 text-grafito px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em] border border-slate-200">
-                                            Estampado
-                                        </span>
-                                    )}
-                                    {product.hasEmbroidery && (
-                                        <span className="bg-white/95 text-grafito px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em] border border-slate-200">
-                                            Bordado
-                                        </span>
-                                    )}
-                                </span>
-                            )}
+                            <ChipsTecnicas
+                                hasScreenPrint={product.hasScreenPrint}
+                                hasEmbroidery={product.hasEmbroidery}
+                                variant="foto"
+                                posicion="arriba"
+                                className="absolute bottom-3 left-3"
+                            />
                         </div>
 
                         <div className="p-4">

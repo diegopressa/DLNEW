@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ZoomIn, ChevronLeft, ChevronRight } from "lucide-react";
+import ChipsTecnicas from "@/components/product/ChipsTecnicas";
 
 interface ProductGalleryProps {
     images: string[];
@@ -58,20 +59,15 @@ export default function ProductGallery({ images, hasScreenPrint, hasEmbroidery, 
                     </>
                 )}
 
-                {(hasScreenPrint || hasEmbroidery) && (
-                    <div className="absolute top-4 right-4 z-20 flex flex-col items-end gap-1.5">
-                        {hasScreenPrint && (
-                            <span className="bg-white/95 text-slate-900 px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em] border border-slate-200">
-                                Estampado
-                            </span>
-                        )}
-                        {hasEmbroidery && (
-                            <span className="bg-white/95 text-slate-900 px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.06em] border border-slate-200">
-                                Bordado
-                            </span>
-                        )}
-                    </div>
-                )}
+                <ChipsTecnicas
+                    hasScreenPrint={hasScreenPrint}
+                    hasEmbroidery={hasEmbroidery}
+                    variant="foto"
+                    posicion="abajo"
+                    alineacion="derecha"
+                    direccion="columna"
+                    className="absolute top-4 right-4 z-20"
+                />
             </div>
 
             {/* Thumbnails */}
