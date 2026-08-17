@@ -47,10 +47,8 @@ export async function generateMetadata({ params }: { params: { categorySlug: str
 
 export default async function CategoryListingPage({
     params,
-    searchParams,
 }: {
     params: { categorySlug: string };
-    searchParams: { version?: string };
 }) {
     // Una sola URL indexable por categoría: sin el prefijo "lista-" se redirige
     if (!params.categorySlug.startsWith("lista-")) {
@@ -78,14 +76,6 @@ export default async function CategoryListingPage({
         ...(category.products as any[]),
         ...extrasReflectivos.filter((p: any) => !idsYaListados.has(p.id)),
     ];
-
-    // Filtro por versión (?version=dama | nino)
-    const filtroVersion = searchParams?.version;
-    const productosFiltrados = todosLosProductos.filter((p: any) => {
-        if (filtroVersion === "dama") return p.versionDama;
-        if (filtroVersion === "nino") return p.versionNino;
-        return true;
-    });
 
     const whatsapp = settings?.whatsapp || "59897534866";
     const waAsesoria = `https://api.whatsapp.com/send/?phone=${whatsapp}&text=${encodeURIComponent(`Hola, necesito ayuda para elegir ${category.name.toLowerCase()} para mi equipo.`)}&type=phone_number&app_absent=0`;
@@ -166,32 +156,6 @@ export default async function CategoryListingPage({
                             })}
                         </div>
 
-                        <div className="border border-slate-200 rounded-md p-5">
-                            <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-3">
-                                Versiones
-                            </h2>
-                            {[
-                                { valor: undefined, etiqueta: "Todas las prendas" },
-                                { valor: "dama", etiqueta: "Disponible en dama" },
-                                { valor: "nino", etiqueta: "Disponible en niño" },
-                            ].map((f) => {
-                                const activa = filtroVersion === f.valor || (!filtroVersion && !f.valor);
-                                return (
-                                    <Link
-                                        key={f.etiqueta}
-                                        href={f.valor ? `/categorias/${params.categorySlug}?version=${f.valor}` : `/categorias/${params.categorySlug}`}
-                                        className={
-                                            activa
-                                                ? "block py-2 pl-3 border-l-[3px] border-primary font-bold text-grafito text-sm"
-                                                : "block py-2 text-sm font-semibold text-slate-600 hover:text-primary transition-colors"
-                                        }
-                                    >
-                                        {f.etiqueta}
-                                    </Link>
-                                );
-                            })}
-                        </div>
-
                         <div className="bg-[#F7F7F7] rounded-md p-5">
                             <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 mb-2">
                                 ¿No sabés cuál elegir?
@@ -213,21 +177,18 @@ export default async function CategoryListingPage({
                     <div>
                         <div className="flex items-center justify-between gap-4 mb-5">
                             <span className="text-sm font-semibold text-slate-500">
-                                <b className="text-grafito">{productosFiltrados.length}</b> {productosFiltrados.length === 1 ? "prenda" : "prendas"}
-                                {filtroVersion && (
-                                    <> · filtro: <b className="text-grafito">{filtroVersion === "dama" ? "dama" : "niño"}</b></>
-                                )}
+                                <b className="text-grafito">{todosLosProductos.length}</b> {todosLosProductos.length === 1 ? "prenda" : "prendas"}
                             </span>
                         </div>
 
                         {/* Grilla con arrastre en modo admin (el público la ve igual que siempre) */}
-                        <CategoryGrid products={productosFiltrados} categorySlug={params.categorySlug} />
+                        <CategoryGrid products={todosLosProductos} categorySlug={params.categorySlug} />
 
-                        {productosFiltrados.length === 0 && (
+                        {todosLosProductos.length === 0 && (
                             <div className="border border-dashed border-slate-300 rounded-md p-14 text-center">
                                 <Package size={40} className="mx-auto mb-4 text-slate-300" />
                                 <h2 className="font-bold text-lg text-grafito mb-1">
-                                    {filtroVersion ? "Ninguna prenda de esta categoría tiene esa versión" : "Aún no hay prendas cargadas"}
+                                    Aún no hay prendas cargadas
                                 </h2>
                                 <p className="text-slate-500 text-sm">Estamos actualizando el catálogo de esta categoría. Escribinos y te pasamos las opciones por WhatsApp.</p>
                             </div>
