@@ -25,12 +25,10 @@ export default function BrandSlider({ brands }: BrandSliderProps) {
     );
 
     return (
-        <div className="pt-10 sm:pt-14 pb-12 bg-white border-b border-slate-50 overflow-hidden relative">
-            <div className="max-w-[1240px] mx-auto px-4 sm:px-6 mb-6 sm:mb-8">
-                <h2 className="font-display uppercase text-4xl sm:text-5xl text-grafito">
-                    Empresas que confiaron en nosotros
-                </h2>
-            </div>
+        <div className="py-10 sm:py-12 bg-white border-b border-slate-50 overflow-hidden relative">
+            {/* Sin título visible (decisión de Diego): solo pasa el slide de logos.
+                El h2 queda oculto para lectores de pantalla y buscadores. */}
+            <h2 className="sr-only">Empresas que confiaron en nosotros</h2>
             <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white to-transparent z-10" />
             <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white to-transparent z-10" />
 
