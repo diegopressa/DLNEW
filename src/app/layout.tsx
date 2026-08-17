@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     url: "https://dldisenoyestampado.uy",
     siteName: "DL Diseño & Estampado",
     title: "DL Diseño & Estampado | Uniformes Personalizados para Empresas",
-    description: "Uniformes personalizados para empresas en Uruguay. Estampado, bordado y entrega en 24-48h. +500 empresas confían en nosotros.",
+    description: "Uniformes personalizados para empresas en Uruguay. Estampado, bordado y entrega en 24-48h. +1000 empresas confían en nosotros.",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "DL Diseño & Estampado — Uniformes personalizados para empresas" }],
   },
   twitter: {

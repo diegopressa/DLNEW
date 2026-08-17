@@ -794,7 +794,7 @@ export default function HomeEditor() {
                                 value={hero.minOrderText}
                                 onChange={(e) => setHero({ ...hero, minOrderText: e.target.value })}
                                 className="w-full bg-slate-50 border border-slate-100 p-4 rounded-xl outline-none focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all"
-                                placeholder="Ej: Pedido mínimo: 10 unidades · Atendemos empresas en todo Uruguay."
+                                placeholder="Ej: Sin pedido mínimo · Atendemos empresas en todo Uruguay."
                             />
                             <p className="text-xs text-slate-400">Aparece debajo del subtítulo en el inicio. Dejalo vacío para ocultarlo.</p>
                         </div>
@@ -807,7 +807,7 @@ export default function HomeEditor() {
                                     value={hero.trustStat1}
                                     onChange={(e) => setHero({ ...hero, trustStat1: e.target.value })}
                                     className="w-full bg-white border border-slate-100 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all"
-                                    placeholder="+500 empresas atendidas"
+                                    placeholder="+1000 empresas atendidas"
                                 />
                                 <input
                                     type="text"

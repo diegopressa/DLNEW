@@ -1,4 +1,4 @@
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Check } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import prisma from "@/lib/prisma";
@@ -21,7 +21,13 @@ export default async function Hero() {
         subtitle: data?.subtitle || "Prenda + logo + entrega en 24–48 Hs. Un solo proveedor para uniformar a tu empresa.",
         ctaPrimary: data?.ctaPrimary || "Pedir presupuesto por WhatsApp",
         bgImage: images[0]?.url as string | undefined,
+        minOrderText: data?.minOrderText || "",
     };
+
+    // Barra de confianza: se edita en /admin/home. Vacío = no se muestra.
+    const stats = [data?.trustStat1, data?.trustStat2, data?.trustStat3].filter(
+        (t): t is string => !!t && !!t.trim()
+    );
 
     return (
         <section className="relative bg-grafito overflow-hidden">
@@ -62,6 +68,21 @@ export default async function Hero() {
                             Ver trabajos
                         </Link>
                     </div>
+
+                    {hero.minOrderText && (
+                        <p className="mt-6 text-[13px] sm:text-sm text-slate-300">{hero.minOrderText}</p>
+                    )}
+
+                    {stats.length > 0 && (
+                        <ul className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/15 pt-4">
+                            {stats.map((s) => (
+                                <li key={s} className="flex items-center gap-1.5 text-[13px] font-semibold text-slate-200">
+                                    <Check className="w-4 h-4 text-primary shrink-0" strokeWidth={3} />
+                                    {s}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
             </div>
         </section>
