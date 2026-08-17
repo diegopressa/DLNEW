@@ -114,7 +114,7 @@ export default function CategoryGrid({ products, categorySlug }: { products: any
                                 </div>
                             )}
                             {(product.masVendido || product.highlight) && (
-                                <span className="absolute top-4 left-4 flex flex-col items-start gap-1.5">
+                                <span className="absolute top-3 left-3 flex flex-col items-start gap-1.5">
                                     {product.masVendido && <SelloMasPedido />}
                                     {product.highlight && (
                                         <span className="bg-primary text-white px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-[0.08em]">

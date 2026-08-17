@@ -337,7 +337,7 @@ export default function AdminQuickImages({
                     : btn}
                 title={masVendido ? "Quitar el sello de la tarjeta y la ficha" : "Mostrar el sello El más pedido en la tarjeta y la ficha"}
             >
-                <Star size={14} className={masVendido ? "text-grafito fill-resalte" : ""} />
+                <Star size={14} className={masVendido ? "text-primary fill-primary" : ""} />
                 {masVendido ? "Quitar 'El más pedido'" : "Marcar 'El más pedido'"}
             </button>
             <input ref={inputPrincipal} type="file" accept="image/*" className="hidden" onChange={cambiarPrincipal} />
